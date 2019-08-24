@@ -8,6 +8,5 @@
         <file>res/normalscreen.png</file>
         <file>res/setting.png</file>
         <file>res/skin.png</file>
-        <file>res/窗口-01.png</file>
     </qresource>
 </RCC>
