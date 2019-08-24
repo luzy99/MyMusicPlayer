@@ -41,3 +41,6 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
+
+##
+/build-MyMusicPlayer-Desktop_Qt_5_9_2_MinGW_32bit-Debug

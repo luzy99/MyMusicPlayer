@@ -1,2 +1,13 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/icon">
+        <file>res/close.png</file>
+        <file>res/icon.png</file>
+        <file>res/maxscreen.png</file>
+        <file>res/mini.png</file>
+        <file>res/minscreen.png</file>
+        <file>res/normalscreen.png</file>
+        <file>res/setting.png</file>
+        <file>res/skin.png</file>
+        <file>res/窗口-01.png</file>
+    </qresource>
+</RCC>
