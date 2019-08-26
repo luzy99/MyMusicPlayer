@@ -3,7 +3,7 @@
 
 #include <QLabel>
 #include <QPushButton>
-
+#include<QGroupBox>
 class titleBar : public QWidget
 {
     Q_OBJECT
@@ -41,6 +41,7 @@ private:
     QPushButton *m_pCloseButton; //关闭按钮
     QPushButton *m_pSkinButton; //皮肤按钮
     QPushButton *m_pSettingButton; //设置按钮
+    QGroupBox *g_title;
 };
 
 #endif // TITLEBAR_H
