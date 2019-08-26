@@ -3,12 +3,19 @@
 #include "titlebar.h" //包含“自定义标题栏”头文件
 #include <QVBoxLayout>
 
+#include<QDebug>
 //调用WIN API需要用到的头文件与库 [实现缩放]
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
 #include <Windowsx.h>
 #endif
-
+/*
+ * 205 10 10 深红
+ * 240 12 16 选中红色
+ * 255 255 255 白色
+ * 219 208 208 深灰
+ * 244 239 239 浅灰
+ */
 MainWidget::MainWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainWidget)
@@ -20,26 +27,32 @@ MainWidget::MainWidget(QWidget *parent) :
     //背景透明
     //setAttribute(Qt::WA_TranslucentBackground, true);
 
+    //使用调色板设置窗口的背景色
+    QPalette pal_windows(palette());
+    pal_windows.setColor(QPalette::Background, QColor(255, 255, 255));
+    setAutoFillBackground(false);
+    setPalette(pal_windows);
+    setMinimumSize(400 , 300);
     //定义自定义标题栏对象
     titleBar *pTitleBar = new titleBar(this);
     installEventFilter(pTitleBar);
+
 
     resize(960, 540);
     setWindowTitle("My Music Player"); //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
     setWindowIcon(QIcon(":/icon/res/icon.png")); //设置窗口图标，会发生窗口图标改变事件，随之自定义标题栏的图标会更新
 
-    //使用调色板设置窗口的背景色
-    QPalette pal(palette());
-    pal.setColor(QPalette::Background, QColor(255, 200, 130));
-    setAutoFillBackground(true);
-    setPalette(pal);
 
-    //窗口布局中加入标题栏
+
+    //窗口布局中加标题栏盒子
     QVBoxLayout *pLayout = new QVBoxLayout();
+
+
     pLayout->addWidget(pTitleBar);
     pLayout->addStretch();
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
+
     setLayout(pLayout);
 
     //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
