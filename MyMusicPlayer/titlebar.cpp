@@ -36,22 +36,28 @@ titleBar::titleBar(QWidget *parent)
     m_pMinimizeButton->setIconSize(QSize(27,22));
     m_pMinimizeButton->setIcon(QIcon(":/icon/res/minscreen.png"));
     m_pMinimizeButton->setFlat(true);
+    m_pMinimizeButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
     //--
     m_pMaximizeButton->setIconSize(QSize(27,22));
     m_pMaximizeButton->setIcon(QIcon(":/icon/res/maxscreen.png"));
     m_pMaximizeButton->setFlat(true);
+    m_pMaximizeButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
     //--
     m_pCloseButton->setIconSize(QSize(27,22));
     m_pCloseButton->setIcon(QIcon(":/icon/res/close.png"));
     m_pCloseButton->setFlat(true);
+    m_pCloseButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
     //--
     m_pSettingButton->setIconSize(QSize(27,22));
     m_pSettingButton->setIcon(QIcon(":/icon/res/setting.png"));
     m_pSettingButton->setFlat(true);
+    m_pSettingButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
     //--
     m_pSkinButton->setIconSize(QSize(27,22));
     m_pSkinButton->setIcon(QIcon(":/icon/res/skin.png"));
     m_pSkinButton->setFlat(true);
+    m_pSkinButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
+
 
     //设置窗口部件的名称
     m_pTitleLabel->setObjectName("whiteLabel");
@@ -78,9 +84,15 @@ titleBar::titleBar(QWidget *parent)
     pLayout->addWidget(m_pMaximizeButton);
     pLayout->addWidget(m_pCloseButton);
 
+    //装入盒子
+    g_title = new QGroupBox(this) ;
+    g_title->setObjectName("GroupTitle");
+    g_title->setFlat(true);
+    g_title->setGeometry(0, 0, this->width(), 30);
+    g_title->setStyleSheet("background-color: rgb(219, 208, 208);");
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(5, 0, 5, 0);
-    setLayout(pLayout);
+    g_title->setLayout(pLayout);
 
     //连接三个按钮的信号槽
     connect(m_pMinimizeButton, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
@@ -98,7 +110,7 @@ void titleBar::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event); //没有实质性的作用，只是用来允许event可以不使用，用来避免编译器警告
 
-    emit m_pMaximizeButton->clicked();
+    emit m_pMaximizeButton->clicked(1);
 }
 
 //进行界面的拖动  [一般情况下，是界面随着标题栏的移动而移动，所以我们将事件写在标题栏中比较合理]
@@ -182,6 +194,7 @@ void titleBar::onClicked()
         {
             pWindow->close(); //窗口关闭
         }
+        g_title->setGeometry(0, 0, this->width(), 30);
     }
 }
 
@@ -212,4 +225,5 @@ void titleBar::updateMaximize()
 
         m_pMaximizeButton->setStyle(QApplication::style());
     }
+    g_title->setGeometry(0, 0, this->width(), 30);
 }
