@@ -1,6 +1,7 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
-
+#include "titlebar.h" //包含“自定义标题栏”头文件
+#include "songlist.h"
 #include <QVBoxLayout>
 
 #include<QDebug>
@@ -30,14 +31,18 @@ MainWidget::MainWidget(QWidget *parent) :
     //使用调色板设置窗口的背景色
     QPalette pal_windows(palette());
     pal_windows.setColor(QPalette::Background, QColor(255, 255, 255));
-    setAutoFillBackground(false);
+    setAutoFillBackground(false);    
+    resize(1200,900);
+    //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
+    setWindowTitle("My Music Player"); 
+    //设置窗口图标，会发生窗口图标改变事件，随之自定义标题栏的图标会更新    
+    setWindowIcon(QIcon(":/icon/res/icon.png")); 
     setPalette(pal_windows);
     setMinimumSize(400 , 300);
-
-    //初始化自定义标题栏
-    pTitleBar = new titleBar(this);
+    //定义自定义标题栏对象
+    titleBar *pTitleBar = new titleBar(this);
     installEventFilter(pTitleBar);
-
+        
     //初始化自定义音乐播放栏
     pMusicPlayBar = new MusicPlayBar(this);
 
@@ -45,19 +50,23 @@ MainWidget::MainWidget(QWidget *parent) :
     setWindowTitle("My Music Player"); //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
     setWindowIcon(QIcon(":/icon/res/icon.png")); //设置窗口图标，会发生窗口图标改变事件，随之自定义标题栏的图标会更新
 
-
-
+    
     //窗口布局中加标题栏盒子
-    QVBoxLayout *pLayout = new QVBoxLayout();
+    QVBoxLayout *pLayout1 = new QVBoxLayout();
+    pLayout1->addWidget(pTitleBar);
+    pLayout1->addStretch();
+    pLayout1->setSpacing(0);
+    pLayout1->setContentsMargins(0, 0, 0, 0);//设置边距
+    setLayout(pLayout1);
 
-    pLayout->addWidget(pTitleBar);
-    pLayout->addWidget(pMusicPlayBar);
-    pLayout->addStretch();
-    pLayout->setSpacing(0);
-    pLayout->setContentsMargins(0, 0, 0, 0);
 
-    setLayout(pLayout);
-
+    //歌单布局
+    SongList *pSongList = new SongList (this);
+    installEventFilter(pSongList);
+    pSongList->setGeometry(0,30,240,this->height()-30);
+    //与歌单建立联系
+    connect(this , SIGNAL(windowChange()), pSongList,SLOT(resetGeometry()));
+        
     //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
     m_nBorderWidth=5;
 }
@@ -66,6 +75,7 @@ MainWidget::~MainWidget()
 {
     delete ui;
 }
+
 
 //nativeEvent主要用于进程间通信-消息传递，使用这种方式后来实现窗体的缩放 [加上了这函数，窗口也能移动了]
 bool MainWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
@@ -119,6 +129,6 @@ bool MainWidget::nativeEvent(const QByteArray &eventType, void *message, long *r
         return true;
     }
     }
-
+    emit windowChange();
     return QWidget::nativeEvent(eventType, message, result);
 }
