@@ -8,6 +8,7 @@
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
 #include <Windowsx.h>
+#include"audiotag.h"
 #endif
 /*
  * 205 10 10 深红
@@ -57,6 +58,11 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
     m_nBorderWidth=5;
+
+    SongInfo si;
+    AudioTag* aa = new AudioTag(L"D:/test.mp3",si);
+    aa->getAllinfo();
+    qDebug()<<"456456";
 }
 
 MainWidget::~MainWidget()

@@ -26,11 +26,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwidget.cpp \
-    titlebar.cpp
+    titlebar.cpp \
+    audiotag.cpp
 
 HEADERS += \
         mainwidget.h \
-    titlebar.h
+    titlebar.h \
+    songinfo.h \
+    audiotag.h
 
 FORMS += \
         mainwidget.ui
