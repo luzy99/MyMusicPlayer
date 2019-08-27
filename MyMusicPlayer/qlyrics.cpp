@@ -2,7 +2,16 @@
 #include "common.h"
 #include <QDataStream>
 #include <QFile>
-
+#include <iomanip>
+#include<vector>
+#include<string>
+#include<QDebug>
+#include<iostream>
+#include <iomanip>
+#include <fstream>
+#include <algorithm>
+#include<ios>
+using namespace std;
 
 void QLyrics::SaveLyric2()
 {
