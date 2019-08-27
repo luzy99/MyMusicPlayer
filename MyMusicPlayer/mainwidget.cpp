@@ -1,6 +1,6 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
-#include "titlebar.h" //包含“自定义标题栏”头文件
+
 #include <QVBoxLayout>
 
 #include<QDebug>
@@ -33,10 +33,13 @@ MainWidget::MainWidget(QWidget *parent) :
     setAutoFillBackground(false);
     setPalette(pal_windows);
     setMinimumSize(400 , 300);
-    //定义自定义标题栏对象
-    titleBar *pTitleBar = new titleBar(this);
+
+    //初始化自定义标题栏
+    pTitleBar = new titleBar(this);
     installEventFilter(pTitleBar);
 
+    //初始化自定义音乐播放栏
+    pMusicPlayBar = new MusicPlayBar(this);
 
     resize(960, 540);
     setWindowTitle("My Music Player"); //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
@@ -47,8 +50,8 @@ MainWidget::MainWidget(QWidget *parent) :
     //窗口布局中加标题栏盒子
     QVBoxLayout *pLayout = new QVBoxLayout();
 
-
     pLayout->addWidget(pTitleBar);
+    pLayout->addWidget(pMusicPlayBar);
     pLayout->addStretch();
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0, 0, 0, 0);

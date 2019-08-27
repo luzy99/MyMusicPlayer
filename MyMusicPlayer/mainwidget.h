@@ -7,6 +7,8 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include "titlebar.h" //包含“自定义标题栏”头文件
+#include "musicplaybar.h" //包含“自定义音乐播放栏”头文件
 
 namespace Ui {
 class MainWidget;
@@ -26,6 +28,8 @@ private:
     Ui::MainWidget *ui;
 
     int m_nBorderWidth; //m_nBorder表示鼠标位于边框缩放范围的宽度
+    titleBar *pTitleBar; //自定义标题栏
+    MusicPlayBar *pMusicPlayBar; //自定义音乐播放栏
 };
 
 #endif // MainWidget_H
