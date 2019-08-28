@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include "titleBar.h"
+#include"mainwidget.h"
 
 //调用WIN API需要用到的头文件与库
 #ifdef Q_OS_WIN
@@ -84,7 +85,7 @@ titleBar::titleBar(QWidget *parent)
     pLayout->addWidget(m_pMaximizeButton);
     pLayout->addWidget(m_pCloseButton);
 
-    //装入盒子
+    //装入盒子,盒子的目的是设置背景色
     g_title = new QGroupBox(this) ;
     g_title->setObjectName("GroupTitle");
     g_title->setFlat(true);
@@ -93,6 +94,7 @@ titleBar::titleBar(QWidget *parent)
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(5, 0, 5, 0);
     g_title->setLayout(pLayout);
+    this->setLayout(pLayout);
 
     //连接三个按钮的信号槽
     connect(m_pMinimizeButton, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
@@ -194,8 +196,8 @@ void titleBar::onClicked()
         {
             pWindow->close(); //窗口关闭
         }
-        g_title->setGeometry(0, 0, this->width(), 30);
     }
+    g_title->setGeometry(0, 0, this->width(), 30);
 }
 
 //最大化/还原

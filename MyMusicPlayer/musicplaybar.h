@@ -1,6 +1,8 @@
 #ifndef MUSICPLAYBAR_H
 #define MUSICPLAYBAR_H
 
+#include"lyricdownload.h"
+#include"lyricwidget.h"
 #include <QWidget>
 #include <QPushButton>
 #include<QGroupBox>
@@ -9,6 +11,7 @@
 #include <QMediaPlayer> //音乐播放器
 #include <QMediaPlaylist> //播放列表
 #include <QHBoxLayout>
+#include <QUrl>
 
 class MusicPlayBar : public QWidget
 {
@@ -31,8 +34,11 @@ public slots:
     void on_previousBtn_clicked(); //上一首被点击时触发
     void on_playBtn_clicked(); //播放&暂停键点击触发
     void on_nextBtn_clicked(); //下一首被点击时触发
-    void on_playSlider_sliderReleased(); //用户拖动进度条时更改位置
+    void on_playSlider_sliderPressed(); //进度条被点击时触发
+    void on_playSlider_sliderReleased(); //用户拖动进度条时更改位置，释放时触发
     void on_muteBtn_clicked(); //静音被点击时触发
+    void on_soundSlider_sliderPressed();//进度条被点击时触发
+    void on_soundSlider_sliderReleased(); //用户拖动进度条时更改位置，释放时触发
     void on_soundSlider_valueChanged(int value); //音量滑条被拖动时触发
     void on_playModeBtn_clicked(); //切换播放模式时触发
     void on_playSpeedBtn_clicked(); //切换倍速时触发
@@ -58,6 +64,9 @@ private:
     double currentSpeed; //当前播放速度
     QString durationTime; //总长度
     QString positionTime; //当前播放到的位置
+
+    LyricDownload *ly1;
+    LyricWidget *lw1;
 };
 
 #endif // MUSICPLAYBAR_H

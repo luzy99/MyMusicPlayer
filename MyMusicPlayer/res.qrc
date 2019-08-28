@@ -8,20 +8,28 @@
         <file>res/normalscreen.png</file>
         <file>res/setting.png</file>
         <file>res/skin.png</file>
-        <file>res/play.png</file>
-        <file>res/previous.png</file>
-        <file>res/next.png</file>
-        <file>res/pause.png</file>
-        <file>res/soundFull.png</file>
-        <file>res/soundMute.png</file>
-        <file>res/soundNormal.png</file>
+        <file>res/favourite_d.ico</file>
+        <file>res/heart.ico</file>
+        <file>res/add.png</file>
+        <file>res/lyrics.png</file>
         <file>res/modeLoop.png</file>
         <file>res/modeRandom.png</file>
         <file>res/modeSequence.png</file>
-        <file>res/lyrics.png</file>
+        <file>res/next.png</file>
+        <file>res/pause.png</file>
+        <file>res/play.png</file>
+        <file>res/previous.png</file>
         <file>res/rate050.png</file>
         <file>res/rate100.png</file>
         <file>res/rate150.png</file>
         <file>res/rate200.png</file>
+        <file>res/soundFull.png</file>
+        <file>res/soundMute.png</file>
+        <file>res/soundNormal.png</file>
+        <file>res/playSlider.png</file>
+        <file>res/playSliderClicked.png</file>
+        <file>res/defaultCover.png</file>
+        <file>res/resize.png</file>
+        <file>res/showSongList.png</file>
     </qresource>
 </RCC>

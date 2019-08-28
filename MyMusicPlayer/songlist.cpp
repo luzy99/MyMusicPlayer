@@ -1,6 +1,9 @@
 #include "songlist.h"
 #include "titlebar.h"
 #include<QDebug>
+#include <QDir>
+#include <QFileDialog>
+
 SongList::SongList(QWidget *parent) : QWidget(parent)
 {
     //数据成员初始化，各个窗口父子关系确认
@@ -13,10 +16,9 @@ SongList::SongList(QWidget *parent) : QWidget(parent)
     listSongs = new QListWidget(scrollSongsWidget);
     labelLists = new QLabel(scrollListsWidget);
     labelSongs = new QLabel(scrollSongsWidget);
-
     lovedMusiclist = new QListWidgetItem(listList);
-
     createMusicListButton = new QPushButton(scrollListsWidget);
+    addSongBtn = new QPushButton(scrollSongsWidget);
 
     //滚轮属性
     scrollLists->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -39,6 +41,7 @@ SongList::SongList(QWidget *parent) : QWidget(parent)
     listSongs->setGeometry(0, 30, 230, 550);
 
     createMusicListButton->setGeometry(200, 0, 30, 30);
+    addSongBtn->setGeometry(200, 0, 30, 30);
     //设置两个滚轮区无边框
     scrollLists->setFrameShape(QFrame::NoFrame);
     scrollSongs->setFrameShape(QFrame::NoFrame);
@@ -70,215 +73,120 @@ SongList::SongList(QWidget *parent) : QWidget(parent)
 //                                             "min-width: 10px;"
 //                                         "}");
 
+    //添加歌曲按钮
+    addSongBtn->setFlat(true);
+    addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
 
     //设置滚轮样式
     scrollLists->setWidget(scrollListsWidget);
     scrollSongs->setWidget(scrollSongsWidget);
-    scrollLists->setStyleSheet("QScrollBar:vertical"
-    "{   width:8px;  "
-    "   background:rgba(0,0,0,0%);"
-    "    margin:0px,0px,0px,0px;"
-     "   padding-top:9px;"
-     "   padding-bottom:9px;"
-   " }"
-    "QScrollBar::handle:vertical"
-    "{"
-        "width:8px;"
-       " background:rgba(0,0,0,25%);"
-       " border-radius:4px;"
-        "min-height:20;"
-    "}"
-    "QScrollBar::handle:vertical:hover"
-    "{"
-       " width:8px;"
-       " background:rgba(0,0,0,50%);"
-       " border-radius:4px;"
-       " min-height:20;"
-    "}"
-    "QScrollBar::add-line:vertical"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/3.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:vertical"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/1.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-line:vertical:hover"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/4.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:vertical:hover"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/2.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical"
-    "{"
-        "background:rgba(0,0,0,10%);"
-        "border-radius:4px;"
-    "}"
 
-    "QScrollBar:horizontal"
-    "{"
-        "width:8px;"
-        "background:rgba(0,0,0,0%);"
-        "margin:0px,0px,0px,0px;"
-        "padding-top:9px;"
-        "padding-bottom:9px;"
-    "}"
-    "QScrollBar::handle:horizontal"
-    "{"
-       " width:8px;"
-       " background:rgba(0,0,0,25%);"
-       " border-radius:4px;"
-        "min-height:20;"
-    "}"
-    "QScrollBar::handle:horizontal:hover"
-    "{"
-        "width:8px;"
-       " background:rgba(0,0,0,50%);"
-        "border-radius:4px;"
-       " min-height:20;"
-    "}"
-    "QScrollBar::add-line:horizontal"
-    "{"
-       " height:9px;width:8px;"
-       " border-image:url(:/images/a/3.png);"
-       " subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:horizontal"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/1.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-line:horizontal:hover"
-   " {"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/4.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:horizontal:hover"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/2.png);"
-        "subcontrol-position:left;"
-   " }"
-    "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal "
-    "{"
-        "background:rgba(0,0,0,10%);"
-        "border-radius:4px;"
-    "}");
+    QString scrollStyleSheet = "QScrollBar:vertical"
+                               "{   width:8px;  "
+                               "   background:rgba(0,0,0,0%);"
+                               "    margin:0px,0px,0px,0px;"
+                                "   padding-top:9px;"
+                                "   padding-bottom:9px;"
+                              " }"
+                               "QScrollBar::handle:vertical"
+                               "{"
+                                   "width:8px;"
+                                  " background:rgba(0,0,0,25%);"
+                                  " border-radius:4px;"
+                                   "min-height:20;"
+                               "}"
+                               "QScrollBar::handle:vertical:hover"
+                               "{"
+                                  " width:8px;"
+                                  " background:rgba(0,0,0,50%);"
+                                  " border-radius:4px;"
+                                  " min-height:20;"
+                               "}"
+                               "QScrollBar::add-line:vertical"
+                               "{"
+                                   "height:9px;width:8px;"
+                                   "border-image:url(:/images/a/3.png);"
+                                   "subcontrol-position:bottom;"
+                               "}"
+                               "QScrollBar::sub-line:vertical"
+                               "{"
+                                   "height:9px;width:8px;"
+                                   "border-image:url(:/images/a/1.png);"
+                                   "subcontrol-position:top;"
+                               "}"
+                               "QScrollBar::add-line:vertical:hover"
+                               "{"
+                                  " height:9px;width:8px;"
+                                   "border-image:url(:/images/a/4.png);"
+                                   "subcontrol-position:bottom;"
+                               "}"
+                               "QScrollBar::sub-line:vertical:hover"
+                               "{"
+                                   "height:9px;width:8px;"
+                                   "border-image:url(:/images/a/2.png);"
+                                   "subcontrol-position:top;"
+                               "}"
+                               "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical"
+                               "{"
+                                   "background:rgba(0,0,0,10%);"
+                                   "border-radius:4px;"
+                               "}"
 
-    scrollSongs->setStyleSheet("QScrollBar:vertical"
-    "{   width:8px;  "
-    "   background:rgba(0,0,0,0%);"
-    "    margin:0px,0px,0px,0px;"
-     "   padding-top:9px;"
-     "   padding-bottom:9px;"
-   " }"
-    "QScrollBar::handle:vertical"
-    "{"
-        "width:8px;"
-       " background:rgba(0,0,0,25%);"
-       " border-radius:4px;"
-        "min-height:20;"
-    "}"
-    "QScrollBar::handle:vertical:hover"
-    "{"
-       " width:8px;"
-       " background:rgba(0,0,0,50%);"
-       " border-radius:4px;"
-       " min-height:20;"
-    "}"
-    "QScrollBar::add-line:vertical"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/3.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:vertical"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/1.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-line:vertical:hover"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/4.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:vertical:hover"
-    "{"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/2.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical"
-    "{"
-        "background:rgba(0,0,0,10%);"
-        "border-radius:4px;"
-    "}"
+                               "QScrollBar:horizontal"
+                               "{"
+                                   "width:8px;"
+                                   "background:rgba(0,0,0,0%);"
+                                   "margin:0px,0px,0px,0px;"
+                                   "padding-top:9px;"
+                                   "padding-bottom:9px;"
+                               "}"
+                               "QScrollBar::handle:horizontal"
+                               "{"
+                                  " width:8px;"
+                                  " background:rgba(0,0,0,25%);"
+                                  " border-radius:4px;"
+                                   "min-height:20;"
+                               "}"
+                               "QScrollBar::handle:horizontal:hover"
+                               "{"
+                                   "width:8px;"
+                                  " background:rgba(0,0,0,50%);"
+                                   "border-radius:4px;"
+                                  " min-height:20;"
+                               "}"
+                               "QScrollBar::add-line:horizontal"
+                               "{"
+                                  " height:9px;width:8px;"
+                                  " border-image:url(:/images/a/3.png);"
+                                  " subcontrol-position:bottom;"
+                               "}"
+                               "QScrollBar::sub-line:horizontal"
+                               "{"
+                                  " height:9px;width:8px;"
+                                   "border-image:url(:/images/a/1.png);"
+                                   "subcontrol-position:top;"
+                               "}"
+                               "QScrollBar::add-line:horizontal:hover"
+                              " {"
+                                   "height:9px;width:8px;"
+                                   "border-image:url(:/images/a/4.png);"
+                                   "subcontrol-position:bottom;"
+                               "}"
+                               "QScrollBar::sub-line:horizontal:hover"
+                               "{"
+                                  " height:9px;width:8px;"
+                                   "border-image:url(:/images/a/2.png);"
+                                   "subcontrol-position:left;"
+                              " }"
+                               "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal "
+                               "{"
+                                   "background:rgba(0,0,0,10%);"
+                                   "border-radius:4px;"
+                               "}";
 
-    "QScrollBar:horizontal"
-    "{"
-        "width:8px;"
-        "background:rgba(0,0,0,0%);"
-        "margin:0px,0px,0px,0px;"
-        "padding-top:9px;"
-        "padding-bottom:9px;"
-    "}"
-    "QScrollBar::handle:horizontal"
-    "{"
-       " width:8px;"
-       " background:rgba(0,0,0,25%);"
-       " border-radius:4px;"
-        "min-height:20;"
-    "}"
-    "QScrollBar::handle:horizontal:hover"
-    "{"
-        "width:8px;"
-       " background:rgba(0,0,0,50%);"
-        "border-radius:4px;"
-       " min-height:20;"
-    "}"
-    "QScrollBar::add-line:horizontal"
-    "{"
-       " height:9px;width:8px;"
-       " border-image:url(:/images/a/3.png);"
-       " subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:horizontal"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/1.png);"
-        "subcontrol-position:top;"
-    "}"
-    "QScrollBar::add-line:horizontal:hover"
-   " {"
-        "height:9px;width:8px;"
-        "border-image:url(:/images/a/4.png);"
-        "subcontrol-position:bottom;"
-    "}"
-    "QScrollBar::sub-line:horizontal:hover"
-    "{"
-       " height:9px;width:8px;"
-        "border-image:url(:/images/a/2.png);"
-        "subcontrol-position:left;"
-   " }"
-    "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal "
-    "{"
-        "background:rgba(0,0,0,10%);"
-        "border-radius:4px;"
-    "}");
+    scrollLists->setStyleSheet(scrollStyleSheet);
+
+    scrollSongs->setStyleSheet(scrollStyleSheet);
 
     //让部件显示
     g_container->show();
@@ -288,8 +196,20 @@ SongList::SongList(QWidget *parent) : QWidget(parent)
     scrollSongsWidget->show();
     listList->show();
     listSongs->show();
+
+    //链接信号与槽
+    initSignalsAndSlots();
 }
 
+void SongList::initSignalsAndSlots()
+{
+    //双击时发出播放信号
+    connect(listSongs,SIGNAL(doubleClicked(QModelIndex)),
+            this,SLOT(on_ListSongs_doubleClicked(QModelIndex)));
+    //双击添加歌曲时添加文件
+    connect(addSongBtn,SIGNAL(clicked()),
+            this,SLOT(on_addSongBtn_clicked()));
+}
 
 //当窗口发生改变的时候，歌单部分按照比例缩放
 void SongList::resetGeometry()
@@ -302,13 +222,39 @@ void SongList::resetGeometry()
     g_container->setGeometry(0, 0, 240 , sizeY-30);
     scrollLists->setGeometry(0, 0, 240,  ((sizeY-30 ))/3);
     scrollSongs->setGeometry(0, ((sizeY-30 ))/3, 240, (2*(sizeY-30))/3);
+    scrollListsWidget->setGeometry(0, 0, 230, 290);
+    scrollListsWidget->setMinimumSize(230, 290);
+
+    scrollSongsWidget->setGeometry(0, 0, 230 , 580);
+    scrollSongsWidget->setMinimumSize(230, 580);
 }
 
-//void SongList::onListSongsDoubleClicked(const QModelIndex &index)
-//{
-//    int curRow = index.row();
-//    emit playMusic(curRow);
-//}
+void SongList::on_ListSongs_doubleClicked(const QModelIndex &index)
+{
+    int songIndex = index.row();
+    emit playMusic(songIndex);
+}
+
+void SongList::on_addSongBtn_clicked()
+{
+    //添加文件
+    QString curPath = QDir::homePath(); //获取用户目录
+    //限制打开文件的类型
+    QString dlgTitle = "选择音频文件(mp3/wav/wma)";
+    QString filter = "音频文件(*.mp3 *.wav *.wma);;mp3文件(*.mp3);;wav文件(*.wav);;wma文件(*.wma);;所有文件(*.*)";
+    QStringList fileList = QFileDialog::getOpenFileNames(this,dlgTitle,curPath,filter);
+
+    if (fileList.count()<1)
+        return;
+    for(int i=0;i<fileList.count();i++)
+    {
+        QString file = fileList.at(i);
+        QFileInfo fileInfo(file);
+        listSongs->addItem(fileInfo.fileName()); //添加到界面文件夹
+        QUrl songUrl = QUrl::fromLocalFile(file);
+        emit changePlaylist(songUrl,1);
+    }
+}
 
 void SongList::onChangeListSongs(QString fileName, int behaviorIndex)
 {

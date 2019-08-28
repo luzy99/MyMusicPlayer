@@ -88,7 +88,6 @@ MainWidget::~MainWidget()
     delete ui;
 }
 
-
 //nativeEvent主要用于进程间通信-消息传递，使用这种方式后来实现窗体的缩放 [加上了这函数，窗口也能移动了]
 bool MainWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
@@ -147,16 +146,25 @@ bool MainWidget::nativeEvent(const QByteArray &eventType, void *message, long *r
 
 void MainWidget::initSignalsAndSlots()
 {
+    //重绘歌单大小
     connect(this , SIGNAL(windowChange()),
             pSongList,SLOT(resetGeometry()));
+    //主窗口修改音乐播放器中的逻辑列表(playlist)
     connect(this , SIGNAL(changePlaylist(QUrl,int)),
             pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
+    //修改显示给用户的歌单
     connect(this,SIGNAL(changeListSongs(QString,int)),
             pSongList,SLOT(onChangeListSongs(QString,int)));
+    //歌单触发播放音乐事件
     connect(pSongList,SIGNAL(playMusic(int)),
             pMusicPlayBar,SLOT(onPlayMusic(int)));
+    //主窗口触发播放音乐事件
     connect(this,SIGNAL(playMusic(int)),
             pMusicPlayBar,SLOT(onPlayMusic(int)));
+    //歌单修改音乐播放器中的逻辑列表(playlist)
+    connect(pSongList , SIGNAL(changePlaylist(QUrl,int)),
+            pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
+    //重绘主窗口大小
     connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
 }
 
@@ -206,8 +214,9 @@ void MainWidget::dropEvent(QDropEvent *event)
         emit changeListSongs(fileInfo.fileName(),1);
     }
 
+    //**********************************************************************************
     //播放最新拖入的歌
-    emit playMusic(0);
+    emit playMusic(-1);
 }
 
 void MainWidget::resetGeometry()

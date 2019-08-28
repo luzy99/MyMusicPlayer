@@ -7,6 +7,7 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <QUrl>
 #include "titlebar.h" //包含“自定义标题栏”头文件
 #include "musicplaybar.h" //包含“自定义音乐播放栏”头文件
 #include "songlist.h" //包含"‘自定义歌单"的头文件

@@ -5,7 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += sql
 QT       += multimedia
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,15 +27,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    lyricdownload.cpp \
+    lyricwidget.cpp \
         main.cpp \
         mainwidget.cpp \
     musicplaybar.cpp \
+    songlist.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
 
 HEADERS += \
+    lyricdownload.h \
+    lyricwidget.h \
         mainwidget.h \
     musicplaybar.h \
+    songlist.h \
     suspensionwindow.h \
     titlebar.h
 
