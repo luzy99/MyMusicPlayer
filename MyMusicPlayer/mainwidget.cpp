@@ -1,6 +1,8 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
-#include "titlebar.h" //包含“自定义标题栏”头文件
+#include "titlebar.h"
+#include "songinfo.h"
+#include "songinfoshow.h"
 #include <QVBoxLayout>
 
 #include<QDebug>
@@ -60,9 +62,14 @@ MainWidget::MainWidget(QWidget *parent) :
     m_nBorderWidth=5;
 
     SongInfo si;
-    AudioTag* aa = new AudioTag(L"D:/test.mp3",si);
+    AudioTag* aa = new AudioTag(L"D:/4.mp3",si);
     aa->getAllinfo();
     qDebug()<<"456456";
+
+
+    SongInfoShow *infoShow = new SongInfoShow(this,si);
+    infoShow->setGeometry(250,30,(this->width()-240)/2,this->height()-30);
+
 }
 
 MainWidget::~MainWidget()

@@ -8,5 +8,6 @@
         <file>res/normalscreen.png</file>
         <file>res/setting.png</file>
         <file>res/skin.png</file>
+        <file>res/default_cover.ico</file>
     </qresource>
 </RCC>

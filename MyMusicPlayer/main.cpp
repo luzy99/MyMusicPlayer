@@ -1,4 +1,5 @@
 #include "mainwidget.h"
+#include "songinfoshow.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

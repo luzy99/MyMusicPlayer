@@ -27,16 +27,21 @@ SOURCES += \
         main.cpp \
         mainwidget.cpp \
     titlebar.cpp \
-    audiotag.cpp
+    audiotag.cpp \
+    songinfoshow.cpp \
+    diskwidget.cpp
 
 HEADERS += \
         mainwidget.h \
     titlebar.h \
     songinfo.h \
-    audiotag.h
+    audiotag.h \
+    songinfoshow.h \
+    diskwidget.h
 
 FORMS += \
-        mainwidget.ui
+        mainwidget.ui \
+    songinfoshow.ui
 
 RESOURCES += \
     res.qrc
