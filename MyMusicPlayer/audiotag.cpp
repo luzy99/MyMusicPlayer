@@ -23,16 +23,17 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
 {
     string img_type;
     wstring default_path =L"D:/";
-    img_type = tag_content.substr(tag_index + 18, 2);
-    if(img_type.compare("jp"))    //jpg
-    {
-        m_song_info->album_cover = default_path.append(
-                    m_song_info->title).append(L".jpg");
-    }
-    else if(img_type.compare("pn"))   //png
+    img_type = tag_content.substr(tag_index + 25, 2);
+    qDebug()<<img_type.compare("NG");
+    if(!img_type.compare("NG"))    //png
     {
         m_song_info->album_cover = default_path.append(
                     m_song_info->title).append(L".png");
+    }
+    else    //jpg
+    {
+        m_song_info->album_cover = default_path.append(
+                    m_song_info->title).append(L".jpg");
     }
 
     fseek(fp,tag_index+23,SEEK_SET);//定位图片信息
@@ -47,7 +48,6 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
 
 bool AudioTag::getAllinfo()
 {
-    const char* id3v2;
     bool success;
     fseek(fp,0,SEEK_SET);
     char Header[3];
@@ -62,9 +62,9 @@ bool AudioTag::getAllinfo()
         const int tag_size=size[0]* 0x1000000 +size[1] * 0x10000 + size[2]* 0x100 + size[3];	//获取标签区域的总大小
         //const int tag_size = (size[0] & 0x7F) * 0x200000 + (size[1] & 0x7F) * 0x4000 + (size[2] & 0x7F) * 0x80 + (size[3] & 0x7F);
         //string tag_content;
-        char buffer[tag_size];
+        char* buffer=new char[tag_size];
         fseek(fp,0,SEEK_SET);
-        fread(&buffer,tag_size,1,fp);
+        fread(buffer,tag_size,1,fp);
         //tag_content =buffer;
         string tag_content(buffer, buffer + tag_size);
         //tag_content.assign(id3v2, tag_size);	//将标签区域的内容保存到一个string对象里
