@@ -40,8 +40,7 @@ HEADERS += \
     diskwidget.h
 
 FORMS += \
-        mainwidget.ui \
-    songinfoshow.ui
+        mainwidget.ui
 
 RESOURCES += \
     res.qrc
