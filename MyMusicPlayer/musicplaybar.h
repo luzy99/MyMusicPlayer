@@ -65,8 +65,8 @@ private:
     QString durationTime; //总长度
     QString positionTime; //当前播放到的位置
 
-    LyricDownload *ly1;
-    LyricWidget *lw1;
+    LyricDownload *lyricsDownloader; //歌词下载
+    LyricWidget *lyricsShower; //歌词展示
 };
 
 #endif // MUSICPLAYBAR_H

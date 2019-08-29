@@ -136,9 +136,12 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     playlist->setPlaybackMode(QMediaPlaylist::Loop); //循环模式
     player->setPlaylist(playlist);
 
-    ly1=new LyricDownload;
-    lw1=new LyricWidget;
-    lw1->show();
+    //初始化歌词处理软件
+    lyricsDownloader = new LyricDownload;
+    lyricsShower = new LyricWidget;
+    //****************************************************************************************
+    //展示歌词
+    lyricsShower->show();
 
     //连接信号与槽
     initSignalsAndSlots();
@@ -211,6 +214,12 @@ void MusicPlayBar::onDurationChanged(qint64 duration)
        secs = secs%60; //余秒数
        durationTime = QString::asprintf("%d:%d",mins,secs);
        totalTimeLabel->setText(durationTime);
+
+       //***************************************************************
+       //切歌->开始爬取歌词并演示
+       QString str1("ldnqq");
+        lyricsDownloader->DownloadLyric("31010566",str1,false);
+        lyricsShower->analyzeLrcContent("31010566");
 }
 
 //当前文件播放位置变化时发射，用于跟新界面上的进度条
@@ -224,7 +233,9 @@ void MusicPlayBar::onPositionChanged(qint64 position)
        positionTime = QString::asprintf("%d:%d",mins,secs);
        currentTimeLabel->setText(positionTime);
 
-       lw1->positionChanged(position);
+       //************************************************
+       //传递位置给歌词显示
+       lyricsShower->positionChanged(position);
 }
 
 void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
@@ -294,11 +305,6 @@ void MusicPlayBar::on_playBtn_clicked()
         player->play();
         playBtn->setIcon(QIcon(":/icon/res/pause.png"));
         playBtn->setToolTip("暂停");
-
-        QString str1("ldnqq");
-         ly1->DownloadLyric("28854853",str1,true);
-         lw1->analyzeLrcContent("28854853");
-
     }
 }
 

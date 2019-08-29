@@ -32,7 +32,6 @@ SOURCES += \
         main.cpp \
         mainwidget.cpp \
     musicplaybar.cpp \
-    myactions.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
@@ -42,7 +41,6 @@ HEADERS += \
     lyricwidget.h \
         mainwidget.h \
     musicplaybar.h \
-    myactions.h \
     songlist.h \
     suspensionwindow.h \
     titlebar.h
