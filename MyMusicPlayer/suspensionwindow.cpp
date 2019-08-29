@@ -4,7 +4,8 @@
 #include <QHBoxLayout> //水平布局
 
 SuspensionWindow::SuspensionWindow(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    providedActions(this)
 {
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(350,60); //悬浮窗大小不可改变
@@ -45,6 +46,12 @@ SuspensionWindow::SuspensionWindow(QWidget *parent) :
     resizeBtn->setIconSize(QSize(25,25));
     layout->addWidget(resizeBtn);
 
+    //初始化右键菜单
+    rightClickedMenu = new QMenu(this);
+    rightClickedMenu->addAction(providedActions.actClose);
+
+    //初始化歌曲菜单
+
     //初始化中心组件
     layout->setMargin(0);
     this->setLayout(layout);
@@ -64,6 +71,13 @@ void SuspensionWindow::mouseMoveEvent(QMouseEvent *event)
     QPoint offset = event->globalPos() - mouseStartPoint ;
     QPoint p = windowsStartPoint + offset;
     this->move(p);
+}
+
+//重写右键菜单事件
+void SuspensionWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    rightClickedMenu->exec(QCursor::pos());
+    event->accept();
 }
 
 void SuspensionWindow::setSongsInfo(const QString &value)
