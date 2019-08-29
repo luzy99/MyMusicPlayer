@@ -27,22 +27,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    ghostlyricwidget.cpp \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
         mainwidget.cpp \
     musicplaybar.cpp \
-    myactions.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
 
 HEADERS += \
+    ghostlyricwidget.h \
     lyricdownload.h \
     lyricwidget.h \
         mainwidget.h \
     musicplaybar.h \
-    myactions.h \
     songlist.h \
     suspensionwindow.h \
     titlebar.h

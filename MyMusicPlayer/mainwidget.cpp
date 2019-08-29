@@ -12,7 +12,7 @@
 //调用WIN API需要用到的头文件与库 [实现缩放]
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
-#include <Windowsx.h>
+#include <windowsx.h>
 #endif
 /*
  * 205 10 10 深红

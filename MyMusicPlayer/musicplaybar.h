@@ -3,6 +3,7 @@
 
 #include"lyricdownload.h"
 #include"lyricwidget.h"
+#include"ghostlyricwidget.h"
 #include <QWidget>
 #include <QPushButton>
 #include<QGroupBox>
@@ -67,6 +68,7 @@ private:
 
     LyricDownload *ly1;
     LyricWidget *lw1;
+    GhostLyricWidget *lw2;
 };
 
 #endif // MUSICPLAYBAR_H

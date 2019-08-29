@@ -25,7 +25,6 @@ public:
     ~MainWidget();
 
     bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-    void createActions(); //创建信号
     void initSignalsAndSlots(); //初始化信号与槽
     void dragEnterEvent(QDragEnterEvent *event); //重写拖入事件,允许直接拖入歌曲
     void dropEvent(QDropEvent *event); //重写拖入后的事件处理，将歌曲加入歌单

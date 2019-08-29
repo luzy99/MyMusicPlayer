@@ -48,8 +48,9 @@ bool LyricDownload::DownloadLyric(const QString& song_id,QString &result, bool d
     QString Qresult=bytes;
     //qDebug()<<Qresult;
     result=Qresult;
+    result.replace("\\n","\n");
     //result=Qresult.toStdWString();
-    QString path="D:/Git/clone/Lyric/Lyric"+song_id+ ".rlc";
+    QString path="D:/CloudMusic/"+song_id+ ".rlc";
     QFile file(path);
     file.open(QIODevice::WriteOnly);
     file.write(result.toUtf8());

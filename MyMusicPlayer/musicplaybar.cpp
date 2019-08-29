@@ -138,6 +138,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
 
     ly1=new LyricDownload;
     lw1=new LyricWidget;
+    lw2=new GhostLyricWidget;
     lw1->show();
 
     //连接信号与槽
@@ -147,6 +148,8 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
 void MusicPlayBar::initSignalsAndSlots()
 {
     //播放位置改变
+    //connect(player,SIGNAL(onPositionChanged(qint64)),
+      //         this,SLOT(positionChanged(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),
             this,SLOT(onPositionChanged(qint64)));
     //切歌
@@ -223,8 +226,10 @@ void MusicPlayBar::onPositionChanged(qint64 position)
        secs = secs%60; //余秒数
        positionTime = QString::asprintf("%d:%d",mins,secs);
        currentTimeLabel->setText(positionTime);
-
+       //lw1->positionChanged(positionTime.toInt());
+       //qDebug()<<position;
        lw1->positionChanged(position);
+       //lw2->positionChanged(position);//鬼畜歌词窗口
 }
 
 void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
@@ -297,7 +302,8 @@ void MusicPlayBar::on_playBtn_clicked()
 
         QString str1("ldnqq");
          ly1->DownloadLyric("28854853",str1,true);
-         lw1->analyzeLrcContent("28854853");
+         lw1->analyzeLrcContent("28854853");//正常版本的歌词
+         //lw2->analyzeLrcContent("28854853");//鬼畜版本的歌词
 
     }
 }
@@ -463,6 +469,5 @@ void MusicPlayBar::changeThemeColor(QColor)
 {
     //改更各个组件的颜色
 }
-
 
 
