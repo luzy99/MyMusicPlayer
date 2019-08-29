@@ -70,7 +70,7 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //歌曲信息测试
     SongInfoShow *infoShow = new SongInfoShow(this,si);
-    infoShow->setGeometry(250,30,(this->width()-240)/2,this->height()-30);
+    infoShow->setGeometry(250,30,300,this->height()-60);
 
 
 

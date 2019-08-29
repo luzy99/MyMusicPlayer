@@ -1,22 +1,17 @@
 #include "songinfoshow.h"
-#include "ui_songinfoshow.h"
 #include<QLabel>
 #include<QFont>
+#include<QVBoxLayout>
 
 SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
-    QWidget(parent),
-    ui(new Ui::SongInfoShow)
+    QWidget(parent)
 {
-    ui->setupUi(this);
     QVBoxLayout *infoShow = new QVBoxLayout(this);
     titleShow = new QLabel(this);
     artistShow = new QLabel(this);
-    disk = new diskWidget(this,this->width()/2-60);
-
-    titleShow->setGeometry(0,30,200,30);
-    artistShow->setGeometry(0,60,200,30);
-    disk->setGeometry(0,100,250,250);
-
+    disk = new diskWidget(this,this->width());
+    titleShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
+    artistShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     //disk->rotateStop();
     //disk->rotateStart();
 
@@ -29,27 +24,27 @@ SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
     infoShow->addWidget(titleShow);
     infoShow->addWidget(artistShow);
     infoShow->addWidget(disk);
-    infoShow->addStretch();
-    infoShow->setSpacing(0);
-    infoShow->setContentsMargins(0, 0, 0, 0);
+    infoShow->setSpacing(20);
+    infoShow->setContentsMargins(0, 30, 0, 0);
     this->setLayout(infoShow);
     this->show();
 
 }
 
 SongInfoShow::SongInfoShow(QWidget *parent):
-    QWidget(parent),
-    ui(new Ui::SongInfoShow)
+    QWidget(parent)
 {
-    ui->setupUi(this);
+
 }
 
 SongInfoShow::~SongInfoShow()
 {
-    delete ui;
+    delete titleShow;
+    delete artistShow;
+    delete disk;
 }
 
-SongInfoShow::changeSong(SongInfo &m_song_info)
+void SongInfoShow::changeSong(SongInfo &m_song_info)
 {
     titleShow->setText(m_song_info.title);
     artistShow->setText(m_song_info.artist);
