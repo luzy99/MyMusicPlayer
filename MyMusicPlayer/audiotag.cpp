@@ -3,9 +3,9 @@
 #include<QDebug>
 CodeType JudgeCodeType(const string & str, CodeType default_code);
 wstring StrToUnicode(const string & str, CodeType code_type);
-AudioTag::AudioTag(wchar_t *f_url, SongInfo &si)
+AudioTag::AudioTag(QString f_url, SongInfo &si)
 {
-    fp = _wfopen(f_url,L"rb");
+    fp = fopen(f_url.toStdString().c_str(),"rb");
     if (NULL==fp)
     {
         printf("open read file error!!");
@@ -22,27 +22,29 @@ AudioTag::~AudioTag()
 bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
 {
     string img_type;
-    wstring default_path =L"D:/";
+    QString default_path ="D:/";
     img_type = tag_content.substr(tag_index + 25, 2);
     qDebug()<<img_type.compare("NG");
     if(!img_type.compare("NG"))    //png
     {
-        m_song_info->album_cover = default_path.append(
-                    m_song_info->title).append(L".png");
+        default_path +=m_song_info->title;
+        default_path +=QString(".png");
+        m_song_info->album_cover = default_path;
     }
     else    //jpg
     {
-        m_song_info->album_cover = default_path.append(
-                    m_song_info->title).append(L".jpg");
+        default_path +=m_song_info->title;
+        default_path +=QString(".jpg");
+        m_song_info->album_cover = default_path;
     }
 
     fseek(fp,tag_index+23,SEEK_SET);//定位图片信息
-    FILE *wfp = _wfopen( m_song_info->album_cover.c_str(), L"wb" );
+    FILE *wfp = fopen( m_song_info->album_cover.toStdString().c_str(), "wb" );
     char temp_str[tag_size];
     fread(temp_str,1,tag_size,fp);
     fwrite(temp_str,1,tag_size,wfp);
     fclose(wfp);
-    m_song_info->online_cover=true;
+    m_song_info->has_cover=true;
     return 1;
 }
 
@@ -114,17 +116,17 @@ bool AudioTag::getAllinfo()
                     switch (i)
                     {
                     case 0:
-                        m_song_info->title = tag_info;
+                        m_song_info->title = QString::fromStdWString(tag_info);
                         m_song_info->info_acquired=true;//有标题就算信息已获取
                         break;
                     case 1:
-                        m_song_info->artist = tag_info;
+                        m_song_info->artist = QString::fromStdWString(tag_info);
                         break;
                     case 2:
-                        m_song_info->album = tag_info;
+                        m_song_info->album = QString::fromStdWString(tag_info);
                         break;
                     case 3:
-                        m_song_info->year = tag_info;
+                        m_song_info->year = QString::fromStdWString(tag_info);
                         break;
                     case 4: //获取专辑图片
                         GetAlbumCover(tag_content, tag_index, tag_size);
@@ -139,6 +141,111 @@ bool AudioTag::getAllinfo()
         success = false;
     }
     return success;
+}
+
+bool AudioTag::idMatch()
+{
+    QString url ="http://music.163.com/api/search/pc/?s="
+            +m_song_info->title
+            +"&limit=20&type=1&offset=0";
+    //构造请求
+    QNetworkRequest request;
+    request.setUrl(QUrl(url));
+    //构造网络管理
+    QNetworkAccessManager* manager=new QNetworkAccessManager;
+    // 发送请求
+    QNetworkReply *pReply = manager->get(request);
+    //设置事件循环，等待资源下载完毕
+    QEventLoop eventLoop;
+    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+    eventLoop.exec();
+
+    //检测http请求的状态码
+    int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+    qDebug()<<"id匹配："<<nHttpCode;
+
+    QByteArray bytes = pReply->readAll();
+    QString Qresult=bytes;
+    //qDebug()<<Qresult;
+    QJsonParseError error;
+    QJsonDocument jsonResult =QJsonDocument::fromJson(Qresult.toUtf8(),&error);
+
+
+    if (error.error == QJsonParseError::NoError) // 解析未发生错误
+    {
+        if(jsonResult.isObject())
+        {
+            qDebug()<<"toJson SUCCESS";
+            //            QVariantMap jsonMap = jsonResult.toVariant().toMap();
+            //            QVariantMap =jsonMap["result"].toVariant().toMap()["songs"].toArray();
+            QJsonObject temp =jsonResult.object().value("result").toObject();
+            QJsonArray songsArray =temp["songs"].toArray();
+            qDebug()<<songsArray;
+            int i=0;
+            for(;i<songsArray.count();i++)
+            {
+                QString tempStr =songsArray[i].toString();
+                if(tempStr.contains(m_song_info->title)
+                        &&temp.contains(m_song_info->artist))
+                {
+                    QJsonObject jjj =songsArray[i].toObject();
+                    QString idstr=QString::number(jjj.value("id").toInt());//解析songID
+                    qDebug()<<idstr;
+                    m_song_info->song_id=idstr;
+                    QString picUrl =jjj.value("album").toObject().value("picUrl").toString();//解析封面地址
+                    qDebug()<<"picUrl: "<<picUrl;
+                    m_song_info->pic_url=picUrl;
+                    break;
+                }
+            }
+            if(i==songsArray.count())//如果没有匹配的，取第一条
+            {
+                QJsonObject jjj =songsArray[0].toObject();
+                QString idstr=QString::number(jjj.value("id").toInt());//解析songID
+                qDebug()<<idstr;
+                m_song_info->song_id=idstr;
+                QString picUrl =jjj.value("album").toObject().value("picUrl").toString();//解析封面地址
+                qDebug()<<"picUrl: "<<picUrl;
+                m_song_info->pic_url=picUrl;
+            }
+
+        }
+        else return 0;
+    }
+    return 1;
+}
+
+bool AudioTag::downloadPic()
+{
+    if(m_song_info->has_cover==false&&!m_song_info->pic_url.isEmpty())//若没有封面，且链接获取正常
+    {
+        //构造请求
+        QNetworkRequest request;
+        request.setUrl(QUrl(m_song_info->pic_url));
+        //构造网络管理
+        QNetworkAccessManager* manager=new QNetworkAccessManager;
+        // 发送请求
+        QNetworkReply *pReply = manager->get(request);
+        //设置事件循环，等待资源下载完毕
+        QEventLoop eventLoop;
+        QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+        eventLoop.exec();
+        //检测http请求的状态码
+        int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+        qDebug()<<"封面下载："<<nHttpCode;
+        QByteArray bytes = pReply->readAll();
+        QString default_path="D:/";
+        QString path =default_path+m_song_info->title
+                +m_song_info->pic_url.mid(m_song_info->pic_url.length()-4,4);
+        qDebug()<<path;
+        m_song_info->album_cover=path;
+        QFile file(path);
+        file.open(QIODevice::WriteOnly);
+        file.write(bytes);
+        file.close();
+        return true;
+    }
+    return false;
 }
 
 

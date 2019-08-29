@@ -24,7 +24,7 @@ diskWidget::diskWidget(QWidget *parent, int r) : QWidget(parent)
 
 void diskWidget::rotate()
 {
-    if(count >= 30000)
+    if(count >= 60000)
     {
         count = 0;
     }
@@ -51,7 +51,7 @@ void diskWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.translate(i_radius, i_radius);
-    painter.rotate(count * 0.012);
+    painter.rotate(count * 0.006);
     painter.translate(i_radius*(-1), i_radius*(-1));
     painter.drawPixmap(0,0,fitpixmap_userIcon);
 

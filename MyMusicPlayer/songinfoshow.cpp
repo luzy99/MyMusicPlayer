@@ -51,7 +51,7 @@ SongInfoShow::~SongInfoShow()
 
 SongInfoShow::changeSong(SongInfo &m_song_info)
 {
-    titleShow->setText(QString::fromStdWString(m_song_info.title));
-    artistShow->setText(QString::fromStdWString(m_song_info.artist));
-    disk->changePic(QString::fromStdWString(m_song_info.album_cover));
+    titleShow->setText(m_song_info.title);
+    artistShow->setText(m_song_info.artist);
+    disk->changePic(m_song_info.album_cover);
 }
