@@ -5,7 +5,7 @@
 CodeType JudgeCodeType(const string & str, CodeType default_code);
 wstring StrToUnicode(const string & str, CodeType code_type);
 
-AudioTag::AudioTag(QString f_url, SongInfo &si)
+AudioTag::AudioTag(QString f_url, SongInfo* &si)
 {
     fp = _wfopen(f_url.toStdWString().c_str(),L"rb");
     if (NULL == fp)
@@ -13,7 +13,7 @@ AudioTag::AudioTag(QString f_url, SongInfo &si)
         printf("open read file error!!");
     }
     qDebug()<<f_url;
-    m_song_info = &si;
+    m_song_info = si;
     m_song_info->file_path=f_url;
 }
 
@@ -25,10 +25,10 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
 {
     string img_type;
     //到存储封面的文件里读取
-    QString default_path ="D:/MyMusicPlayerTest/CoverImages/";
+    QString default_path ="./CoverImages/";
     img_type = tag_content.substr(tag_index + 25, 2);
-    qDebug()<<img_type.compare("PN");
-    if(!img_type.compare("PN"))    //png
+    qDebug()<<QString::fromStdString(img_type);
+    if(!img_type.compare("NG"))    //png
     {
         default_path +=m_song_info->title;
         default_path +=QString(".png");
@@ -41,11 +41,11 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
         m_song_info->album_cover = default_path;
     }
 
-    fseek(fp,tag_index+23+1,SEEK_SET);//定位图片信息
+    fseek(fp,tag_index+23,SEEK_SET);//定位图片信息
     FILE *wfp = _wfopen( m_song_info->album_cover.toStdWString().c_str(), L"wb" );
-    wchar_t* temp_str = new wchar_t[tag_size+24];
-    fread(temp_str,1,tag_size+24,fp);
-    fwrite(temp_str,1,tag_size+24,wfp);
+    wchar_t* temp_str = new wchar_t[tag_size];
+    fread(temp_str,1,tag_size-13,fp);
+    fwrite(temp_str,1,tag_size-13,wfp);
     fclose(wfp);
     m_song_info->has_cover=true;
     return 1;
@@ -238,7 +238,7 @@ bool AudioTag::downloadPic()
         qDebug()<<"封面下载："<<nHttpCode;
         QByteArray bytes = pReply->readAll();
         //默认将封面存储在路径为"D:/MyMusicPlayerTest/CoverImages"
-        QString default_path = "D:/MyMusicPlayerTest/CoverImages/";
+        QString default_path = "./CoverImages/";
         QString path = default_path+m_song_info->title
                 +m_song_info->pic_url.mid(m_song_info->pic_url.length()-4,4);
         qDebug()<<path;

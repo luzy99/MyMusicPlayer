@@ -269,7 +269,8 @@ void MainWidget::onSongChanged(QString songId, bool translate)
 
 void MainWidget::onUpdateAudioTag(QString currentFileName)
 {
-    AudioTag tag(currentFileName,*currentSongInfo);
+    currentSongInfo->has_cover=false;
+    AudioTag tag(currentFileName,currentSongInfo);
     tag.getAllinfo();
     tag.idMatch();
     tag.downloadPic();
