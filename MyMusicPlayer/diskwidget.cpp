@@ -19,13 +19,13 @@ diskWidget::diskWidget(QWidget *parent, int r) : QWidget(parent)//输入圆的�
     pixmapPath=":/icon/res/default_cover.ico";
     timer = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(rotate()));
-    timer->setInterval(50);
+    timer->setInterval(80);
     timer->start();
 }
 
 void diskWidget::rotate()
 {
-    if(count >= 60000)
+    if(count >= 120000)
     {
         count = 0;
     }
@@ -54,15 +54,15 @@ void diskWidget::paintEvent(QPaintEvent *event)
     //qDebug()<<"painting...";
     if(paintFlag==0)//设置蒙版将图片切成圆形
     {
-        QSize size(2*i_radius, 2*i_radius);
+        QSize size(1.2*i_radius, 1.2*i_radius);
         QImage tempimg(pixmapPath);
         if(tempimg.load(pixmapPath) == false)
         {
             qDebug() << "no image";
-            tempimg.load(":/icon/res/default_cover.ico");
+            tempimg.load(":/icon/res/disk.ico");
         }
         coverPic=QPixmap::fromImage(tempimg.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-        this->resize(coverPic.size());
+        //this->resize(coverPic.size());
 
         QPixmap mask(size);
         QPainter painter2(&mask);
@@ -74,15 +74,20 @@ void diskWidget::paintEvent(QPaintEvent *event)
         painter2.drawEllipse(0, 0, size.width(), size.height());
 
         coverPic.setMask(mask);//图片蒙版
-        this->setMask(coverPic.mask());//窗口蒙版
+        //this->setMask(coverPic.mask());//窗口蒙版
         paintFlag =1;
     }
 
     QPainter painter(this);
+    QPixmap diskPic(":/icon/res/disk.png");
+    diskPic=diskPic.scaled(2*i_radius,2*i_radius);
+    painter.drawPixmap(0,0,diskPic);
     painter.translate(i_radius, i_radius);
-    painter.rotate(count * 0.006);
+    painter.rotate(count * 0.003);
     painter.translate(i_radius*(-1), i_radius*(-1));
-    painter.drawPixmap(0,0,coverPic);
+
+    painter.drawPixmap(0,0,diskPic);
+    painter.drawPixmap(0.4*i_radius,0.4*i_radius,coverPic);
 
     return QWidget::paintEvent(event);
 }

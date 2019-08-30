@@ -34,5 +34,6 @@
         <file>res/resizeHover.png</file>
         <file>res/showSongListHover.png</file>
         <file>res/default_cover.ico</file>
+        <file>res/disk.png</file>
     </qresource>
 </RCC>
