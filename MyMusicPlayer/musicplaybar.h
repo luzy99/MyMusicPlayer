@@ -2,6 +2,7 @@
 #define MUSICPLAYBAR_H
 
 #include <QWidget>
+#include <QEvent>
 #include <QPushButton>
 #include<QGroupBox>
 #include <QSlider>
@@ -17,13 +18,18 @@ class MusicPlayBar : public QWidget
 public:
     explicit MusicPlayBar(QWidget *parent = nullptr);
     void initSignalsAndSlots(); //初始化设定信号与槽
+    bool eventFilter(QObject *obj, QEvent *event);
     QGroupBox *g_container;//布局器
+
 signals:
     void positionChanged(qint64 postion); //位置改变时发送的型号
     void songChanged(QString songId,bool translate); //切歌时发送的信号
     void updateAudioTag(QString currentFilePath); //更新歌曲信息
     void becomePlaying(); //表示接下来播放
     void becomePausing(); //表示接下来暂停
+    void positionStop(qint64); //发送当前停止的位置
+    void translateChanged(); //表示翻译模式发生变化
+    void showLyricsBarrage(bool show); //表示显示&隐藏底部歌词弹幕
 
 public slots:
     void changeThemeColor(QColor);
@@ -32,6 +38,8 @@ public slots:
     void onPositionChanged(qint64 position);
     void onChangePlaylist(QUrl url,int behaviorIndex); //处理信号changePlaylist的函数
     void onPlayMusic(int SongIndex); //处理信号playMusic的函数
+    void onBlockSignals(bool block); //拖动歌词时触发的函数
+    void onPositionDraggedTo(qint64 newPosition); //歌曲拖动后触发的槽函数
 
     void on_previousBtn_clicked(); //上一首被点击时触发
     void on_playBtn_clicked(); //播放&暂停键点击触发
@@ -43,11 +51,11 @@ public slots:
     void on_soundSlider_sliderReleased(); //用户拖动进度条时更改位置，释放时触发
     void on_soundSlider_valueChanged(int value); //音量滑条被拖动时触发
     void on_playModeBtn_clicked(); //切换播放模式时触发
+    void on_showLyricsBtn_clicked(); //显示&隐藏底部弹幕时触发
+    void on_translateBtn_clicked(); //翻译歌词时触发
     void on_playSpeedBtn_clicked(); //切换倍速时触发
 
-
 private:
-
     QHBoxLayout *layout;
 
     QMediaPlayer *player; //播放器
@@ -62,10 +70,14 @@ private:
     QSlider *soundSlider; //歌曲进度条
     QPushButton *playModeBtn; //切换播放模式
     QPushButton *showLyricsBtn; //显示歌词&隐藏歌词
+    QPushButton *translateBtn; //翻译外语歌词
     QPushButton *playSpeedBtn; //倍数
+
     double currentSpeed; //当前播放速度
     QString durationTime; //总长度
     QString positionTime; //当前播放到的位置
+
+    bool block; //音乐播放位置改变时是否将它传递给进度条
 };
 
 #endif // MUSICPLAYBAR_H

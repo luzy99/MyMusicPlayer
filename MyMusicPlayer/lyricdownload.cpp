@@ -43,7 +43,7 @@ bool LyricDownload::DownloadLyric(const QString& song_id, bool download_translat
 
     //检测http请求的状态码
     int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
-    qDebug()<<nHttpCode;
+    //qDebug()<<nHttpCode;
 
     QByteArray bytes = pReply->readAll();
     QString Qresult=bytes;
@@ -54,9 +54,9 @@ bool LyricDownload::DownloadLyric(const QString& song_id, bool download_translat
     result.remove("\\r");
     result.remove(result.section("[",0,0));
     result.remove(result.section("]",-1,-1));
-    qDebug()<<result;
+    //qDebug()<<result;
     //result=Qresult.toStdWString();
-    QString path="D:/Git/clone/Lyric/Lyric"+song_id+ ".rlc";
+    QString path = QDir::currentPath()+"/Lyrics/"+song_id+ ".rlc";
     QFile file(path);
     file.open(QIODevice::WriteOnly);
     file.write(result.toUtf8());

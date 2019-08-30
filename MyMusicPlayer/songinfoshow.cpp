@@ -9,7 +9,7 @@ SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
     QVBoxLayout *infoShow = new QVBoxLayout(this);
     titleShow = new QLabel(this);
     artistShow = new QLabel(this);
-    disk = new diskWidget(this,this->width());
+    disk = new diskWidget(this,this->width()+30);
     titleShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     artistShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     //disk->rotateStop();

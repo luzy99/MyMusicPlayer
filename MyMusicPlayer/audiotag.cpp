@@ -5,7 +5,7 @@
 CodeType JudgeCodeType(const string & str, CodeType default_code);
 wstring StrToUnicode(const string & str, CodeType code_type);
 
-AudioTag::AudioTag(QString f_url, SongInfo &si)
+AudioTag::AudioTag(QString f_url, SongInfo* &si)
 {
     fp = _wfopen(f_url.toStdWString().c_str(),L"rb");
     if (NULL == fp)
@@ -13,7 +13,7 @@ AudioTag::AudioTag(QString f_url, SongInfo &si)
         printf("open read file error!!");
     }
     qDebug()<<f_url;
-    m_song_info = &si;
+    m_song_info = si;
     m_song_info->file_path=f_url;
 }
 
@@ -25,9 +25,9 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
 {
     string img_type;
     //到存储封面的文件里读取
-    QString default_path ="D:/MyMusicPlayerTest/CoverImages/";
+    QString default_path ="./CoverImages/";
     img_type = tag_content.substr(tag_index + 25, 2);
-    qDebug()<<img_type.compare("PN");
+    qDebug()<<QString::fromStdString(img_type);
     if(!img_type.compare("PN"))    //png
     {
         default_path +=m_song_info->title;
@@ -41,11 +41,11 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
         m_song_info->album_cover = default_path;
     }
 
-    fseek(fp,tag_index+23+1,SEEK_SET);//定位图片信息
+    fseek(fp,tag_index+24,SEEK_SET);//定位图片信息
     FILE *wfp = _wfopen( m_song_info->album_cover.toStdWString().c_str(), L"wb" );
-    wchar_t* temp_str = new wchar_t[tag_size+24];
-    fread(temp_str,1,tag_size+24,fp);
-    fwrite(temp_str,1,tag_size+24,wfp);
+    wchar_t* temp_str = new wchar_t[tag_size];
+    fread(temp_str,1,tag_size-14,fp);
+    fwrite(temp_str,1,tag_size-14,wfp);
     fclose(wfp);
     m_song_info->has_cover=true;
     return 1;
@@ -89,8 +89,14 @@ bool AudioTag::getAllinfo()
             {
                 string size = tag_content.substr(tag_index + 4, 4);
                 const size_t tag_size = (BYTE)size[0] * 0x1000000 + (BYTE)size[1] * 0x10000 + (BYTE)size[2] * 0x100 + (BYTE)size[3];	//获取当前标签的大小
-                if (tag_size <= 0) continue;
-                if (tag_index + 11 >= tag_content.size()) continue;
+                if (tag_size <= 0)
+                {
+                    continue;
+                 }
+                if (tag_index + 11 >= tag_content.size())
+                 {
+                    continue;
+                 }
                 //判断标签的编码格式
                 CodeType default_code, code_type;
                 switch (tag_content[tag_index + 10])
@@ -238,7 +244,7 @@ bool AudioTag::downloadPic()
         qDebug()<<"封面下载："<<nHttpCode;
         QByteArray bytes = pReply->readAll();
         //默认将封面存储在路径为"D:/MyMusicPlayerTest/CoverImages"
-        QString default_path = "D:/MyMusicPlayerTest/CoverImages/";
+        QString default_path = "./CoverImages/";
         QString path = default_path+m_song_info->title
                 +m_song_info->pic_url.mid(m_song_info->pic_url.length()-4,4);
         qDebug()<<path;
@@ -276,18 +282,26 @@ CodeType JudgeCodeType(const string & str, CodeType default_code)
 
 wstring StrToUnicode(const string & str, CodeType code_type)
 {
-    if (str.empty()) return wstring();
+    if (str.empty())
+    {
+        return wstring();
+    }
 
     if (code_type == CodeType::AUTO)
     {
         code_type = JudgeCodeType(str,CodeType::ANSI);
     }
+
     wstring result;
     int size;
+
     if (code_type == CodeType::ANSI)
     {
         size = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
-        if (size <= 0) return wstring();
+        if (size <= 0)
+        {
+            return wstring();
+        }
         wchar_t* str_unicode = new wchar_t[size + 1];
         MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, str_unicode, size);
         result.assign(str_unicode);
@@ -298,11 +312,18 @@ wstring StrToUnicode(const string & str, CodeType code_type)
         string temp;
         //如果前面有BOM，则去掉BOM
         if (str.size() >= 3 && str[0] == -17 && str[1] == -69 && str[2] == -65)
+        {
             temp = str.substr(3);
+        }
         else
+        {
             temp = str;
+        }
         size = MultiByteToWideChar(CP_UTF8, 0, temp.c_str(), -1, NULL, 0);
-        if (size <= 0) return wstring();
+        if (size <= 0)
+        {
+            return wstring();
+        }
         wchar_t* str_unicode = new wchar_t[size + 1];
         MultiByteToWideChar(CP_UTF8, 0, temp.c_str(), -1, str_unicode, size);
         result.assign(str_unicode);
@@ -313,11 +334,17 @@ wstring StrToUnicode(const string & str, CodeType code_type)
         string temp;
         //如果前面有BOM，则去掉BOM
         if (str.size() >= 2 && str[0] == -1 && str[1] == -2)
+        {
             temp = str.substr(2);
+        }
         else
+        {
             temp = str;
+        }
         if (temp.size() % 2 == 1)
+        {
             temp.pop_back();
+        }
         temp.push_back('\0');
         result = (const wchar_t*)temp.c_str();
     }

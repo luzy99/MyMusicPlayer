@@ -34,5 +34,21 @@
         <file>res/resizeHover.png</file>
         <file>res/showSongListHover.png</file>
         <file>res/default_cover.ico</file>
+        <file>res/translate.png</file>
+        <file>res/default_cover.png</file>
+        <file>res/previousHover.png</file>
+        <file>res/disk.png</file>
+        <file>res/lyricsHover.png</file>
+        <file>res/nextHover.png</file>
+        <file>res/playHover.png</file>
+        <file>res/rate050Hover.png</file>
+        <file>res/rate100Hover.png</file>
+        <file>res/rate150Hover.png</file>
+        <file>res/rate200Hover.png</file>
+        <file>res/translateHover.png</file>
+        <file>res/pauseHover.png</file>
+        <file>res/soundFullHover.png</file>
+        <file>res/soundMuteHover.png</file>
+        <file>res/soundNormalHover.png</file>
     </qresource>
 </RCC>

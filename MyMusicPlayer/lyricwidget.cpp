@@ -185,7 +185,8 @@ void LyricWidget::analyzeLrcContent(const QString& song_id)
     //interval,间隔时间
     QMap<int ,int> interval_map;
     //从本地读取文件
-    QString path = "D:/Git/clone/Lyric/Lyric"+song_id+ ".rlc";
+    //***********************************************
+    QString path = QDir::currentPath()+"/Lyrics/"+song_id+ ".rlc";
     QFile file(path);
     file.open(QIODevice::ReadOnly);
     QByteArray t = file.readAll();
@@ -225,7 +226,7 @@ void LyricWidget::analyzeLrcContent(const QString& song_id)
         m_lineMap.insert(nPos,strGetLine);//开始时间和歌词
     }
 
-    qDebug()<<m_lineMap;
+    //qDebug()<<m_lineMap;
     for(int i = 0 ; i < m_lineMap.keys().count() ; i++)
     {
         int count = 0;
@@ -262,8 +263,8 @@ void LyricWidget::analyzeLrcContent(const QString& song_id)
         interval_map.clear();
     }
 
-    qDebug()<<m_word_list;
-    qDebug()<<m_interval_list;
+//    qDebug()<<m_word_list;
+//    qDebug()<<m_interval_list;
 
 }
 
@@ -370,24 +371,46 @@ void LyricWidget::paintEvent(QPaintEvent *event)
 
 void LyricWidget::mousePressEvent(QMouseEvent* event)
 {
+//    qDebug()<<"press event";
     //记录鼠标的初始位置
     m_mouseStartPoint = event->globalPos();
+    emit blockSignals(true);
 }
 
 void LyricWidget::mouseMoveEvent(QMouseEvent *event)
 {
+//    qDebug()<<"move event";
     //窗口和鼠标偏移量一致
     QPoint offset = event->globalPos() - m_mouseStartPoint;
-    int offset_width=offset.ry();
-    int offset_index=offset_width/ROW_HEIGHT;
-    m_nCurIndex+=offset_index;
+    //得到鼠标的偏移量
+    int offset_width = offset.y();
+//    int offset_index = offset_width/ROW_HEIGHT;
+//    m_nCurIndex += offset_index;
+   //代替信号被阻塞的进度条发出时间信号（stoptime+偏移量计算得出）
+    qint64 virtualpositon= m_nStoptime - offset_width*15;
+    emit positionChanged(virtualpositon);
+}
 
+//鼠标松开将现在这一句发送给进度条滚动控制权归还给进度条
+void LyricWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+//    qDebug()<<"release event";
+    qint64 changedtime = m_nCurStartPos;
+    emit positionChanged(changedtime);
+    emit positionDraggedTo(changedtime);
+    emit blockSignals(false);
 }
 
 void LyricWidget::on_btnPlaythis_clicked()
 {
-    qint64 position=GetPosByindex(m_nCurIndex);
-    emit positionChanged(position);
+//    qint64 position=GetPosByindex(m_nCurIndex);
+    //    emit positionChanged(position);
+}
+
+void LyricWidget::on_positionStop(qint64 stoptime)
+{
+//    qDebug()<<"on_positionStop";
+       m_nStoptime = stoptime;
 }
 
 void LyricWidget::slot_timer()
@@ -485,4 +508,17 @@ void LyricWidget::DrawItem(QPainter &Painter, ItemInfo &Info)
     }
 }
 
+QList<QMap<int, int> > LyricWidget::getInterval_list() const
+{
+    return m_interval_list;
+}
 
+QList<QMap<int, QString> > LyricWidget::getWord_list() const
+{
+    return m_word_list;
+}
+
+QMap<qint64, QString> LyricWidget::getLineMap() const
+{
+    return m_lineMap;
+}

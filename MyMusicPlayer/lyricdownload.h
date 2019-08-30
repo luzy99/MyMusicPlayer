@@ -9,11 +9,11 @@
 #include <QFile>
 #include <QUrl>
 #include <QtDebug>
+#include <QDir>
 #include <QEventLoop>
 #include <wchar.h>
 #include <Windows.h>
 using namespace std;
-
 //编码信息(在songinfo中有重复定义)
 #ifndef CODETYPE_H
 #define CODETYPE_H

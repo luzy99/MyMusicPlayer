@@ -7,33 +7,45 @@
 MusicPlayBar::MusicPlayBar(QWidget *parent)
     : QWidget(parent)
 {
-    layout = new QHBoxLayout(parent); //采用水平布局
+    layout = new QHBoxLayout; //采用水平布局
 
     //初始化上一首按钮
     previousBtn = new QPushButton;
+    previousBtn->setObjectName("previousBtn");
     previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
     previousBtn->setIconSize(QSize(35,35));
     previousBtn->setFixedSize(QSize(50,50));
     previousBtn->setFlat(true);
     previousBtn->setToolTip("上一首");
+    previousBtn->setStyleSheet("border: none;");
+    previousBtn->setAttribute(Qt::WA_Hover,true);
+    previousBtn->installEventFilter(this);
     layout->addWidget(previousBtn);
 
     //初始化播放按钮
     playBtn = new QPushButton;
+    playBtn->setObjectName("playBtn");
     playBtn->setIcon(QIcon(":/icon/res/play.png"));
     playBtn->setIconSize(QSize(45,45));
     playBtn->setFixedSize(QSize(50,50));
     playBtn->setFlat(true);
     playBtn->setToolTip("播放");
+    playBtn->setStyleSheet("border: none;");
+    playBtn->setAttribute(Qt::WA_Hover,true);
+    playBtn->installEventFilter(this);
     layout->addWidget(playBtn);
 
     //初始化下一首按钮
     nextBtn = new QPushButton;
+    nextBtn->setObjectName("nextBtn");
     nextBtn->setIcon(QIcon(":/icon/res/next.png"));
     nextBtn->setIconSize(QSize(35,35));
     nextBtn->setFixedSize(QSize(50,50));
     nextBtn->setFlat(true);
     nextBtn->setToolTip("下一首");
+    nextBtn->setStyleSheet("border: none;");
+    nextBtn->setAttribute(Qt::WA_Hover,true);
+    nextBtn->installEventFilter(this);
     layout->addWidget(nextBtn);
 
     //初始化音乐播放的当前时间
@@ -51,7 +63,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
             }\
             QSlider::sub-page:Horizontal \
            {\
-               background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(231,80,229, 255), stop:1 rgba(7,208,255, 255));\
+               background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255,205,217,255), stop:1 rgba(110,179,217,255));\
                height:4px;\
                border-radius: 2px;\
             }\
@@ -84,11 +96,16 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
 
     //初始化静音按钮
     muteBtn = new QPushButton;
+    muteBtn->setObjectName("muteBtn");
     muteBtn->setIcon(QIcon(":/icon/res/soundFull.png"));
     muteBtn->setIconSize(QSize(25,25));
     muteBtn->setFixedSize(QSize(25,25));
     muteBtn->setFlat(true);
+    muteBtn->setToolTip("点击开启/关闭声音");
     muteBtn->setToolTip("静音");
+    muteBtn->setStyleSheet("border: none;");
+    muteBtn->setAttribute(Qt::WA_Hover,true);
+    muteBtn->installEventFilter(this);
     layout->addWidget(muteBtn);
 
     //初始化声音滚动条
@@ -112,20 +129,45 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
 
     //显示歌词按钮
     showLyricsBtn = new QPushButton;
+    showLyricsBtn->setObjectName("showLyricsBtn");
     showLyricsBtn->setIcon(QIcon(":/icon/res/lyrics.png"));
     showLyricsBtn->setIconSize(QSize(35,35));
     showLyricsBtn->setFixedSize(QSize(35,35));
     showLyricsBtn->setFlat(true);
     showLyricsBtn->setToolTip("点击显示/隐藏歌词");
+    showLyricsBtn->setStyleSheet("border: none;");
+    showLyricsBtn->setCheckable(true);
+    showLyricsBtn->setChecked(false);
+    showLyricsBtn->setAttribute(Qt::WA_Hover,true);
+    showLyricsBtn->installEventFilter(this);
     layout->addWidget(showLyricsBtn);
+
+    //初始化翻译歌词按钮
+    translateBtn = new QPushButton;
+    translateBtn->setObjectName("translateBtn");
+    translateBtn->setIcon(QIcon(":/icon/res/translate.png"));
+    translateBtn->setIconSize(QSize(35,35));
+    translateBtn->setFixedSize(QSize(35,35));
+    translateBtn->setFlat(true);
+    translateBtn->setToolTip("点击翻译/恢复外文歌词");
+    translateBtn->setStyleSheet("border: none;");
+    translateBtn->setCheckable(true);
+    translateBtn->setChecked(false);
+    translateBtn->setAttribute(Qt::WA_Hover,true);
+    translateBtn->installEventFilter(this);
+    layout->addWidget(translateBtn);
 
     //显示倍速选择
     playSpeedBtn = new QPushButton;
+    playSpeedBtn->setObjectName("playSpeedBtn");
     playSpeedBtn->setIcon(QIcon(":/icon/res/rate100.png"));
     playSpeedBtn->setIconSize(QSize(35,35));
     playSpeedBtn->setFixedSize(QSize(35,35));
     playSpeedBtn->setFlat(true);
     playSpeedBtn->setToolTip("点击切换播放速度");
+    playSpeedBtn->setStyleSheet("border: none;");
+    playSpeedBtn->setAttribute(Qt::WA_Hover,true);
+    playSpeedBtn->installEventFilter(this);
     layout->addWidget(playSpeedBtn);
     currentSpeed = 1.0;
 
@@ -136,6 +178,10 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     playlist = new QMediaPlaylist(this);
     playlist->setPlaybackMode(QMediaPlaylist::Loop); //循环模式
     player->setPlaylist(playlist);
+
+    //初始化进度条阻塞状态
+    //默认刚开始时不阻塞，进度条随着position的改变而改变
+    block = false;
 
     //连接信号与槽
     initSignalsAndSlots();
@@ -179,9 +225,181 @@ void MusicPlayBar::initSignalsAndSlots()
     //"播放模式"按钮
     connect(playModeBtn,SIGNAL(clicked()),
             this,SLOT(on_playModeBtn_clicked()));
+    //"显示底部歌词"按钮
+    connect(showLyricsBtn,SIGNAL(clicked()),
+            this,SLOT(on_showLyricsBtn_clicked()));
+    //"翻译歌词按钮"
+    connect(translateBtn,SIGNAL(clicked()),
+            this,SLOT(on_translateBtn_clicked()));
     //"倍速"按钮
     connect(playSpeedBtn,SIGNAL(clicked()),
             this,SLOT(on_playSpeedBtn_clicked()));
+}
+
+//事件过滤器->用于产生按钮覆盖效果
+bool MusicPlayBar::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj->objectName() == "previousBtn")
+    {
+        //过滤“上一首“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            previousBtn->setIcon(QIcon(":/icon/res/previousHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
+        }
+    }
+    else if(obj->objectName() == "playBtn")
+    {
+        //过滤“播放&暂停“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            if(player->state() == QMediaPlayer::PlayingState)
+            {
+                playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
+            }
+            else
+            {
+                playBtn->setIcon(QIcon(":/icon/res/playHover.png"));
+            }
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            if(player->state() == QMediaPlayer::PlayingState)
+            {
+                playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+            }
+            else
+            {
+                playBtn->setIcon(QIcon(":/icon/res/play.png"));
+            }
+        }
+    }
+    else if(obj->objectName() == "nextBtn")
+    {
+        //过滤“下一首“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            nextBtn->setIcon(QIcon(":/icon/res/nextHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            nextBtn->setIcon(QIcon(":/icon/res/next.png"));
+        }
+    }
+    else if(obj->objectName() == "translateBtn")
+    {
+        //过滤“翻译“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            translateBtn->setIcon(QIcon(":/icon/res/translateHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            translateBtn->setIcon(QIcon(":/icon/res/translate.png"));
+        }
+    }
+    else if(obj->objectName() == "showLyricsBtn")
+    {
+        //过滤“显示底部歌词“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            showLyricsBtn->setIcon(QIcon(":/icon/res/lyricsHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            showLyricsBtn->setIcon(QIcon(":/icon/res/lyrics.png"));
+        }
+    }
+    else if(obj->objectName() == "playSpeedBtn")
+    {
+        //过滤“倍数“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            if(currentSpeed == 1.0)
+            {
+                playSpeedBtn->setIcon(QIcon(":/icon/res/rate100Hover.png"));
+            }
+            else if(currentSpeed == 1.5)
+            {
+                playSpeedBtn->setIcon(QIcon(":/icon/res/rate150Hover.png"));
+            }
+            else if(currentSpeed == 2.0)
+            {
+                playSpeedBtn->setIcon(QIcon(":/icon/res/rate200Hover.png"));
+            }
+            else
+            {
+                //currentSpeed == 0.5
+                playSpeedBtn->setIcon(QIcon(":/icon/res/rate050Hover.png"));
+            }
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+                if(currentSpeed == 1.0)
+                {
+                    playSpeedBtn->setIcon(QIcon(":/icon/res/rate100.png"));
+                }
+                else if(currentSpeed == 1.5)
+                {
+                    playSpeedBtn->setIcon(QIcon(":/icon/res/rate150.png"));
+                }
+                else if(currentSpeed == 2.0)
+                {
+                    playSpeedBtn->setIcon(QIcon(":/icon/res/rate200.png"));
+                }
+                else
+                {
+                    //currentSpeed == 0.5
+                    playSpeedBtn->setIcon(QIcon(":/icon/res/rate050.png"));
+                }
+         }
+     }
+    else if(obj->objectName() == "muteBtn")
+    {
+        //过滤“静音“按钮被覆盖事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            if(!player->isMuted())
+            {
+                if(soundSlider->value() != 99)
+                {
+                    muteBtn->setIcon(QIcon(":/icon/res/soundNormalHover.png"));
+                }
+                else
+                {
+                    muteBtn->setIcon(QIcon(":/icon/res/soundFullHover.png"));
+                }
+            }
+            else
+            {
+                muteBtn->setIcon(QIcon(":/icon/res/soundMuteHover.png"));
+            }
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            if(!player->isMuted())
+            {
+                if(soundSlider->value() != 99)
+                {
+                    muteBtn->setIcon(QIcon(":/icon/res/soundNormal.png"));
+                }
+                else
+                {
+                    muteBtn->setIcon(QIcon(":/icon/res/soundFull.png"));
+                }
+            }
+            else
+            {
+                muteBtn->setIcon(QIcon(":/icon/res/soundMute.png"));
+            }
+        }
+    }
+    else {}
+
+    return QWidget::eventFilter(obj,event);
 }
 
 //在播放器播放状态变化时发射，以更新界面上按钮的使能状态
@@ -223,18 +441,22 @@ void MusicPlayBar::onDurationChanged(qint64 duration)
 void MusicPlayBar::onPositionChanged(qint64 position)
 {
     //当前文件播放进度变化，更新进度显示
+    //如果当前不是阻塞状态，进度条随位置的改变而改变
+    if(!block)
+    {
+//        qDebug()<<"position changed";
        playSlider->setSliderPosition(int(position));
+       emit positionChanged(position);
+
        int secs = int(position)/1000; //秒
        int mins =  secs/60; //分钟
        secs = secs%60; //余秒数
        positionTime = QString::asprintf("%d:%d",mins,secs);
        currentTimeLabel->setText(positionTime);
-
-       //************************************************
-       //传递位置给歌词显示
-       emit positionChanged(position);
+     }
 }
 
+//更新逻辑播放列表
 void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
 {
     if(behaviorIndex == 1)
@@ -243,7 +465,7 @@ void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
     }
 }
 
-//*******************************************************************************************
+//外界触发放歌
 void MusicPlayBar::onPlayMusic(int SongIndex)
 {
     //如果是-1->播放最后一首(最新加入的一首)
@@ -256,6 +478,25 @@ void MusicPlayBar::onPlayMusic(int SongIndex)
         playlist->setCurrentIndex(SongIndex);
         player->play();
         playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+}
+
+//拖动歌词时触发的槽函数
+void MusicPlayBar::onBlockSignals(bool block)
+{
+    //更新阻塞状态
+    this->block = block;
+    qint64 currentPosition = qint64(playSlider->value());
+    //qDebug()<<block;
+    //playSlider->blockSignals(block);
+    emit positionStop(currentPosition);
+}
+
+//歌词拖动之后更新位置
+void MusicPlayBar::onPositionDraggedTo(qint64 newPosition)
+{
+    //qDebug()<<"enter positionDraggedTo";
+    //将播放的歌曲位置同步到拖动的那句歌词上
+    player->setPosition(newPosition);
 }
 
 //点击"上一首"触发的槽函数
@@ -306,7 +547,9 @@ void MusicPlayBar::on_nextBtn_clicked()
 {
     //如果歌单为空->不执行
     if(playlist->isEmpty())
+     {
         return;
+     }
 
     //如果状态时随机播放,则随机出下一首
     int currentIndex;
@@ -353,11 +596,18 @@ void MusicPlayBar::on_muteBtn_clicked()
     player->setMuted(!mute);
     if(mute)
     {
-        muteBtn->setIcon(QIcon(":/icon/res/soundNormal.png"));
+        if(soundSlider->value() != 99)
+        {
+            muteBtn->setIcon(QIcon(":/icon/res/soundNormalHover.png"));
+        }
+        else
+        {
+            muteBtn->setIcon(QIcon(":/icon/res/soundFullHover.png"));
+        }
     }
     else
     {
-        muteBtn->setIcon(QIcon(":/icon/res/soundMute.png"));
+        muteBtn->setIcon(QIcon(":/icon/res/soundMuteHover.png"));
     }
 }
 
@@ -424,6 +674,59 @@ void MusicPlayBar::on_playModeBtn_clicked()
     }
 }
 
+//显示&隐藏底部弹幕时触发的槽函数
+void MusicPlayBar::on_showLyricsBtn_clicked()
+{
+    //如果当前没有歌播放，不允许开启底部弹幕
+    if(player->mediaStatus() != QMediaPlayer::NoMedia)
+    {
+        bool allowHover = !(showLyricsBtn->isChecked());
+        showLyricsBtn->setAttribute(Qt::WA_Hover,allowHover);
+        if(!allowHover)
+        {
+            showLyricsBtn->setIcon(QIcon(":/icon/res/lyricsHover.png"));
+        }
+        else
+        {
+            showLyricsBtn->setIcon(QIcon(":/icon/res/lyrics.png"));
+        }
+
+            //发送信号,决定底部弹幕的显示或隐藏
+            emit showLyricsBarrage(!allowHover);
+    }
+    else
+    {
+        return;
+    }
+}
+
+//翻译&恢复歌词语言时的槽函数
+void MusicPlayBar::on_translateBtn_clicked()
+{
+    //如果当前没有歌播放，不允许开启歌词翻译
+    if(player->mediaStatus() != QMediaPlayer::NoMedia)
+    {
+        //开启&关闭鼠标事件过滤器
+        //使得被选中时持久性改变按钮图标的样式
+        //qDebug()<<"enter here";
+        bool allowHover = !(translateBtn->isChecked());
+        translateBtn->setAttribute(Qt::WA_Hover,allowHover);
+        if(!allowHover)
+        {
+            translateBtn->setIcon(QIcon(":/icon/res/translateHover.png"));
+        }
+        else
+        {
+            translateBtn->setIcon(QIcon(":/icon/res/translate.png"));
+        }
+        emit translateChanged();
+    }
+    else
+    {
+        return;
+    }
+}
+
 //切换倍数时触发的槽函数
 void MusicPlayBar::on_playSpeedBtn_clicked()
 {
@@ -432,30 +735,33 @@ void MusicPlayBar::on_playSpeedBtn_clicked()
         //如果当前是1.0x->1.5x
         currentSpeed = 1.5;
         player->setPlaybackRate(currentSpeed);
-        playSpeedBtn->setIcon(QIcon(":/icon/res/rate150.png"));
+        playSpeedBtn->setIcon(QIcon(":/icon/res/rate150Hover.png"));
     }
     else if(currentSpeed == 1.5)
     {
         //如果当前是1.5x->2.0x
         currentSpeed = 2.0;
         player->setPlaybackRate(currentSpeed);
-        playSpeedBtn->setIcon(QIcon(":/icon/res/rate200.png"));
+        playSpeedBtn->setIcon(QIcon(":/icon/res/rate200Hover.png"));
     }
     else if(currentSpeed == 2.0)
     {
         //如果当前是2.0x->0.5x
         currentSpeed = 0.5;
         player->setPlaybackRate(currentSpeed);
-        playSpeedBtn->setIcon(QIcon(":/icon/res/rate050.png"));
+        playSpeedBtn->setIcon(QIcon(":/icon/res/rate050Hover.png"));
     }
     else if(currentSpeed == 0.5)
     {
         //如果当前是0.5x->1.0x
         currentSpeed = 1.0;
         player->setPlaybackRate(currentSpeed);
-        playSpeedBtn->setIcon(QIcon(":/icon/res/rate100.png"));
+        playSpeedBtn->setIcon(QIcon(":/icon/res/rate100Hover.png"));
     }
-    else {}
+    else
+    {
+
+    }
 }
 
 void MusicPlayBar::changeThemeColor(QColor)

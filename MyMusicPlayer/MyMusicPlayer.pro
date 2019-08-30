@@ -33,6 +33,7 @@ SOURCES += \
     lyricwidget.cpp \
         main.cpp \
         mainwidget.cpp \
+    minilyrics.cpp \
     musicplaybar.cpp \
     songinfoshow.cpp \
     songlist.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     lyricdownload.h \
     lyricwidget.h \
         mainwidget.h \
+    minilyrics.h \
     musicplaybar.h \
     songinfo.h \
     songinfoshow.h \

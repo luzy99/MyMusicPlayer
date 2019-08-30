@@ -64,19 +64,23 @@ MainWidget::MainWidget(QWidget *parent) :
     pLayout1->setContentsMargins(0, 0, 0, 0);//设置边距
     this->setLayout(pLayout1);
 
-
     //歌单布局
     pSongList = new SongList (this);
     installEventFilter(pSongList);
     pSongList->setGeometry(0,30,240,this->height()-30);
 
     //初始化歌词下载
+    //默认不进行翻译
     lyricsDownloader = new LyricDownload;
+    translate = false;
 
     //初始化展示歌词的组件
     lyricsShower = new LyricWidget;
     lyricsShower->resize(200,400);
     lyricsShower->show();
+
+    //初始化底部歌词弹幕
+    lyricsBarrage = new miniLyrics;
         
     //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
     m_nBorderWidth=5;
@@ -86,6 +90,7 @@ MainWidget::MainWidget(QWidget *parent) :
     currentSongInfo = new SongInfo;
     currentSongInfo->title = "暂无歌曲在播放";
     currentSongInfo->artist = "暂无相关信息";
+    currentSongInfo->album_cover = ":/icon/res/default_cover.png";
 
     //初始化显示
     infoShow = new SongInfoShow(this,*currentSongInfo);
@@ -95,6 +100,29 @@ MainWidget::MainWidget(QWidget *parent) :
     //初始化自定义音乐播放栏
     pMusicPlayBar = new MusicPlayBar(this);
     pMusicPlayBar->setGeometry(240, 840, 900, 60);
+
+    //判断当前路径下有无下载封面和歌词需要的文件
+    //若没有则重新创建
+    QDir coverFile(QDir::currentPath()+"/CoverImages");
+    if(coverFile.exists())
+    {
+        //如果已经存在则什么也不做
+    }
+    else
+    {
+        //如果不存在，则重新创建文件
+        coverFile.mkdir(QDir::currentPath()+"/CoverImages");
+    }
+    QDir lyricsFile(QDir::currentPath()+"/Lyrics");
+    if(coverFile.exists())
+    {
+        //如果已经存在则什么也不做
+    }
+    else
+    {
+        //如果不存在，则重新创建文件
+        coverFile.mkdir(QDir::currentPath()+"/Lyrics");
+    }
 
     //关联信号与槽
     initSignalsAndSlots();
@@ -181,15 +209,33 @@ void MainWidget::initSignalsAndSlots()
     //歌单修改音乐播放器中的逻辑列表(playlist)
     connect(pSongList , SIGNAL(changePlaylist(QUrl,int)),
             pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
-    //切歌时进行歌词下载
-    connect(this,SIGNAL(songChanged(QString,bool)),
-            this,SLOT(onSongChanged(QString,bool)));
     //播放位置改变时歌词变化
     connect(pMusicPlayBar,SIGNAL(positionChanged(qint64)),
             lyricsShower,SLOT(onPositionChanged(qint64)));
+    connect(pMusicPlayBar,SIGNAL(positionChanged(qint64)),
+            lyricsBarrage,SLOT(onPositionChanged(qint64)));
+    //拖动歌词时阻塞进度条
+    connect(lyricsShower,SIGNAL(blockSignals(bool)),
+            pMusicPlayBar,SLOT(onBlockSignals(bool)));
+    //把阻塞那一时刻的position传回给lyricShower
+    connect(pMusicPlayBar,SIGNAL(positionStop(qint64)),
+            lyricsShower,SLOT(on_positionStop(qint64)));
+    //歌词拖动后播放器进度随之更新
+    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
+            pMusicPlayBar,SLOT(onPositionDraggedTo(qint64)));
+    //同时底部弹幕也随之更新
+    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
+            lyricsBarrage,SLOT(onPositionChanged(qint64)));
     //切歌时进行歌曲信息的变化
+    //同时进行歌词下载
     connect(pMusicPlayBar,SIGNAL(updateAudioTag(QString)),
             this,SLOT(onUpdateAudioTag(QString)));
+    //显示&隐藏底部弹幕
+    connect(pMusicPlayBar,SIGNAL(showLyricsBarrage(bool)),
+            this,SLOT(onShowLyricsBarrage(bool)));
+    //歌词翻译&取消翻译
+    connect(pMusicPlayBar,SIGNAL(translateChanged()),
+            this,SLOT(onTranslateChanged()));
     //链接播放状态和圆盘的转动
     connect(pMusicPlayBar,SIGNAL(becomePausing()),
             infoShow,SLOT(Stop()));
@@ -260,19 +306,51 @@ void MainWidget::resetGeometry()
     this->pMusicPlayBar->setGeometry(240, sizeY-60, sizeX-300, 60);
 }
 
-//切歌词开始爬歌词
-void MainWidget::onSongChanged(QString songId, bool translate)
+//歌词翻译状态改变，重写爬取歌词
+void MainWidget::onTranslateChanged()
 {
-    lyricsDownloader->DownloadLyric(songId,translate);
-    lyricsShower->analyzeLrcContent(songId);
+    //改变翻译状态
+    translate = !translate;
+    //qDebug()<<translate;
+    //重新爬取歌词
+    lyricsDownloader->DownloadLyric(currentSongInfo->song_id,translate);
+    lyricsShower->analyzeLrcContent(currentSongInfo->song_id);
+
+    //同步更新至底部弹幕
+    lyricsBarrage->setLineMap(lyricsShower->getLineMap());
+    lyricsBarrage->setWord_list(lyricsShower->getWord_list());
+    lyricsBarrage->setInterval_list(lyricsShower->getInterval_list());
 }
 
+//切歌时开始爬取各类信息
 void MainWidget::onUpdateAudioTag(QString currentFileName)
 {
-    AudioTag tag(currentFileName,*currentSongInfo);
+    currentSongInfo->has_cover=false;
+    AudioTag tag(currentFileName,currentSongInfo);
     tag.getAllinfo();
     tag.idMatch();
     tag.downloadPic();
-    emit songChanged(currentSongInfo->song_id,false);
+    lyricsDownloader->DownloadLyric(currentSongInfo->song_id,translate);
+    lyricsShower->analyzeLrcContent(currentSongInfo->song_id);
+
+    //将主歌词的结果给底部弹幕赋值,防止重复爬取,提高程序效率
+    lyricsBarrage->setLineMap(lyricsShower->getLineMap());
+    lyricsBarrage->setWord_list(lyricsShower->getWord_list());
+    lyricsBarrage->setInterval_list(lyricsShower->getInterval_list());
+
     infoShow->changeSong(*currentSongInfo);
+}
+
+//显示&隐藏底部歌词弹幕的槽函数
+void MainWidget::onShowLyricsBarrage(bool show)
+{
+    //qDebug()<<"reach change lyrics";
+    if(show)
+    {
+        lyricsBarrage->show();
+    }
+    else
+    {
+        lyricsBarrage->hide();
+    }
 }
