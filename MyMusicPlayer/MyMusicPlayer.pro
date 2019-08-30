@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT       += multimedia
-
+QT       += sql
+QT       +=multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = MyMusicPlayer
@@ -25,20 +25,32 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    createsonglistdialog.cpp \
         main.cpp \
         mainwidget.cpp \
     musicplaybar.cpp \
+    mylistlistwidget.cpp \
+    mylistsongwidget.cpp \
+    renamesonglistdialog.cpp \
+    songlist.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
 
 HEADERS += \
+    createsonglistdialog.h \
         mainwidget.h \
     musicplaybar.h \
+    mylistlistwidget.h \
+    mylistsongwidget.h \
+    renamesonglistdialog.h \
+    songlist.h \
     suspensionwindow.h \
     titlebar.h
 
 FORMS += \
-        mainwidget.ui
+        createsonglistdialog.ui \
+        mainwidget.ui \
+        renamesonglistdialog.ui
 
 RESOURCES += \
     res.qrc

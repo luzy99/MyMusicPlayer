@@ -10,6 +10,7 @@
 #include "titlebar.h" //包含“自定义标题栏”头文件
 #include "musicplaybar.h" //包含“自定义音乐播放栏”头文件
 #include "songlist.h" //包含"‘自定义歌单"的头文件
+#include "createsonglistdialog.h"
 
 namespace Ui {
 class MainWidget;
@@ -33,9 +34,11 @@ signals:
     void changePlaylist(QUrl url,int behaviorIndex);  //改变播放列表的信号，第二个参数代表操作类型，1:增加
     void changeListSongs(QString fileName,int behaviorIndex); //改变歌单的信号，第二个参数代表操作类型，1:增加
     void playMusic(int SongIndex); //触发播放音乐
+    void sendSongListName(QString);
 
 public slots:
     void resetGeometry();
+    void showCreateSongListDialog();
 private:
     Ui::MainWidget *ui;
 

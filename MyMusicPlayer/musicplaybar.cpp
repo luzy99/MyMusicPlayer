@@ -350,3 +350,4 @@ void MusicPlayBar::changeThemeColor(QColor)
 }
 
 
+

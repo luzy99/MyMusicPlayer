@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWidget</class>
- <widget class="QWidget" name="MainWidget">
+ <class>CreateSongListDialog</class>
+ <widget name="CreateSongListDialog" class="QDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,10 +10,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWidget</string>
+   <string>Dialog</string>
   </property>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

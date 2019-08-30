@@ -2,6 +2,7 @@
 #include "ui_mainwidget.h"
 #include "titlebar.h" //包含“自定义标题栏”头文件
 #include "songlist.h"
+#include "renamesonglistdialog.h"
 #include <QMimeData>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -158,6 +159,11 @@ void MainWidget::initSignalsAndSlots()
     connect(this,SIGNAL(playMusic(int)),
             pMusicPlayBar,SLOT(onPlayMusic(int)));
     connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
+    connect(this, SIGNAL(sendSongListName(QString)),
+            this->pSongList, SLOT(createSongListInDatabase(QString)));
+    connect(this->pSongList->getCreateMusicListButton(), SIGNAL(clicked()),
+            this , SLOT(showCreateSongListDialog()));
+
 }
 
 //覆写dragEnterEvent,允许歌曲被拖入
@@ -218,4 +224,13 @@ void MainWidget::resetGeometry()
     int sizeX = pWindowSize.width();
     this->resize(sizeX , sizeY);
     this->pMusicPlayBar->setGeometry(240, sizeY-60, sizeX-300, 60);
+}
+
+void MainWidget::showCreateSongListDialog()
+{
+    CreateSongListDialog dlg;
+    int status = dlg.exec();
+    if(status == 0)
+        emit(sendSongListName(dlg.getLineEdit()->text()));
+    else {}
 }
