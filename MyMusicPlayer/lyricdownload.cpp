@@ -56,7 +56,7 @@ bool LyricDownload::DownloadLyric(const QString& song_id, bool download_translat
     result.remove(result.section("]",-1,-1));
     qDebug()<<result;
     //result=Qresult.toStdWString();
-    QString path="D:/Git/clone/Lyric/Lyric"+song_id+ ".rlc";
+    QString path="./Lyric/Lyric"+song_id+ ".rlc";
     QFile file(path);
     file.open(QIODevice::WriteOnly);
     file.write(result.toUtf8());

@@ -37,7 +37,8 @@ SOURCES += \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
-    titlebar.cpp
+    titlebar.cpp \
+    searchdata.cpp
 
 HEADERS += \
     audiotag.h \
@@ -50,7 +51,8 @@ HEADERS += \
     songinfoshow.h \
     songlist.h \
     suspensionwindow.h \
-    titlebar.h
+    titlebar.h \
+    searchdata.h
 
 FORMS += \
         mainwidget.ui

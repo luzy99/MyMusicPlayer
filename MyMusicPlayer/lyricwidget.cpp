@@ -142,7 +142,7 @@ void LyricWidget::GetMaskLen(int nFontSize)
     QFontMetrics metrics(fontTemp);
     if(s_fPercent != percent)
     {
-        s_keyLen=metrics.QFontMetrics::horizontalAdvance(m_strCurLrc)*percent;
+        //s_keyLen=metrics.QFontMetrics::horizontalAdvance(m_strCurLrc)*percent;
         s_fPercent=percent;
     }
 
@@ -151,7 +151,7 @@ void LyricWidget::GetMaskLen(int nFontSize)
        //percent2=(float)(m_nCurPos-m_nCurStartPos-keyTime)/interval;
        percent2=(float)(m_nCurPos-keyTime)/interval;
       // s_curLen=s_keyLen+metrics.width(strKeyWord)*percent2;
-       s_curLen=s_keyLen+metrics.QFontMetrics::horizontalAdvance(strKeyWord)*percent2;
+       //s_curLen=s_keyLen+metrics.QFontMetrics::horizontalAdvance(strKeyWord)*percent2;
        m_nMaskLen=s_curLen;
        if(percent2<=1.0f && s_curLen >= m_nMaskLen)
        {
@@ -469,7 +469,7 @@ void LyricWidget::DrawItem(QPainter &Painter, ItemInfo &Info)
     QFontMetrics metric(m_normalFont);
 
     //让字体在那一行垂直和水平都居中
-    int X= (width()-metric.QFontMetrics::horizontalAdvance(Info.strText))/2;//整个歌词栏的宽度-歌词的宽度/2
+    int X=10; //(width()-metric.QFontMetrics::horizontalAdvance(Info.strText))/2;//整个歌词栏的宽度-歌词的宽度/2
     Info.Y+=(ROW_HEIGHT-metric.height())/2;
 
     //所有的歌词都用normal的颜色画一遍

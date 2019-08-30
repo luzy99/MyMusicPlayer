@@ -192,9 +192,9 @@ void MainWidget::initSignalsAndSlots()
             this,SLOT(onUpdateAudioTag(QString)));
     //链接播放状态和圆盘的转动
     connect(pMusicPlayBar,SIGNAL(becomePausing()),
-            infoShow,SLOT(Stop()));
+            infoShow,SLOT(diskRotateStop()));
     connect(pMusicPlayBar,SIGNAL(becomePlaying()),
-            infoShow,SLOT(Start()));
+            infoShow,SLOT(diskRotateStart()));
     //重绘主窗口大小
     connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
 }

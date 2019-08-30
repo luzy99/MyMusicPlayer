@@ -15,15 +15,12 @@ class AudioTag
 {
 public:
     AudioTag(QString f_url, SongInfo *&si);
-    //获取音频文件的专辑封面，并保存到临时目录
-    //image_type：用来接收封面的格式 0:jpg, 1:png, 2:gif
-    //file_name: 指定保存的专辑封面的文件名，如果为nullptr，则使用默认的文件名
-    //返回值：专辑封面的保存路径
     ~AudioTag();
+    //解析mp3中的封面图片，tag_content表示原始标签信息，tag_index表示图片信息起始地址，tag_size表示标签大小
     bool GetAlbumCover(string& tag_content,int tag_index,int tag_size);
-    bool getAllinfo();
-    bool idMatch();
-    bool downloadPic();
+    bool getAllinfo();//获取mp3中标题，艺术家，年份等信息，存入成员对象m_song_info中
+    bool idMatch();//根据m_song_info中的标题，艺术家信息匹配网易云的歌曲id
+    bool downloadPic();//通过id下载封面图片
 private:
     SongInfo* m_song_info;
     FILE* fp;

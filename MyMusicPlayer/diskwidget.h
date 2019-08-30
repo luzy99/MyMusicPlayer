@@ -9,7 +9,7 @@ class diskWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit diskWidget(QWidget *parent = nullptr,int r = 100);
+    explicit diskWidget(QWidget *parent = nullptr,int r = 100);//构造函数，传入图片半径
     void setRadius(int radius);
     void setRate(double rate);
     void rotateStop();//旋转暂停
@@ -26,7 +26,8 @@ public slots:
 
 private:
 
-    QPixmap coverPic;
+    QPixmap coverPic;//封面图片
+    QPixmap diskPic;    //唱片图
     int count;
     QTimer *timer;
     int i_radius;       //半径
