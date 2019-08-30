@@ -1,8 +1,6 @@
 #ifndef MUSICPLAYBAR_H
 #define MUSICPLAYBAR_H
 
-#include"lyricdownload.h"
-#include"lyricwidget.h"
 #include <QWidget>
 #include <QPushButton>
 #include<QGroupBox>
@@ -21,9 +19,13 @@ public:
     void initSignalsAndSlots(); //初始化设定信号与槽
     QGroupBox *g_container;//布局器
 signals:
+    void positionChanged(qint64 postion); //位置改变时发送的型号
+    void songChanged(QString songId,bool translate); //切歌时发送的信号
+    void updateAudioTag(QString currentFilePath); //更新歌曲信息
+    void becomePlaying(); //表示接下来播放
+    void becomePausing(); //表示接下来暂停
 
 public slots:
-
     void changeThemeColor(QColor);
     void onStateChanged(QMediaPlayer::State state);
     void onDurationChanged(qint64 duration);
@@ -64,9 +66,6 @@ private:
     double currentSpeed; //当前播放速度
     QString durationTime; //总长度
     QString positionTime; //当前播放到的位置
-
-    LyricDownload *lyricsDownloader; //歌词下载
-    LyricWidget *lyricsShower; //歌词展示
 };
 
 #endif // MUSICPLAYBAR_H

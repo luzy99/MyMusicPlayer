@@ -1,3 +1,4 @@
+//在线播放的url:"http://music.163.com/song/media/outer/url?id=xxxxx.mp3"
 #include "musicplaybar.h"
 #include "lyricdownload.h"
 #include "lyricwidget.h"
@@ -136,19 +137,15 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     playlist->setPlaybackMode(QMediaPlaylist::Loop); //循环模式
     player->setPlaylist(playlist);
 
-    //初始化歌词处理软件
-    lyricsDownloader = new LyricDownload;
-    lyricsShower = new LyricWidget;
-    //****************************************************************************************
-    //展示歌词
-    lyricsShower->show();
-
     //连接信号与槽
     initSignalsAndSlots();
 }
 
 void MusicPlayBar::initSignalsAndSlots()
 {
+    //播放状态改变
+    connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),
+            this,SLOT(onStateChanged(QMediaPlayer::State)));
     //播放位置改变
     connect(player,SIGNAL(positionChanged(qint64)),
             this,SLOT(onPositionChanged(qint64)));
@@ -194,17 +191,20 @@ void MusicPlayBar::onStateChanged(QMediaPlayer::State state)
    bool isPlaying = (state == QMediaPlayer::PlayingState);
    if(isPlaying)
    {
-       playBtn->setIcon(QIcon(":/icon/res/play.png"));
+       playBtn->setIcon(QIcon(":/icon/res/pause.png"));
        playBtn->setToolTip("播放");
+       emit becomePlaying();
    }
    else
    {
-       playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+       playBtn->setIcon(QIcon(":/icon/res/play.png"));
        playBtn->setToolTip("暂停");
+      emit becomePausing();
    }
 }
 
 //在文件时长变化时发射，用于跟新用户界面上文件时间长度的显示
+//同时切歌时需要调用爬虫更新作者和封面的信息
 void MusicPlayBar::onDurationChanged(qint64 duration)
 {
     //文件时长变化，更新进度显示
@@ -215,11 +215,8 @@ void MusicPlayBar::onDurationChanged(qint64 duration)
        durationTime = QString::asprintf("%d:%d",mins,secs);
        totalTimeLabel->setText(durationTime);
 
-       //***************************************************************
-       //切歌->开始爬取歌词并演示
-       QString str1("ldnqq");
-        lyricsDownloader->DownloadLyric("31010566",str1,false);
-        lyricsShower->analyzeLrcContent("31010566");
+       QString currentFilePath = playlist->currentMedia().canonicalUrl().toLocalFile();
+       emit updateAudioTag(currentFilePath);
 }
 
 //当前文件播放位置变化时发射，用于跟新界面上的进度条
@@ -235,7 +232,7 @@ void MusicPlayBar::onPositionChanged(qint64 position)
 
        //************************************************
        //传递位置给歌词显示
-       lyricsShower->positionChanged(position);
+       emit positionChanged(position);
 }
 
 void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
@@ -293,8 +290,6 @@ void MusicPlayBar::on_playBtn_clicked()
     if(player->state() == QMediaPlayer::PlayingState )
     {
         player->pause();
-        playBtn->setIcon(QIcon(":/icon/res/play.png"));
-        playBtn->setToolTip("播放");
     }
     else
     {
@@ -303,8 +298,6 @@ void MusicPlayBar::on_playBtn_clicked()
             playlist->setCurrentIndex(0);
         }
         player->play();
-        playBtn->setIcon(QIcon(":/icon/res/pause.png"));
-        playBtn->setToolTip("暂停");
     }
 }
 

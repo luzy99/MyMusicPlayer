@@ -27,20 +27,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    audiotag.cpp \
+    diskwidget.cpp \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
         mainwidget.cpp \
     musicplaybar.cpp \
+    songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
 
 HEADERS += \
+    audiotag.h \
+    diskwidget.h \
     lyricdownload.h \
     lyricwidget.h \
         mainwidget.h \
     musicplaybar.h \
+    songinfo.h \
+    songinfoshow.h \
     songlist.h \
     suspensionwindow.h \
     titlebar.h

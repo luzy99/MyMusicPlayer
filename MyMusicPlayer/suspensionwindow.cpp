@@ -49,10 +49,12 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     //初始化恢复大窗口按钮
     resizeBtn = new QPushButton;
     resizeBtn->setFlat(true);
+    resizeBtn->setObjectName("resizeBtn");
     resizeBtn->setToolTip("点击切换窗口模式");
     resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
     resizeBtn->setIconSize(QSize(25,25));
     resizeBtn->setMaximumSize(27,27);
+    resizeBtn->setAttribute(Qt::WA_Hover,true);
     layout->addWidget(resizeBtn);
 
     //初始化右键菜单
@@ -134,7 +136,7 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
 //显示播放列表按钮按下时触发的槽函数
 void SuspensionWindow::on_showListBtn_clicked(bool checked)
 {
-    //点击变色且
+    //点击变色且显示歌单
     if(!checked)
     {
         showListsBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));

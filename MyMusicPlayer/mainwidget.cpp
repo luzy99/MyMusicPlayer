@@ -1,7 +1,6 @@
 #include "mainwidget.h"
 #include "ui_mainwidget.h"
 #include "titlebar.h" //包含“自定义标题栏”头文件
-#include "songlist.h"
 #include <QMimeData>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -63,7 +62,7 @@ MainWidget::MainWidget(QWidget *parent) :
     pLayout1->addStretch();
     pLayout1->setSpacing(0);
     pLayout1->setContentsMargins(0, 0, 0, 0);//设置边距
-    setLayout(pLayout1);
+    this->setLayout(pLayout1);
 
 
     //歌单布局
@@ -71,9 +70,27 @@ MainWidget::MainWidget(QWidget *parent) :
     installEventFilter(pSongList);
     pSongList->setGeometry(0,30,240,this->height()-30);
 
+    //初始化歌词下载
+    lyricsDownloader = new LyricDownload;
+
+    //初始化展示歌词的组件
+    lyricsShower = new LyricWidget;
+    lyricsShower->resize(200,400);
+    lyricsShower->show();
         
     //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
     m_nBorderWidth=5;
+
+    //初始化当前歌曲的信息
+    //默认第一次打开时还没有播放歌曲
+    currentSongInfo = new SongInfo;
+    currentSongInfo->title = "暂无歌曲在播放";
+    currentSongInfo->artist = "暂无相关信息";
+
+    //初始化显示
+    infoShow = new SongInfoShow(this,*currentSongInfo);
+
+    infoShow->setGeometry(250,30,300,this->height()-60);
 
     //初始化自定义音乐播放栏
     pMusicPlayBar = new MusicPlayBar(this);
@@ -164,6 +181,20 @@ void MainWidget::initSignalsAndSlots()
     //歌单修改音乐播放器中的逻辑列表(playlist)
     connect(pSongList , SIGNAL(changePlaylist(QUrl,int)),
             pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
+    //切歌时进行歌词下载
+    connect(this,SIGNAL(songChanged(QString,bool)),
+            this,SLOT(onSongChanged(QString,bool)));
+    //播放位置改变时歌词变化
+    connect(pMusicPlayBar,SIGNAL(positionChanged(qint64)),
+            lyricsShower,SLOT(onPositionChanged(qint64)));
+    //切歌时进行歌曲信息的变化
+    connect(pMusicPlayBar,SIGNAL(updateAudioTag(QString)),
+            this,SLOT(onUpdateAudioTag(QString)));
+    //链接播放状态和圆盘的转动
+    connect(pMusicPlayBar,SIGNAL(becomePausing()),
+            infoShow,SLOT(Stop()));
+    connect(pMusicPlayBar,SIGNAL(becomePlaying()),
+            infoShow,SLOT(Start()));
     //重绘主窗口大小
     connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
 }
@@ -227,4 +258,21 @@ void MainWidget::resetGeometry()
     int sizeX = pWindowSize.width();
     this->resize(sizeX , sizeY);
     this->pMusicPlayBar->setGeometry(240, sizeY-60, sizeX-300, 60);
+}
+
+//切歌词开始爬歌词
+void MainWidget::onSongChanged(QString songId, bool translate)
+{
+    lyricsDownloader->DownloadLyric(songId,translate);
+    lyricsShower->analyzeLrcContent(songId);
+}
+
+void MainWidget::onUpdateAudioTag(QString currentFileName)
+{
+    AudioTag tag(currentFileName,*currentSongInfo);
+    tag.getAllinfo();
+    tag.idMatch();
+    tag.downloadPic();
+    emit songChanged(currentSongInfo->song_id,false);
+    infoShow->changeSong(*currentSongInfo);
 }

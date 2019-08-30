@@ -14,6 +14,9 @@
 #include <Windows.h>
 using namespace std;
 
+//编码信息(在songinfo中有重复定义)
+#ifndef CODETYPE_H
+#define CODETYPE_H
 enum class CodeType
 {
     ANSI,
@@ -22,6 +25,7 @@ enum class CodeType
     UTF16,
     AUTO
 };
+#endif
 
 class LyricDownload : public QObject
 {
@@ -29,13 +33,12 @@ class LyricDownload : public QObject
 public:
     explicit LyricDownload(QObject *parent = nullptr);
 
-   // ~LyricDownload();
-
+   // ~LyricDownload()
 
     //搜索框得到歌曲id
     //结果保存到result中
     //download_translate(从界面'译'按钮得到)参数指定是否下载带翻译的歌词
-    static bool DownloadLyric(const QString& song_id,QString&result,bool download_translate);
+    static bool DownloadLyric(const QString& song_id,bool download_translate);
 
     //对从网易云音乐下载的歌词进行处理，转换成正确的歌词文本
     static bool DisposeLryic(QString& lyric_str);

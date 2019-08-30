@@ -12,8 +12,9 @@ LyricDownload::LyricDownload(QObject *parent)
 
 }
 
-bool LyricDownload::DownloadLyric(const QString& song_id,QString &result, bool download_translate)
+bool LyricDownload::DownloadLyric(const QString& song_id, bool download_translate)
 {
+    QString result;
     QString lyric_url;
     if(!download_translate)
     {//下载不带翻译的歌词文
@@ -48,14 +49,14 @@ bool LyricDownload::DownloadLyric(const QString& song_id,QString &result, bool d
     QString Qresult=bytes;
     //qDebug()<<Qresult;
     result=Qresult;
-    result.replace("\\n","\n");
-    QStringList list=result.split("\n");
-    list[0]=list[0].section("[",-1,-1);
-    list[0]="["+list[0];
+    result.replace("\\n", "\n");
+    result.remove("\r");
+    result.remove("\\r");
     result.remove(result.section("[",0,0));
     result.remove(result.section("]",-1,-1));
+    qDebug()<<result;
     //result=Qresult.toStdWString();
-    QString path="D:/CloudMusic/"+song_id+ ".rlc";
+    QString path="D:/Git/clone/Lyric/Lyric"+song_id+ ".rlc";
     QFile file(path);
     file.open(QIODevice::WriteOnly);
     file.write(result.toUtf8());
