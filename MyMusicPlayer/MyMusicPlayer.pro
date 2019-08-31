@@ -29,7 +29,8 @@ SOURCES += \
     titlebar.cpp \
     audiotag.cpp \
     songinfoshow.cpp \
-    diskwidget.cpp
+    diskwidget.cpp \
+    searchdata.cpp
 
 HEADERS += \
         mainwidget.h \
@@ -37,7 +38,8 @@ HEADERS += \
     songinfo.h \
     audiotag.h \
     songinfoshow.h \
-    diskwidget.h
+    diskwidget.h \
+    searchdata.h
 
 FORMS += \
         mainwidget.ui

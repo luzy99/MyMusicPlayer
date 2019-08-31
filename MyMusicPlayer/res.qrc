@@ -9,5 +9,9 @@
         <file>res/setting.png</file>
         <file>res/skin.png</file>
         <file>res/default_cover.ico</file>
+        <file>res/favourite_d.ico</file>
+        <file>res/heart.ico</file>
+        <file>res/addtolist.png</file>
+        <file>res/more.png</file>
     </qresource>
 </RCC>

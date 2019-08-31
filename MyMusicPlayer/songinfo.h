@@ -18,7 +18,7 @@ enum class CodeType
 //一首歌曲的信息
 struct SongInfo
 {
-    QString file_path{};        //歌曲的文件名
+    QString file_path{};        //歌曲的路径
     QString lyric_file{};	//匹配的歌词文件的路径
     int bitrate{};		//比特率
     QString title;		//标题

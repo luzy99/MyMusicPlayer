@@ -208,11 +208,12 @@ bool AudioTag::idMatch()
                 qDebug()<<"picUrl: "<<picUrl;
                 m_song_info->pic_url=picUrl;
             }
-
+            return 1;
         }
-        else return 0;
+
     }
-    return 1;
+    return 0;
+
 }
 
 bool AudioTag::downloadPic()
