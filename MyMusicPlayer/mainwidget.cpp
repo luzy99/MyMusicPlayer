@@ -90,7 +90,7 @@ MainWidget::MainWidget(QWidget *parent) :
     //初始化显示
     infoShow = new SongInfoShow(this,*currentSongInfo);
 
-    infoShow->setGeometry(250,30,300,this->height()-60);
+    infoShow->setGeometry(260,40,500,this->height()-60);
 
     //初始化自定义音乐播放栏
     pMusicPlayBar = new MusicPlayBar(this);

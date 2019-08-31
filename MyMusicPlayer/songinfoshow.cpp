@@ -6,11 +6,12 @@
 SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
     QWidget(parent)
 {
+    this->resize(500,parent->height()-100);
     //整体垂直布局
     vLayout = new QVBoxLayout(this);
     titleShow = new QLabel(this);
     artistShow = new QLabel(this);
-    disk = new diskWidget(this,this->width()+30);
+    disk = new diskWidget(this,this->width()/2-80);
     titleShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     artistShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
     //disk->rotateStop();
@@ -27,7 +28,7 @@ SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
     vLayout->addWidget(artistShow);
     vLayout->addWidget(disk);
     vLayout->setSpacing(20);
-    vLayout->setContentsMargins(0, 30, 0, 0);
+    vLayout->setContentsMargins(20, 30, 0, 0);
 
     //下方按钮布局
     buttonBar = new QWidget(this);
@@ -68,6 +69,10 @@ SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
     moreInfoButton->setStyleSheet ("border:2px groove gray;border-radius:10px;padding:2px 4px;");
     hLayout->addWidget(moreInfoButton);
 
+    vLayout->setStretchFactor(titleShow,1);
+    vLayout->setStretchFactor(artistShow,1);
+    vLayout->setStretchFactor(disk,6);
+    vLayout->setStretchFactor(buttonBar,2);
     this->setLayout(vLayout);
     this->show();
 
