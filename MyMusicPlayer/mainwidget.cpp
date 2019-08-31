@@ -74,11 +74,6 @@ MainWidget::MainWidget(QWidget *parent) :
     lyricsDownloader = new LyricDownload;
     translate = false;
 
-    //初始化展示歌词的组件
-    lyricsShower = new LyricWidget;
-    lyricsShower->resize(200,400);
-    lyricsShower->show();
-
     //初始化底部歌词弹幕
     lyricsBarrage = new miniLyrics;
         
@@ -94,14 +89,17 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //初始化显示
     infoShow = new SongInfoShow(this,*currentSongInfo);
+    infoShow->setGeometry(260,40,500,this->height()-60);
 
-    infoShow->setGeometry(250,30,300,this->height()-60);
+    //初始化展示歌词的组件
+    lyricsShower = new LyricWidget(this);
+    lyricsShower->setGeometry(760,40,this->width()-760,this->height()-60);
 
     //初始化自定义音乐播放栏
     pMusicPlayBar = new MusicPlayBar(this);
     pMusicPlayBar->setGeometry(240, 840, 900, 60);
 
-    //判断当前路径下有无下载封面和歌词需要的文件
+    //判断当前路径下有无下载封面歌词和歌需要的文件
     //若没有则重新创建
     QDir coverFile(QDir::currentPath()+"/CoverImages");
     if(coverFile.exists())
@@ -114,7 +112,7 @@ MainWidget::MainWidget(QWidget *parent) :
         coverFile.mkdir(QDir::currentPath()+"/CoverImages");
     }
     QDir lyricsFile(QDir::currentPath()+"/Lyrics");
-    if(coverFile.exists())
+    if(lyricsFile.exists())
     {
         //如果已经存在则什么也不做
     }
@@ -122,6 +120,16 @@ MainWidget::MainWidget(QWidget *parent) :
     {
         //如果不存在，则重新创建文件
         coverFile.mkdir(QDir::currentPath()+"/Lyrics");
+    }
+    QDir songsFile(QDir::currentPath()+"/Songs");
+    if(songsFile.exists())
+    {
+        //如果已经存在则什么也不做
+    }
+    else
+    {
+        //如果不存在，则重新创建文件
+        coverFile.mkdir(QDir::currentPath()+"/Songs");
     }
 
     //关联信号与槽
@@ -238,9 +246,9 @@ void MainWidget::initSignalsAndSlots()
             this,SLOT(onTranslateChanged()));
     //链接播放状态和圆盘的转动
     connect(pMusicPlayBar,SIGNAL(becomePausing()),
-            infoShow,SLOT(Stop()));
+            infoShow,SLOT(diskRotateStop()));
     connect(pMusicPlayBar,SIGNAL(becomePlaying()),
-            infoShow,SLOT(Start()));
+            infoShow,SLOT(diskRotateStart()));
     //重绘主窗口大小
     connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
 }

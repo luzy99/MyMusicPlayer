@@ -1,11 +1,13 @@
 #ifndef SONGINFOSHOW_H
 #define SONGINFOSHOW_H
 
-#include"diskwidget.h"
-#include"songinfo.h"
 #include <QWidget>
+#include"songinfo.h"
 #include<QLabel>
-
+#include"diskwidget.h"
+#include<QHBoxLayout>
+#include<QVBoxLayout>
+#include<QPushButton>
 
 class SongInfoShow : public QWidget
 {
@@ -13,18 +15,23 @@ class SongInfoShow : public QWidget
 
 public:
     explicit SongInfoShow(QWidget *parent,SongInfo &m_song_info);
-    SongInfoShow(QWidget *parent = nullptr);
+    SongInfoShow(QWidget *parent = 0);
     ~SongInfoShow();
-
 public slots:
     void changeSong(SongInfo &m_song_info);
-    void Stop();
-    void Start();
+    void diskRotateStart();
+    void diskRotateStop();
 
 private:
     QLabel *titleShow;
     QLabel *artistShow;
     diskWidget *disk;
+    QVBoxLayout *vLayout;
+    QHBoxLayout *hLayout;
+    QPushButton *likeButton;
+    QPushButton *starButton;
+    QPushButton *moreInfoButton;
+    QWidget *buttonBar;
 };
 
 #endif // SONGINFOSHOW_H

@@ -50,5 +50,10 @@
         <file>res/soundFullHover.png</file>
         <file>res/soundMuteHover.png</file>
         <file>res/soundNormalHover.png</file>
+        <file>res/choosePath.png</file>
+        <file>res/choosePathHover.png</file>
+        <file>res/download.png</file>
+        <file>res/downloadHover.png</file>
+        <file>res/ic_needle.png</file>
     </qresource>
 </RCC>

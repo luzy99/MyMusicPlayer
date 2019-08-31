@@ -8,11 +8,12 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     :QWidget(parent)
 {
     this->setWindowFlags(Qt::FramelessWindowHint);
+//    this->setStyleSheet("background-color: rgba(255,255,255,200)");
     this->setFixedSize(350,60); //悬浮窗大小不可改变
 
     QHBoxLayout *layout = new QHBoxLayout;
 
-    //初始化专辑封面
+    //初始化专辑封面t5
     coverLabel = new QLabel;
     coverImage.load(":/icon/res/defaultCover.png");
     QPixmap newImage = coverImage.scaled(QSize(60,60), Qt::KeepAspectRatio,Qt::FastTransformation);

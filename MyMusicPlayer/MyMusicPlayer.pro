@@ -29,6 +29,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     audiotag.cpp \
     diskwidget.cpp \
+    downloadwindow.cpp \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
 HEADERS += \
     audiotag.h \
     diskwidget.h \
+    downloadwindow.h \
     lyricdownload.h \
     lyricwidget.h \
         mainwidget.h \

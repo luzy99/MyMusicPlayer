@@ -409,15 +409,13 @@ void MusicPlayBar::onStateChanged(QMediaPlayer::State state)
    bool isPlaying = (state == QMediaPlayer::PlayingState);
    if(isPlaying)
    {
-       playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+       playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
        playBtn->setToolTip("播放");
-       emit becomePlaying();
    }
    else
    {
-       playBtn->setIcon(QIcon(":/icon/res/play.png"));
+       playBtn->setIcon(QIcon(":/icon/res/playHover.png"));
        playBtn->setToolTip("暂停");
-      emit becomePausing();
    }
 }
 
@@ -531,6 +529,7 @@ void MusicPlayBar::on_playBtn_clicked()
     if(player->state() == QMediaPlayer::PlayingState )
     {
         player->pause();
+        emit becomePausing();
     }
     else
     {
@@ -539,6 +538,7 @@ void MusicPlayBar::on_playBtn_clicked()
             playlist->setCurrentIndex(0);
         }
         player->play();
+        emit becomePlaying();
     }
 }
 

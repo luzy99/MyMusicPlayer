@@ -27,7 +27,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
 
@@ -45,6 +45,7 @@ private:
 
     QPixmap coverImage; //专辑封面
     QString songsInfo; //歌曲信息
+
     //实现窗口可拖动
     QPoint mouseStartPoint; //鼠标的初始位置
     QPoint windowsStartPoint; //窗口的初始位
