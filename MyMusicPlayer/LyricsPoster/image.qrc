@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/test">
+        <file>C:/Users/Lenovo/Desktop/背景图片/1.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/2.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/3.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/4.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/5.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/6.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/7.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/8.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/background.jpg</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/11.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/12.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/13.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/14.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/15.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/16.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/9.JPG</file>
+        <file>C:/Users/Lenovo/Desktop/背景图片/10.JPG</file>
+    </qresource>
+</RCC>
