@@ -199,12 +199,18 @@ void DownloadWindow::on_downloadBtn_clicked()
     loop.exec();
     //开启子事件循环
     //请求结束并下载完成后，退出子事件循环
-    qDebug()<<reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
-
-    QString filePath = savePath+"/"+songName+".mp3";
-    file = new QFile(filePath);
-    file->open(QIODevice::WriteOnly);
-    file->write(reply->readAll());
+    int statuscode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+    if(statuscode == 200)
+    {
+        QString filePath = savePath+"/"+songName+".mp3";
+        file = new QFile(filePath);
+        file->open(QIODevice::WriteOnly);
+        file->write(reply->readAll());
+    }
+    else
+    {
+        QMessageBox::information(this,"错误","该歌曲下载权限受限.",QMessageBox::Yes);
+    }
     downloadProgress->close();
 }
 

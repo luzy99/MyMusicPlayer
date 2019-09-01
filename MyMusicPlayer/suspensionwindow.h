@@ -3,6 +3,8 @@
 #define SUSPENSIONWINDOW_H
 
 #include <QWidget>
+#include <QDesktopWidget>
+#include <QEvent>
 #include <QMouseEvent>
 #include <QAction>
 #include <QPixmap>
@@ -10,6 +12,10 @@
 #include <QPushButton>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QPropertyAnimation>
+
+//定义窗体状态的枚举类型
+enum WindowsStatus {Normal, LeftOut, RightOut};
 
 class SuspensionWindow : public QWidget
 {
@@ -23,15 +29,21 @@ public:
     void setSongsInfo(const QString &value); //歌曲信息的set函数
     void setShowListsMenu(QMenu *value); //播放列表的set函数
 
+    void moveOut(); //移出
+    void moveIn(); //移入
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
 
 public slots:
+
+private slots:
     void on_showListBtn_clicked(bool checked); //显示播放列表按钮按下时触发
 
 private:
@@ -49,6 +61,12 @@ private:
     //实现窗口可拖动
     QPoint mouseStartPoint; //鼠标的初始位置
     QPoint windowsStartPoint; //窗口的初始位
+
+    //实现窗口的停靠效果
+    WindowsStatus status; //表示当前窗体坐标的信息
+    int screenWidth;  //屏幕宽度
+    int screenHeight; //屏幕高度
+    QPushButton *suspensionBtn; //悬浮窗收起时的小图标
 };
 
 #endif // SUSPENSIONWINDOW_H

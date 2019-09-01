@@ -13,12 +13,12 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-//        MainWidget w;
-//        w.show();
+    MainWidget w;
+    w.show();
 //    SuspensionWindow w;
 //    w.show();
-    DownloadWindow w("416388799","明月天涯");
-    w.show();
+//    DownloadWindow w("110527","杨柳");
+//    w.show();
 
     return a.exec();
 }

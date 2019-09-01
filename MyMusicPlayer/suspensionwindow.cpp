@@ -1,27 +1,63 @@
-//这是一个悬浮框
-//用来和主窗口互换视图
 #include "suspensionwindow.h"
 #include <QHBoxLayout> //水平布局
 #include <QDebug>
+#include <QPainter>
+#include <QBitmap>
+#include <QApplication>
+#include <QTimer>
 
 SuspensionWindow::SuspensionWindow(QWidget *parent)
-    :QWidget(parent)
+    : QWidget(parent),
+      status(Normal)
 {
+    //设置窗口样式
     this->setWindowFlags(Qt::FramelessWindowHint);
-//    this->setStyleSheet("background-color: rgba(255,255,255,200)");
+    this->setWindowOpacity(0.9);
+    this->setStyleSheet("background-color: rgb(255,255,255)");
     this->setFixedSize(350,60); //悬浮窗大小不可改变
 
+    //绘制圆角窗口
+    QBitmap bmp(this->size());
+    bmp.fill();
+    QPainter p(&bmp);
+    p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+    p.setPen(Qt::NoPen);
+    p.setBrush(Qt::black);
+    p.drawRoundedRect(bmp.rect(),2,2);
+    setMask(bmp);
+
+    //获取桌面屏幕大小
+    QRect deskRect = QApplication::desktop()->screenGeometry();
+    screenWidth = deskRect.width();
+    screenHeight = deskRect.height();
+
+    //水平布局
     QHBoxLayout *layout = new QHBoxLayout;
+
+    //初始化小窗标签按钮
+    suspensionBtn = new QPushButton;
+    suspensionBtn->setObjectName("suspensionBtn");
+    suspensionBtn->setWindowFlags(Qt::FramelessWindowHint);
+    suspensionBtn->setAttribute(Qt::WA_TranslucentBackground);
+    suspensionBtn->setIcon(QIcon(":/icon/res/suspensionWindow.png"));
+    suspensionBtn->setIconSize(QSize(36,36));
+    suspensionBtn->setFixedSize(36,36);
+    suspensionBtn->setFlat(true);
+    suspensionBtn->setAttribute(Qt::WA_Hover,true);
+    suspensionBtn->installEventFilter(this);
+    suspensionBtn->setStyleSheet("border: none;");
 
     //初始化专辑封面t5
     coverLabel = new QLabel;
-    coverImage.load(":/icon/res/defaultCover.png");
+    coverLabel->setObjectName("coverLabel");
+    coverImage.load(":/icon/res/default_cover.png");
     QPixmap newImage = coverImage.scaled(QSize(60,60), Qt::KeepAspectRatio,Qt::FastTransformation);
     coverLabel->setPixmap(newImage);
     layout->addWidget(coverLabel);
 
     //初始化歌词滚动的标签
     lyricsLabel = new QLabel;
+    lyricsLabel->setObjectName("lyricsLabel");
     lyricsLabel->setText("暂时无音乐播放");
     layout->addWidget(lyricsLabel);
 
@@ -36,11 +72,13 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     //初始化显示播放列表的按钮
     showListsBtn = new QPushButton;
     showListsBtn->setFlat(true);
+    showListsBtn->setStyleSheet("border: none;");
     showListsBtn->setObjectName("showListsBtn");
+    showListsBtn->setAttribute(Qt::WA_TranslucentBackground);
     showListsBtn->setToolTip("点击显示歌单");
     showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
-    showListsBtn->setIconSize(QSize(25,25));
-    showListsBtn->setMaximumSize(27,27);
+    showListsBtn->setIconSize(QSize(27,27));
+    showListsBtn->setMaximumSize(29,29);
     //开启鼠标悬停事件
     showListsBtn->setAttribute(Qt::WA_Hover,true);
     //安装事件过滤器
@@ -50,21 +88,19 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     //初始化恢复大窗口按钮
     resizeBtn = new QPushButton;
     resizeBtn->setFlat(true);
+    resizeBtn->setStyleSheet("border: none;");
     resizeBtn->setObjectName("resizeBtn");
     resizeBtn->setToolTip("点击切换窗口模式");
     resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
     resizeBtn->setIconSize(QSize(25,25));
     resizeBtn->setMaximumSize(27,27);
     resizeBtn->setAttribute(Qt::WA_Hover,true);
+    resizeBtn->installEventFilter(this);
     layout->addWidget(resizeBtn);
 
     //初始化右键菜单
     rightClickedMenu = new QMenu(this);
     initActions(rightClickedMenu);
-
-    //初始化歌曲菜单
-    showListsMenu = new QMenu;
-    showListsBtn->setMenu(showListsMenu);
 
     //初始化中心组件
     layout->setMargin(0);
@@ -107,6 +143,42 @@ void SuspensionWindow::mouseMoveEvent(QMouseEvent *event)
     this->move(p);
 }
 
+//鼠标放下进行检测
+void SuspensionWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    //记录当前窗口的位置
+    int x=this->x();
+    int y=this->y();
+    //如果位置是合法的
+    if(x > 0 && y >= 0 && x+350 < screenWidth)
+    {
+        status = Normal;
+        return;
+    }
+
+    //如果位置触顶了,将它移回去
+    if(y < 0)
+    {
+        this->move(x,0);
+    }
+    else {}
+
+    //如果位置触边了,设置触边事件
+    if(x <= 0)
+    {
+        status = LeftOut;
+        moveOut();
+    }
+    else if( x+350 >= screenWidth)
+    {
+        status = RightOut;
+        moveOut();
+    }
+    else
+    {
+    }
+}
+
 //重写右键菜单事件
 void SuspensionWindow::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -118,7 +190,7 @@ void SuspensionWindow::contextMenuEvent(QContextMenuEvent *event)
 bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
 {
     //"显示歌单"按钮的事件过滤器
-    if(obj->objectName()=="showListsBtn")
+    if(obj->objectName() == "showListsBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -129,20 +201,38 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
             showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
         }
     }
+
+    if(obj->objectName() == "resizeBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            resizeBtn->setIcon(QIcon(":/icon/res/resizeHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
+        }
+    }
+
+    if(obj->objectName() == "suspensionBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            moveIn();
+        }
+    }
+
     return QWidget::eventFilter(obj,event);
 }
 
-//**********************************
-//注意这里我么的写完！！！！！！！！！！
-//显示播放列表按钮按下时触发的槽函数
 void SuspensionWindow::on_showListBtn_clicked(bool checked)
 {
     //点击变色且显示歌单
     if(!checked)
     {
-        showListsBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
-        //选中后关闭事件过滤器
-        showListsBtn->setAttribute(Qt::WA_Hover,false);
+//        showListsBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
+//        //选中后关闭事件过滤器
+//        showListsBtn->setAttribute(Qt::WA_Hover,false);
     }
 }
 
@@ -153,11 +243,78 @@ void SuspensionWindow::setShowListsMenu(QMenu *value)
     showListsMenu = value;
 }
 
+//窗口移入
+void SuspensionWindow::moveOut()
+{
+    QPoint start = this->pos();
+    if(status == LeftOut)
+    {
+        QPoint end(-350,start.y());
+        QPropertyAnimation *animation = new QPropertyAnimation;
+        animation->setTargetObject(this);
+        animation->setPropertyName("pos");
+        animation->setDuration(500);
+        animation->setStartValue(start);
+        animation->setEndValue(end);
+        animation->start();
+
+        suspensionBtn->setProperty("pos",QPoint(0,start.y()+12));
+        suspensionBtn->show();
+    }
+    else
+    {
+        QPoint end(screenWidth,start.y());
+        QPropertyAnimation *animation = new QPropertyAnimation;
+        animation->setTargetObject(this);
+        animation->setPropertyName("pos");
+        animation->setDuration(500);
+        animation->setStartValue(start);
+        animation->setEndValue(end);
+        animation->start();
+
+        suspensionBtn->setProperty("pos",QPoint(screenWidth-36,start.y()+12));
+        suspensionBtn->show();
+    }
+}
+
+//窗口移出
+void SuspensionWindow::moveIn()
+{
+    QPoint start = this->pos();
+    if(status == LeftOut)
+    {
+        QPoint end(0,start.y());
+        QPropertyAnimation *animation = new QPropertyAnimation;
+        animation->setTargetObject(this);
+        animation->setPropertyName("pos");
+        animation->setDuration(500);
+        animation->setStartValue(start);
+        animation->setEndValue(end);
+        animation->start();
+    }
+    else
+    {
+        QPoint end(screenWidth-350,start.y());
+        QPropertyAnimation *animation = new QPropertyAnimation;
+        animation->setTargetObject(this);
+        animation->setPropertyName("pos");
+        animation->setDuration(500);
+        animation->setStartValue(start);
+        animation->setEndValue(end);
+        animation->start();
+    }
+
+    //弹出后不在收回
+    suspensionBtn->hide();
+    status = Normal;
+}
+
 //修改正在播放的歌曲的信息
 //给主界面提供一个同步的接口
 void SuspensionWindow::setSongsInfo(const QString &value)
 {
     songsInfo = value;
+    lyricsLabel->setText(songsInfo);
 }
 
 //修改正在播放的歌曲的专辑封面
@@ -165,4 +322,6 @@ void SuspensionWindow::setSongsInfo(const QString &value)
 void SuspensionWindow::setCoverImage(const QPixmap &value)
 {
     coverImage = value;
+    QPixmap newImage = coverImage.scaled(QSize(60,60), Qt::KeepAspectRatio,Qt::FastTransformation);
+    coverLabel->setPixmap(newImage);
 }

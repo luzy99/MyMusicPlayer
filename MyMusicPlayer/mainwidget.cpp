@@ -34,9 +34,16 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //Qt::FramelessWindowHint设置窗口标志为无边框，而Qt::WindowStaysOnTopHint使窗口位于所有界面之上
     this->setWindowFlags(Qt::FramelessWindowHint);
-    //背景透明
-    //setAttribute(Qt::WA_TranslucentBackground, true);
-
+    //绘制圆角窗口
+    QBitmap bmp(this->size());
+    bmp.fill();
+    QPainter p(&bmp);
+    p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+    p.setPen(Qt::NoPen);
+    p.setBrush(Qt::black);
+    p.drawRoundedRect(bmp.rect(),2,2);
+    this->setMask(bmp);
+    this->setWindowTitle("My Music Player");
     //设置窗口允许拖拽东西上来(默认不可以)
     this->setAcceptDrops(true);
 
@@ -44,9 +51,9 @@ MainWidget::MainWidget(QWidget *parent) :
     QPalette pal_windows(palette());
     pal_windows.setColor(QPalette::Background, QColor(255, 255, 255));
     setAutoFillBackground(false);    
-    resize(1200,900);
+//    resize(1200,900);
     //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
-    setWindowTitle("My Music Player"); 
+
     //设置窗口图标，会发生窗口图标改变事件，随之自定义标题栏的图标会更新    
     setWindowIcon(QIcon(":/icon/res/icon.png")); 
     setPalette(pal_windows);

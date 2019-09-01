@@ -28,7 +28,6 @@
         <file>res/soundNormal.png</file>
         <file>res/playSlider.png</file>
         <file>res/playSliderClicked.png</file>
-        <file>res/defaultCover.png</file>
         <file>res/resize.png</file>
         <file>res/showSongList.png</file>
         <file>res/resizeHover.png</file>
@@ -57,5 +56,8 @@
         <file>res/ic_needle.png</file>
         <file>res/progressBackground.png</file>
         <file>res/progressFrontCircle.png</file>
+        <file>res/addtolist.png</file>
+        <file>res/more.png</file>
+        <file>res/suspensionWindow.png</file>
     </qresource>
 </RCC>
