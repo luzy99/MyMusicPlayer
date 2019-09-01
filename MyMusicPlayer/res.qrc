@@ -38,5 +38,7 @@
         <file>res/addtolist.png</file>
         <file>res/more.png</file>
         <file>res/ic_needle.png</file>
+        <file>res/exitfullscreen.png</file>
+        <file>res/fullscreen.png</file>
     </qresource>
 </RCC>

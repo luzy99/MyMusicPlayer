@@ -253,6 +253,60 @@ bool AudioTag::downloadPic()
     return false;
 }
 
+bool AudioTag::mvIdMatch()
+{
+    if(m_song_info->song_id.isEmpty())//若id不存在
+    {
+        qDebug()<<"id不存在";
+        return 0;
+    }
+    else
+    {
+        QString url = "https://music.163.com/m/song?id="
+                +m_song_info->song_id;
+        //构造请求
+        QNetworkRequest request;
+        request.setUrl(QUrl(url));
+        //构造网络管理
+        QNetworkAccessManager* manager = new QNetworkAccessManager;
+        // 发送请求
+        QNetworkReply *pReply = manager->get(request);
+        //设置事件循环，等待资源下载完毕
+        QEventLoop eventLoop;
+        QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+        eventLoop.exec();
+
+        //检测http请求的状态码
+        int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+        qDebug()<<"mv查找："<<nHttpCode;
+
+        QByteArray response = pReply->readAll();
+        QString responseStr=response;
+        qDebug()<<responseStr;
+        QRegExp re("\"mv\":(\\d+),");//正则匹配数字
+        int pos=responseStr.indexOf(re);
+        qDebug()<<pos;
+        if(pos>=0)
+        {
+            QString matchedId =re.cap(1);
+            qDebug()<<"mv_id "<<matchedId;
+            if(matchedId.length()>3)
+            {
+                m_song_info->mv_id=matchedId;
+            }
+            else
+            {
+                return 0;
+            }
+            return 1;
+        }
+        else//未匹配到
+        {
+            return 0;
+        }
+    }
+}
+
 //判断编码
 CodeType JudgeCodeType(const string & str, CodeType default_code)
 {

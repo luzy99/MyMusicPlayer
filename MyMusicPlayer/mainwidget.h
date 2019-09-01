@@ -16,6 +16,7 @@
 #include "songinfo.h" //代表歌曲信息的头文件
 #include "songinfoshow.h" //展示歌曲信息的头文件
 #include "audiotag.h" //爬取歌曲信息的组件
+#include"mvplayer.h"
 
 namespace Ui {
 class MainWidget;

@@ -98,6 +98,11 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //关联信号与槽
     initSignalsAndSlots();
+
+    //test
+    MvPlayer *m =new MvPlayer;
+    m->getMvUrls("524116");
+    m->show();
 }
 
 MainWidget::~MainWidget()
@@ -274,6 +279,7 @@ void MainWidget::onUpdateAudioTag(QString currentFileName)
     tag.getAllinfo();
     tag.idMatch();
     tag.downloadPic();
+    tag.mvIdMatch();
     emit songChanged(currentSongInfo->song_id,false);
     infoShow->changeSong(*currentSongInfo);
 }
