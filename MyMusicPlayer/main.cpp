@@ -2,6 +2,9 @@
 //***************************测试用：
 #include "suspensionwindow.h"
 #include "downloadwindow.h"
+#include "myprogressbar.h"
+
+
 #include <QApplication>
 #include <QSqlDatabase>
 #include <QDebug>
@@ -14,7 +17,7 @@ int main(int argc, char *argv[])
 //        w.show();
 //    SuspensionWindow w;
 //    w.show();
-    DownloadWindow w("34218582","东南大学校歌");
+    DownloadWindow w("416388799","明月天涯");
     w.show();
 
     return a.exec();

@@ -1,6 +1,7 @@
 #ifndef DOWNLOADWINDOW_H
 #define DOWNLOADWINDOW_H
 
+#include "myprogressbar.h"
 #include <QWidget>
 #include <QEvent>
 #include <QMouseEvent>
@@ -31,8 +32,7 @@ signals:
 private slots:
     void on_choosePathBtn_clicked();
     void on_downloadBtn_clicked();
-    void on_readyRead();
-    void on_finished();
+    void onDownloadProgress(qint64 current ,qint64 total);
 
 private:
     QString songId; //歌曲id
@@ -49,6 +49,8 @@ private:
 
     QFile *file; //下载的临时文件
     QFileInfo fileInfo; //下载文件的信息
+
+    MyProgressBar *downloadProgress; //自定义进度条
 };
 
 #endif // DOWNLOADWINDOW_H

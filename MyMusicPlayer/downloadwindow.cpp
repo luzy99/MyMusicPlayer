@@ -72,6 +72,10 @@ DownloadWindow::DownloadWindow(QString id,QString name,QWidget *parent)
     downloadBtn->installEventFilter(this);
     layout->addWidget(downloadBtn);
 
+    //初始化进度条
+    downloadProgress = new MyProgressBar;
+    downloadProgress->setObjectName("downloadProgress");
+
     this->setLayout(layout);
 
     //关联信号与槽
@@ -87,11 +91,6 @@ void DownloadWindow::initSignalsAndSlots()
     //点击下载按钮开始下载
     connect(downloadBtn,SIGNAL(clicked()),
             this,SLOT(on_downloadBtn_clicked()));
-    //网络请求过程中的操作
-//    connect(reply,SIGNAL(finished()),
-//            this,SLOT(on_finished()));
-//    connect(reply,SIGNAL(readyRead()),
-//            this,SLOT(on_readyRead()));
 }
 
 //实现鼠标拖动窗口
@@ -125,7 +124,7 @@ bool DownloadWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
     //"下载文件"按钮的事件过滤器
-    if(obj->objectName()=="downloadBtn")
+    if(obj->objectName() == "downloadBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -185,13 +184,18 @@ void DownloadWindow::on_downloadBtn_clicked()
     request.setRawHeader("Referer","http://music.163.com/");
     //构造网络管理
     QNetworkAccessManager *manager=new QNetworkAccessManager;
-    qDebug()<<"send reply";
     // 发送请求
     QNetworkReply *reply = manager->get(request);
+    downloadProgress->show();
+    this->hide();
 
     //构造事件循环
     QEventLoop loop;
-    connect(manager, &QNetworkAccessManager::finished,&loop, &QEventLoop::quit);
+    connect(manager, &QNetworkAccessManager::finished,
+            &loop, &QEventLoop::quit);
+    //监测下载进度
+    connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
+            this, SLOT(onDownloadProgress(qint64 ,qint64)));
     loop.exec();
     //开启子事件循环
     //请求结束并下载完成后，退出子事件循环
@@ -201,18 +205,12 @@ void DownloadWindow::on_downloadBtn_clicked()
     file = new QFile(filePath);
     file->open(QIODevice::WriteOnly);
     file->write(reply->readAll());
+    downloadProgress->close();
 }
 
-//读取下载的数据
-void DownloadWindow::on_readyRead()
+//根据下载进度重绘进度条
+void DownloadWindow::onDownloadProgress(qint64 current, qint64 total)
 {
-
-}
-
-//下载进程->控制进度条的显示
-
-//网络响应结束
-void DownloadWindow::on_finished()
-{
-
+    int currentPrecent = current*100/total;
+    downloadProgress->setPersent(currentPrecent);
 }

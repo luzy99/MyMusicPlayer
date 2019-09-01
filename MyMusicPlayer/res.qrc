@@ -55,5 +55,7 @@
         <file>res/download.png</file>
         <file>res/downloadHover.png</file>
         <file>res/ic_needle.png</file>
+        <file>res/progressBackground.png</file>
+        <file>res/progressFrontCircle.png</file>
     </qresource>
 </RCC>

@@ -36,6 +36,7 @@ SOURCES += \
         mainwidget.cpp \
     minilyrics.cpp \
     musicplaybar.cpp \
+    myprogressbar.cpp \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
         mainwidget.h \
     minilyrics.h \
     musicplaybar.h \
+    myprogressbar.h \
     songinfo.h \
     songinfoshow.h \
     songlist.h \
