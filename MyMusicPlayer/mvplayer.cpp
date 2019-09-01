@@ -327,6 +327,18 @@ void MvPlayer::keyPressEvent(QKeyEvent *event)
         timer->start(3000);
         controlBar->show();
     }
+    else if(event->key()==Qt::Key_Up)//音量+10%
+    {
+        int volume=mediaPlayer.volume()+10;
+        mediaPlayer.setVolume(volume);
+        qDebug()<<mediaPlayer.volume();
+    }
+    else if(event->key()==Qt::Key_Down)//音量-10%
+    {
+        int volume=mediaPlayer.volume()-10;
+        mediaPlayer.setVolume(volume);
+        qDebug()<<mediaPlayer.volume();
+    }
 }
 
 void MvPlayer::hideBar()
