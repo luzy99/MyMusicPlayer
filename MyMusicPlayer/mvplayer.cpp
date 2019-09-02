@@ -128,6 +128,18 @@ MvPlayer::MvPlayer(QWidget *parent)
     mediaPlayer.setVideoOutput(videoWidget);//设置视频播放窗口
     //this->setLayout(vlayout);
 
+    //状态显示标签
+    statusLabel =new QLabel(this);
+    statusLabel->setStyleSheet("QLabel\
+    {\
+                                   color:white;\
+                                   background-color:rgb(50,50,50);\
+                                   border: 0px;\
+                                   font: 18px \"Microsoft YaHei\";\
+     }");
+
+          statusLabel->hide();
+
     this->setWindowTitle("暂无视频播放");//默认标题
     playButton->setEnabled(true);
 
@@ -194,7 +206,7 @@ bool MvPlayer::getMvUrls(QString mv_id)
                 {
                     urlMap[key]=urls.value(key).toString();
                 }
-                //qDebug()<<urlMap;
+                qDebug()<<urlMap;
                 qualityCom->addItems(urlMap.keys());//设置菜单信息
                 QString title=mvTitle+" - "+mvArtist;//设置窗口标题
                 this->setWindowTitle(title);
@@ -256,14 +268,17 @@ void MvPlayer::durationChanged(qint64 duration)
 void MvPlayer::resizeEvent(QResizeEvent *ev)
 {
     controlBar->setGeometry(0,this->height()-50,this->width(),50);
-
+    statusLabel->setGeometry(this->width()/2-25,this->height()/2-20,0,0);
+    statusLabel->adjustSize();
     return QWidget::resizeEvent(ev);
 }
 
 void MvPlayer::onComboBoxChanged(const QString &key)
 {
     QString url = urlMap.value(key);
+    qDebug()<<QUrl(url).isValid();
     mediaPlayer.setMedia(QUrl(url));
+
 }
 
 void MvPlayer::mouseMoveEvent(QMouseEvent *event)
@@ -331,23 +346,98 @@ void MvPlayer::keyPressEvent(QKeyEvent *event)
     {
         int volume=mediaPlayer.volume()+10;
         mediaPlayer.setVolume(volume);
-        qDebug()<<mediaPlayer.volume();
+        //qDebug()<<mediaPlayer.volume();
+        QString icon;
+        if(volume>=60)//音量图标
+        {
+            icon="🔊";
+        }
+        else if(volume<=0)
+        {
+            icon="🔈";
+        }
+        else
+        {
+            icon="🔉";
+        }
+        QString labelInfo=icon+" "+QString::number(mediaPlayer.volume())+"%";
+        statusLabel->setText(labelInfo);
+        statusLabel->setGeometry(this->width()/2-25,this->height()/2-20,0,0);
+        statusLabel->adjustSize();
+        statusLabel->show();
     }
     else if(event->key()==Qt::Key_Down)//音量-10%
     {
         int volume=mediaPlayer.volume()-10;
         mediaPlayer.setVolume(volume);
-        qDebug()<<mediaPlayer.volume();
+        //qDebug()<<mediaPlayer.volume();
+        QString icon;
+        if(volume>=60)
+        {
+            icon="🔊";
+        }
+        else if(volume<=0)
+        {
+            icon="🔈";
+        }
+        else
+        {
+            icon="🔉";
+        }
+        QString labelInfo=icon+" "+QString::number(mediaPlayer.volume())+"%";
+        statusLabel->setText(labelInfo);
+        statusLabel->setGeometry(this->width()/2-25,this->height()/2-20,0,0);
+        statusLabel->adjustSize();
+        statusLabel->show();
     }
+}
+
+void MvPlayer::wheelEvent(QWheelEvent *event)
+{
+    if(event->delta()>0)
+    {
+        QKeyEvent upKey(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+        QCoreApplication::sendEvent(this, &upKey);
+    }
+    else
+    {
+        QKeyEvent downKey(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+        QCoreApplication::sendEvent(this, &downKey);
+    }
+}
+
+void MvPlayer::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+    mediaPlayer.stop();
 }
 
 void MvPlayer::hideBar()
 {
     controlBar->hide();
+    statusLabel->hide();
     if(this->isFullScreen())//全屏时隐藏鼠标
     {
         this->setCursor(Qt::BlankCursor);
     }
+}
+
+void MvPlayer::handleError()//错误处理
+{
+    playButton->setEnabled(false);
+    const QString errorString = mediaPlayer.errorString();
+    QString message = "Error: ";
+    if (errorString.isEmpty())
+    {
+        message += " #" + QString::number(int(mediaPlayer.error()));
+    }
+    else
+        message += errorString;
+    statusLabel->setText(message);
+    statusLabel->setGeometry(this->width()/2-25,this->height()/2-20,0,0);
+    statusLabel->adjustSize();
+    timer->stop();
+    statusLabel->show();
 }
 
 void MvPlayer::initSignalsAndSlots()
@@ -364,7 +454,10 @@ void MvPlayer::initSignalsAndSlots()
             this,SLOT(onComboBoxChanged(QString)));//切换画质
     connect(timer ,SIGNAL(timeout()), this, SLOT(hideBar()));//定时隐藏进度条
     connect(fullScreenBtn,SIGNAL(clicked()),
-            this,SLOT(on_fullScreenBtn_clicked()));
+            this,SLOT(on_fullScreenBtn_clicked()));//全屏
+    typedef void (QMediaPlayer::*ErrorSignal)(QMediaPlayer::Error);
+    connect(&mediaPlayer, static_cast<ErrorSignal>(&QMediaPlayer::error),
+            this, &MvPlayer::handleError);//错误信息
 }
 
 void MvPlayer::on_fullScreenBtn_clicked()
@@ -372,15 +465,13 @@ void MvPlayer::on_fullScreenBtn_clicked()
     if(this->isFullScreen())//全屏状态
     {
         fullScreenBtn->setIcon(QIcon(":/icon/res/fullscreen.png"));
-        fullScreenBtn->setToolTip("退出全屏");
+        fullScreenBtn->setToolTip("全屏");
         this->showNormal();
     }
     else//非全屏状态
     {
         fullScreenBtn->setIcon(QIcon(":/icon/res/exitfullscreen.png"));
-        fullScreenBtn->setToolTip("全屏");
+        fullScreenBtn->setToolTip("退出全屏");
         this->showFullScreen();
     }
 }
-
-

@@ -99,9 +99,9 @@ MainWidget::MainWidget(QWidget *parent) :
     //关联信号与槽
     initSignalsAndSlots();
 
-    //test
+    //test mv
     MvPlayer *m =new MvPlayer;
-    m->getMvUrls("524116");
+    m->getMvUrls("524116");//输入mv id
     m->show();
 }
 

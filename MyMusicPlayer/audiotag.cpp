@@ -154,6 +154,7 @@ bool AudioTag::idMatch()
     //构造请求
     QNetworkRequest request;
     request.setUrl(QUrl(url));
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
     //构造网络管理
     QNetworkAccessManager* manager = new QNetworkAccessManager;
     // 发送请求
@@ -225,6 +226,7 @@ bool AudioTag::downloadPic()
         //构造请求
         QNetworkRequest request;
         request.setUrl(QUrl(m_song_info->pic_url));
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
         //构造网络管理
         QNetworkAccessManager* manager = new QNetworkAccessManager;
         // 发送请求

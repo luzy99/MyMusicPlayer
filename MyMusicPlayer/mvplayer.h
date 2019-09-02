@@ -43,12 +43,14 @@ public slots:
     void onComboBoxChanged(const QString &key);//画质切换时调用
     void on_fullScreenBtn_clicked();//全屏按钮
     void hideBar();//隐藏进度条
+    void handleError();//错误处理
 
     void mouseMoveEvent(QMouseEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent  *event);
-
+    void wheelEvent(QWheelEvent * event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     void initSignalsAndSlots(); //初始化信号与槽
@@ -56,13 +58,14 @@ private:
     QVideoWidget *videoWidget;//视频窗口
     QPushButton *playButton;//播放按钮
     QPushButton *fullScreenBtn;//全屏按钮
-    QSlider *positionSlider;
-    QWidget *controlBar;
+    QSlider *positionSlider;//进度条
+    QWidget *controlBar;//底部控制条
     QHBoxLayout *controlLayout;
-    QLabel *currentTimeLabel;
-    QLabel *totalTimeLabel;
-    QComboBox *qualityCom;
-    QTimer *timer;
+    QLabel *currentTimeLabel;//当前时间
+    QLabel *totalTimeLabel;//总时间
+    QComboBox *qualityCom;//画质下拉条
+    QTimer *timer;//定时器控制隐藏
+    QLabel *statusLabel;
 
     QString mvId;
     QString mvTitle;//mv标题
