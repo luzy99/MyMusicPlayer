@@ -72,3 +72,12 @@ FORMS +=
 
 RESOURCES += \
     res.qrc
+
+#引入openCV图像处理库
+INCLUDEPATH += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\include
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_core411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_highgui411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_imgproc411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_calib3d411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_imgcodecs411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_video411.dll

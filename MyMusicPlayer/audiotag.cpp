@@ -243,7 +243,7 @@ bool AudioTag::downloadPic()
         int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
         qDebug()<<"封面下载："<<nHttpCode;
         QByteArray bytes = pReply->readAll();
-        //默认将封面存储在路径为"D:/MyMusicPlayerTest/CoverImages"
+        //默认将封面存储在路径为"项目根目录/CoverImages"
         QString default_path = "./CoverImages/";
         QString path = default_path+m_song_info->title
                 +m_song_info->pic_url.mid(m_song_info->pic_url.length()-4,4);

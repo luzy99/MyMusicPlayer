@@ -28,6 +28,7 @@ public:
     void initDirectory(); //初始化文件夹
     void initSignalsAndSlots(); //初始化信号与槽
     void updateDragRegion(); //更新拖动区域
+    void GaussianBlurUpdate(); //高斯模糊并将其结果跟新至背景图
 
 protected:
     void mousePressEvent(QMouseEvent *event);

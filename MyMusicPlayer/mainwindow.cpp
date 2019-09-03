@@ -1,16 +1,19 @@
 #include "mainwindow.h"
 #include "songlist.h"
 #include "renamesonglistdialog.h"
+#include <opencv2/opencv.hpp>
 #include <QDir>
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QBitmap>
 #include <QPainter>
 #include <QMimeData>
+#include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
 #include<QDebug>
+using namespace cv;
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent),
@@ -58,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //初始化展示歌曲信息的页面
     songInfoPage = new QWidget;
+    songInfoPage->setAutoFillBackground(true);
     mainPageContainer->insertWidget(1,songInfoPage);
     QHBoxLayout *songInfoPageLayout = new QHBoxLayout;
     //初始化歌曲信息显示
@@ -67,11 +71,14 @@ MainWindow::MainWindow(QWidget *parent)
     //初始化歌词界面
     lyricsShower = new LyricWidget;
     lyricsShower->setObjectName("lyricsShower");
+    lyricsShower->setWindowFlags(Qt::FramelessWindowHint);
+    lyricsShower->setAttribute(Qt::WA_TranslucentBackground);
     songInfoPageLayout->addWidget(lyricsShower);
     songInfoPage->setLayout(songInfoPageLayout);
 
     //将多页容器添加至主界面
-    mainPageContainer->setCurrentIndex(0);
+    //&&&&&&&&&&&&&&&&&&&&&&&&&&换页&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    mainPageContainer->setCurrentIndex(1);
     outerLayout->addWidget(mainPageContainer);
 
     //初始化自定义音乐播放栏
@@ -213,6 +220,65 @@ void MainWindow::updateDragRegion()
 {
     QPoint rightBottomPoint(x()+width(),y()+height());
     dragRegion = QRect(rightBottomPoint.x()-10,rightBottomPoint.y()-10,10,10);
+}
+
+//高斯模糊并将其结果跟新至背景图
+void MainWindow::GaussianBlurUpdate()
+{
+    //将当前封面另存为同一目录下的tempCover文件
+    QFile coverFile(currentSongInfo->album_cover);
+    if(!coverFile.open(QIODevice::ReadWrite))
+    {
+        qDebug()<<"封面文件读取失败!";
+        return;
+    }
+    QString tempCoverPath = QDir::currentPath() + "/CoverImages/tempCover.png";
+    QFile::remove(tempCoverPath);
+    coverFile.copy(tempCoverPath);
+    coverFile.close();
+    //高斯模糊
+    Mat srcImage = imread(tempCoverPath.toStdString());
+    Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
+    Mat dstImage;
+    int g_nGaussianBlurValue = 20;
+    GaussianBlur(srcImage, dstImage, Size(g_nGaussianBlurValue * 2 + 1, g_nGaussianBlurValue * 2 + 1), 0, 0);
+    //自动调节亮度与对比度
+    int height = dstImage.rows;
+    int width = dstImage.cols;
+    int channels = dstImage.channels();
+    Mat finalImage = Mat::zeros(dstImage.size(),dstImage.type());
+    float alpha = 0.8; //控制对比度的参数，小于1则降低
+    float beta = -10; //控制亮度的参数，小于0则降低
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            if (channels == 3)
+            {
+                //获取RGB各通道像素值
+                float b = dstImage.at<Vec3b>(row, col)[0];
+                float g = dstImage.at<Vec3b>(row, col)[1];
+                float r = dstImage.at<Vec3b>(row, col)[2];
+                //对各通道像素值进行计算，实现对比度和亮度变换
+                finalImage.at<Vec3b>(row, col)[0] = saturate_cast<uchar>(b*alpha + beta);//saturate_cast<uchar>()——确保新的像素值在0-255之间
+                finalImage.at<Vec3b>(row, col)[1] = saturate_cast<uchar>(g*alpha + beta);
+                finalImage.at<Vec3b>(row, col)[2] = saturate_cast<uchar>(r*alpha + beta);
+            }
+            else if (channels == 1)
+            {
+                //获取灰度图像像素值
+                float v = dstImage.at<uchar>(row, col);
+                finalImage.at<uchar>(row, col) = saturate_cast<uchar>(v*alpha + beta);
+            }
+        }
+    }
+    //储存openCV处理完毕后的图片到指定路径
+    imwrite(tempCoverPath.toStdString(), finalImage);
+    //将高斯模糊后的图片作为歌曲展示页的背景
+    QPalette backPalette;
+    QPixmap backImage = QPixmap(tempCoverPath).scaledToWidth(songInfoPage->width(),Qt::SmoothTransformation);
+    backPalette.setBrush(backgroundRole(),backImage);
+    songInfoPage->setPalette(backPalette);
 }
 
 //鼠标按下事件的三个过程
@@ -387,6 +453,10 @@ void MainWindow::onRecieveSongInfo(SongInfo *info)
     currentSongInfo = new SongInfo(*info);
     //qDebug()<<currentSongInfo->song_id;
 
+    //更新临时的背景图片
+    GaussianBlurUpdate();
+
+    //开始爬取歌词
     lyricsDownloader->DownloadLyric(currentSongInfo->song_id,translate);
     lyricsShower->analyzeLrcContent(currentSongInfo->song_id);
 
