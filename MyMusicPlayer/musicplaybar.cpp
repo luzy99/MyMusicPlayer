@@ -463,8 +463,9 @@ void MusicPlayBar::onDurationChanged(qint64 duration)
        durationTime = time.toString("mm:ss");
        totalTimeLabel->setText(durationTime);
 
-       QString currentFilePath = playlist->currentMedia().canonicalUrl().toLocalFile();
-       emit updateAudioTag(currentFilePath);
+       QString currentFilePath = playlist->currentMedia().canonicalUrl().toString();
+       //qDebug()<< playlist->mediaCount()<<playlist->currentIndex()<<playlist->currentMedia().canonicalUrl();
+       emit updateAudioTagInMainWindow(currentFilePath);
 }
 
 //当前文件播放位置变化时发射，用于跟新界面上的进度条

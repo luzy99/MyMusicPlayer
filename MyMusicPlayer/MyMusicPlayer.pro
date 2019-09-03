@@ -34,7 +34,6 @@ SOURCES += \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
-        mainwidget.cpp \
     mainwindow.cpp \
     minilyrics.cpp \
     musicplaybar.cpp \
@@ -55,7 +54,6 @@ HEADERS += \
     downloadwindow.h \
     lyricdownload.h \
     lyricwidget.h \
-        mainwidget.h \
     mainwindow.h \
     minilyrics.h \
     musicplaybar.h \
@@ -70,8 +68,7 @@ HEADERS += \
     suspensionwindow.h \
     titlebar.h
 
-FORMS += \
-        mainwidget.ui
+FORMS +=
 
 RESOURCES += \
     res.qrc

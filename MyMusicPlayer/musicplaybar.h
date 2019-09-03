@@ -24,6 +24,7 @@ signals:
     void positionChanged(qint64 postion); //位置改变时发送的型号
     void songChanged(QString songId,bool translate); //切歌时发送的信号
     void updateAudioTag(QString currentFilePath); //更新歌曲信息
+    void updateAudioTagInMainWindow(QString currentFilePath); //更新歌曲信息
     void becomePlaying(); //表示接下来播放
     void becomePausing(); //表示接下来暂停
     void positionStop(qint64); //发送当前停止的位置

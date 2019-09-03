@@ -50,10 +50,14 @@ private slots:
     void onMaximizeWindow();
     void onCloseWindow();
 
+    //这是对歌单的一些操作
+    void showCreateSongListDialog();
+
     //这是对显示组件的一些更新操作
     void onTranslateChanged(); //歌词的翻译状态改变
-    void onUpdateAudioTag(QString currentFileName); //切歌时爬取作者和封面的槽函数
+    void onRecieveSongInfo(SongInfo *info); //接受歌单爬取的歌曲信息并更新至主页面
     void onShowLyricsBarrage(bool show); //显示&隐藏底部歌词弹幕
+
 
 private:
     TitleBar *titleBar; //自定义标题栏

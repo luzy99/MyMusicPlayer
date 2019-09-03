@@ -679,6 +679,7 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
         songInfo->title = query.value(0).toString();
         songInfo->artist = query.value(1).toString();
         qDebug()<<songInfo->title << songInfo->artist;
+        AudioTag tag(filePath, songInfo);
         if(query.value(2).toString() != "")
         {
             songInfo->has_cover = 1;
@@ -687,11 +688,11 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
         else
         {
             songInfo->has_cover = 0;
-            AudioTag tag(filePath, songInfo);
-            tag.idMatch();
             tag.downloadPic();
             query.exec(QString("update %1 set cover_image = '%2' where songUrl = '%3' ").arg(playingSongList, songInfo->album_cover,filePath));
         }
+        tag.idMatch();
+        qDebug()<<songInfo->song_id;
         emit sendSongInfo(songInfo);
     delete songInfo;
     }

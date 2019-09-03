@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     songInfoPage->setLayout(songInfoPageLayout);
 
     //将多页容器添加至主界面
-    mainPageContainer->setCurrentIndex(1);
+    mainPageContainer->setCurrentIndex(0);
     outerLayout->addWidget(mainPageContainer);
 
     //初始化自定义音乐播放栏
@@ -139,9 +139,6 @@ void MainWindow::initSignalsAndSlots()
     //主窗口触发播放音乐事件
     connect(this,SIGNAL(playMusic(int)),
             musicPlayBar,SLOT(onPlayMusic(int)));
-    //切歌时进行歌曲信息的变化,同时进行歌词下载
-    connect(musicPlayBar,SIGNAL(updateAudioTag(QString)),
-            this,SLOT(onUpdateAudioTag(QString)));
     //歌词翻译&取消翻译
     connect(musicPlayBar,SIGNAL(translateChanged()),
             this,SLOT(onTranslateChanged()));
@@ -159,6 +156,8 @@ void MainWindow::initSignalsAndSlots()
     //在歌单中清空播放列表事件
     connect(songList,SIGNAL(clearMusic()),
             musicPlayBar,SLOT(onClearMusic()));
+    connect(musicPlayBar,SIGNAL(updateAudioTagInMainWindow(QString)),
+            songList,SLOT(onUpdateAudioTagInMainWindow(QString)));
 
     //这是主窗口和歌单之间的信号槽
     //传递新歌单名，让数据库创建
@@ -170,6 +169,8 @@ void MainWindow::initSignalsAndSlots()
     //添加到播放列表
     connect(this, SIGNAL(addIntoPlayList(QString)),
             songList, SLOT(addNewSong(QString)));
+    connect(songList, SIGNAL(sendSongInfo(SongInfo*)),
+            this, SLOT(onRecieveSongInfo(SongInfo*)));
 
     //这里是音乐播放栏和歌曲信息展示窗口之间的信号槽
     //播放位置改变时歌词变化
@@ -349,6 +350,21 @@ void MainWindow::onCloseWindow()
     this->close();
 }
 
+//弹出歌单的对话框
+void MainWindow::showCreateSongListDialog()
+{
+    CreateSongListDialog dlg;
+    int status = dlg.exec();
+    if(status == 0)
+    {
+        emit(sendSongListName(dlg.getLineEdit()->text()));
+    }
+    else
+    {
+
+    }
+}
+
 //歌词翻译状态改变，重写爬取歌词
 void MainWindow::onTranslateChanged()
 {
@@ -364,15 +380,13 @@ void MainWindow::onTranslateChanged()
     lyricsBarrage->setWord_list(lyricsShower->getWord_list());
     lyricsBarrage->setInterval_list(lyricsShower->getInterval_list());
 }
-//切歌时开始爬取各类信息
-void MainWindow::onUpdateAudioTag(QString currentFileName)
+//切歌时接受歌单爬取的歌曲信息并更新至主页面
+void MainWindow::onRecieveSongInfo(SongInfo *info)
 {
-    currentSongInfo->has_cover=false;
-    currentSongInfo->pic_url = ":/icon/res/default_cover.png";
-    AudioTag tag(currentFileName,currentSongInfo);
-    tag.getAllinfo();
-    tag.idMatch();
-    tag.downloadPic();
+
+    currentSongInfo = new SongInfo(*info);
+    //qDebug()<<currentSongInfo->song_id;
+
     lyricsDownloader->DownloadLyric(currentSongInfo->song_id,translate);
     lyricsShower->analyzeLrcContent(currentSongInfo->song_id);
 
@@ -383,6 +397,7 @@ void MainWindow::onUpdateAudioTag(QString currentFileName)
 
     infoShow->changeSong(*currentSongInfo);
 }
+
 //显示&隐藏底部歌词弹幕的槽函数
 void MainWindow::onShowLyricsBarrage(bool show)
 {
