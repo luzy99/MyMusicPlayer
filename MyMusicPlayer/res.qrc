@@ -3,11 +3,8 @@
         <file>res/close.png</file>
         <file>res/icon.png</file>
         <file>res/maxscreen.png</file>
-        <file>res/mini.png</file>
         <file>res/minscreen.png</file>
         <file>res/normalscreen.png</file>
-        <file>res/setting.png</file>
-        <file>res/skin.png</file>
         <file>res/favourite_d.ico</file>
         <file>res/heart.ico</file>
         <file>res/add.png</file>
@@ -59,5 +56,18 @@
         <file>res/addtolist.png</file>
         <file>res/more.png</file>
         <file>res/suspensionWindow.png</file>
+        <file>res/miniWindow.png</file>
+        <file>res/miniWindowHover.png</file>
+        <file>res/titleClose.png</file>
+        <file>res/titleCloseHover.png</file>
+        <file>res/titleMinimize.png</file>
+        <file>res/titleMinimizeHover.png</file>
+        <file>res/titleMaximize.png</file>
+        <file>res/titleMaximizeHover.png</file>
+        <file>res/skinHover.png</file>
+        <file>res/setting.png</file>
+        <file>res/settingHover.png</file>
+        <file>res/skin.png</file>
+        <file>res/dragRegion.png</file>
     </qresource>
 </RCC>

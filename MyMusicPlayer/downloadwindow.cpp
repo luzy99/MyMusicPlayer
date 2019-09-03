@@ -8,7 +8,9 @@
 #include <QPalette>
 
 DownloadWindow::DownloadWindow(QString id,QString name,QWidget *parent)
-    : QWidget(parent),songId(id),songName(name)
+    : QWidget(parent),
+      songId(id),
+      songName(name)
 {
     //修改下载框的样式
     this->setWindowFlags(Qt::FramelessWindowHint);

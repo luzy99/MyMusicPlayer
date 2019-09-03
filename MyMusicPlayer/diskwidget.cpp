@@ -1,6 +1,7 @@
 #include "diskWidget.h"
 
-diskWidget::diskWidget(QWidget *parent, int r) : QWidget(parent)//输入圆的半径
+diskWidget::diskWidget(QWidget *parent, int r)
+    : QWidget(parent)//输入圆的半径
 {
     this->setAttribute(Qt::WA_TranslucentBackground);//设置窗口透明
     //this->resize(parent->width(),2*r+80);

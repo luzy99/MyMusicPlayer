@@ -4,10 +4,20 @@
 #include "lyricwidget.h"
 #include<QDebug>
 #include <QPalette>
+#include <QApplication>
+
 MusicPlayBar::MusicPlayBar(QWidget *parent)
     : QWidget(parent)
 {
+    //初始化窗体信息
+    this->setAutoFillBackground(true);
+    QPalette backPalette;
+    backPalette.setColor(QPalette::Window,QColor(255,255,255));
+    this->setPalette(backPalette);
+    this->setFixedHeight(60);
+
     layout = new QHBoxLayout; //采用水平布局
+    layout->setContentsMargins(0,0,0,0);
 
     //初始化上一首按钮
     previousBtn = new QPushButton;
@@ -169,7 +179,18 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     playSpeedBtn->setAttribute(Qt::WA_Hover,true);
     playSpeedBtn->installEventFilter(this);
     layout->addWidget(playSpeedBtn);
+    //默认倍数为正常倍数1.0x
     currentSpeed = 1.0;
+
+    dragLabel = new QLabel;
+    dragLabel->setObjectName("dragLabel");
+    QPixmap dragIcon = QPixmap(":/icon/res/dragRegion.png").scaled(20,60);
+    dragLabel->setPixmap(dragIcon);
+    dragLabel->setAttribute(Qt::WA_TranslucentBackground);
+    dragLabel->setAttribute(Qt::WA_Hover,true);
+    dragLabel->installEventFilter(this);
+    dragLabel->setFixedHeight(60);
+    layout->addWidget(dragLabel);
 
     //将写的布局添加进当前栏
     this->setLayout(layout);
@@ -397,6 +418,19 @@ bool MusicPlayBar::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
+    else if(obj->objectName() == "dragLabel")
+    {
+        //过滤尺寸更改事件
+        if(event->type() == QEvent::HoverEnter)
+        {
+            QCursor cur(Qt::SizeFDiagCursor);
+            QApplication::setOverrideCursor(cur);
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            QApplication::restoreOverrideCursor();
+        }
+     }
     else {}
 
     return QWidget::eventFilter(obj,event);
@@ -425,10 +459,8 @@ void MusicPlayBar::onDurationChanged(qint64 duration)
 {
     //文件时长变化，更新进度显示
        playSlider->setMaximum(int(duration));
-       int secs = int(duration)/1000; //秒
-       int mins =  secs/60; //分钟
-       secs = secs%60; //余秒数
-       durationTime = QString::asprintf("%d:%d",mins,secs);
+       QDateTime time = QDateTime::fromMSecsSinceEpoch(duration);
+       durationTime = time.toString("mm:ss");
        totalTimeLabel->setText(durationTime);
 
        QString currentFilePath = playlist->currentMedia().canonicalUrl().toLocalFile();
@@ -442,14 +474,12 @@ void MusicPlayBar::onPositionChanged(qint64 position)
     //如果当前不是阻塞状态，进度条随位置的改变而改变
     if(!block)
     {
-//        qDebug()<<"position changed";
+      //qDebug()<<"position changed";
        playSlider->setSliderPosition(int(position));
        emit positionChanged(position);
 
-       int secs = int(position)/1000; //秒
-       int mins =  secs/60; //分钟
-       secs = secs%60; //余秒数
-       positionTime = QString::asprintf("%d:%d",mins,secs);
+       QDateTime time = QDateTime::fromMSecsSinceEpoch(position);
+       positionTime = time.toString("mm:ss");
        currentTimeLabel->setText(positionTime);
      }
 }
@@ -466,16 +496,16 @@ void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
 //外界触发放歌
 void MusicPlayBar::onPlayMusic(int SongIndex)
 {
-    //如果是-1->播放最后一首(最新加入的一首)
-    if(SongIndex == -1)
-    {
-        SongIndex = playlist->mediaCount()-1;
-    }
-
     //播放对应序列的歌曲
         playlist->setCurrentIndex(SongIndex);
         player->play();
         playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+}
+
+//清空播放列表的槽函数
+void MusicPlayBar::onClearMusic()
+{
+    playlist->clear();
 }
 
 //拖动歌词时触发的槽函数
@@ -502,7 +532,9 @@ void MusicPlayBar::on_previousBtn_clicked()
 {
     //如果歌单为空->不执行
     if(playlist->isEmpty())
+    {
         return;
+     }
 
     //如果状态时随机播放,则随机出上一首
     int currentIndex;

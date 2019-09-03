@@ -2,46 +2,43 @@
 #define TITLEBAR_H
 
 #include <QLabel>
+#include <QMouseEvent>
 #include <QPushButton>
-#include<QGroupBox>
-class titleBar : public QWidget
+#include <QHBoxLayout>
+#include <QWidget>
+#include <QLineEdit>
+#include <QMenu>
+
+class TitleBar : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit titleBar(QWidget *parent = nullptr);
-    ~titleBar();
+    explicit TitleBar(QWidget *parent = nullptr);
+    void initSignalsAndSlots(); //初始化信号与槽
+    ~TitleBar();
 
 protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
-    //双击标题栏进行界面的最大化/还原
-    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+signals:
+    void showSuspensionWindow(); //表示小窗化
+    void minimizeWindow(); //表示最小化主窗口
+    void maximizeWindow(); //表示最大化主窗口
+    void closeWindow(); //表示关闭窗口
 
-    //进行界面的拖动
-    virtual void mousePressEvent(QMouseEvent *event);
-
-    //设置界面标题与图标
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-
-private slots:
-
-    //进行最小化、最大化/还原、关闭操作
-    void onClicked();
+public slots:
 
 private:
-
-    //最大化/还原
-    void updateMaximize();
-
-private:
-    QLabel *m_pIconLabel; //标题栏图标
-    QLabel *m_pTitleLabel; //标题栏标题
-    QPushButton *m_pMinimizeButton; //最小化按钮
-    QPushButton *m_pMaximizeButton; //最大化/还原按钮
-    QPushButton *m_pCloseButton; //关闭按钮
-    QPushButton *m_pSkinButton; //皮肤按钮
-    QPushButton *m_pSettingButton; //设置按钮
-    QGroupBox *g_title;
+    QLabel *iconLabel; //标题栏图标
+    QLabel *titleLabel; //标题栏标题
+    QPushButton *skinBtn; //换肤按钮
+    QPushButton *settingsBtn; //设置按钮
+    QPushButton *resizeBtn; //小窗化按钮
+    QPushButton *minimizeBtn; //最小化按钮
+    QPushButton *maximizeBtn; //最大化/还原按钮
+    QPushButton *closeBtn; //关闭按钮
 };
 
 #endif // TITLEBAR_H

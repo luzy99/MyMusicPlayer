@@ -19,7 +19,6 @@ public:
     explicit MusicPlayBar(QWidget *parent = nullptr);
     void initSignalsAndSlots(); //初始化设定信号与槽
     bool eventFilter(QObject *obj, QEvent *event);
-    QGroupBox *g_container;//布局器
 
 signals:
     void positionChanged(qint64 postion); //位置改变时发送的型号
@@ -38,6 +37,7 @@ public slots:
     void onPositionChanged(qint64 position);
     void onChangePlaylist(QUrl url,int behaviorIndex); //处理信号changePlaylist的函数
     void onPlayMusic(int SongIndex); //处理信号playMusic的函数
+    void onClearMusic();
     void onBlockSignals(bool block); //拖动歌词时触发的函数
     void onPositionDraggedTo(qint64 newPosition); //歌曲拖动后触发的槽函数
 
@@ -72,12 +72,14 @@ private:
     QPushButton *showLyricsBtn; //显示歌词&隐藏歌词
     QPushButton *translateBtn; //翻译外语歌词
     QPushButton *playSpeedBtn; //倍数
+    QLabel *dragLabel; //拖动区域
 
     double currentSpeed; //当前播放速度
     QString durationTime; //总长度
     QString positionTime; //当前播放到的位置
 
     bool block; //音乐播放位置改变时是否将它传递给进度条
+
 };
 
 #endif // MUSICPLAYBAR_H

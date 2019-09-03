@@ -14,8 +14,8 @@ class SongInfoShow : public QWidget
     Q_OBJECT
 
 public:
-    explicit SongInfoShow(QWidget *parent,SongInfo &m_song_info);
-    SongInfoShow(QWidget *parent = 0);
+    explicit SongInfoShow(SongInfo &m_song_info,QWidget *parent = nullptr);
+    SongInfoShow(QWidget *parent = nullptr);
     ~SongInfoShow();
 public slots:
     void changeSong(SongInfo &m_song_info);

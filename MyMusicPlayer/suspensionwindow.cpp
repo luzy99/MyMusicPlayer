@@ -40,8 +40,8 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     suspensionBtn->setWindowFlags(Qt::FramelessWindowHint);
     suspensionBtn->setAttribute(Qt::WA_TranslucentBackground);
     suspensionBtn->setIcon(QIcon(":/icon/res/suspensionWindow.png"));
-    suspensionBtn->setIconSize(QSize(36,36));
-    suspensionBtn->setFixedSize(36,36);
+    suspensionBtn->setIconSize(QSize(60,60));
+    suspensionBtn->setFixedSize(60,60);
     suspensionBtn->setFlat(true);
     suspensionBtn->setAttribute(Qt::WA_Hover,true);
     suspensionBtn->installEventFilter(this);
@@ -258,7 +258,7 @@ void SuspensionWindow::moveOut()
         animation->setEndValue(end);
         animation->start();
 
-        suspensionBtn->setProperty("pos",QPoint(0,start.y()+12));
+        suspensionBtn->setProperty("pos",QPoint(0,start.y()));
         suspensionBtn->show();
     }
     else
@@ -272,7 +272,7 @@ void SuspensionWindow::moveOut()
         animation->setEndValue(end);
         animation->start();
 
-        suspensionBtn->setProperty("pos",QPoint(screenWidth-36,start.y()+12));
+        suspensionBtn->setProperty("pos",QPoint(screenWidth-60,start.y()));
         suspensionBtn->show();
     }
 }

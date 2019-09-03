@@ -28,15 +28,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     audiotag.cpp \
+    createsonglistdialog.cpp \
     diskwidget.cpp \
     downloadwindow.cpp \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
         mainwidget.cpp \
+    mainwindow.cpp \
     minilyrics.cpp \
     musicplaybar.cpp \
+    mylistlistwidget.cpp \
+    mylistsongwidget.cpp \
     myprogressbar.cpp \
+    renamesonglistdialog.cpp \
+    searchdata.cpp \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
@@ -44,14 +50,20 @@ SOURCES += \
 
 HEADERS += \
     audiotag.h \
+    createsonglistdialog.h \
     diskwidget.h \
     downloadwindow.h \
     lyricdownload.h \
     lyricwidget.h \
         mainwidget.h \
+    mainwindow.h \
     minilyrics.h \
     musicplaybar.h \
+    mylistlistwidget.h \
+    mylistsongwidget.h \
     myprogressbar.h \
+    renamesonglistdialog.h \
+    searchdata.h \
     songinfo.h \
     songinfoshow.h \
     songlist.h \

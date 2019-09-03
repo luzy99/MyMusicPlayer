@@ -1,4 +1,3 @@
-#pragma once
 #ifndef SONGINFO_H
 #define SONGINFO_H
 #include <QString>

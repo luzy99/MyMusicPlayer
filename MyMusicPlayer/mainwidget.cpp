@@ -7,21 +7,6 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-#include<QDebug>
-//调用WIN API需要用到的头文件与库 [实现缩放]
-#ifdef Q_OS_WIN
-#include <qt_windows.h>
-#include <Windowsx.h>
-#endif
-/*
- * 205 10 10 深红
- * 240 12 16 选中红色
- * 255 255 255 白色
- * 219 208 208 深灰
- * 244 239 239 浅灰
- */
-
-
 /*测试结果
  * 1.当在随机播放模式时，下一首按钮不能有随机效果
  * 2.拖入新歌曲的时候，会自动添加到播放列表的最后，并从列表第一首播放
@@ -32,49 +17,28 @@ MainWidget::MainWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //Qt::FramelessWindowHint设置窗口标志为无边框，而Qt::WindowStaysOnTopHint使窗口位于所有界面之上
-    this->setWindowFlags(Qt::FramelessWindowHint);
-    //绘制圆角窗口
-    QBitmap bmp(this->size());
-    bmp.fill();
-    QPainter p(&bmp);
-    p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
-    p.setPen(Qt::NoPen);
-    p.setBrush(Qt::black);
-    p.drawRoundedRect(bmp.rect(),2,2);
-    this->setMask(bmp);
-    this->setWindowTitle("My Music Player");
-    //设置窗口允许拖拽东西上来(默认不可以)
+    //初始化主窗体属性
+//    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowTitle("Rainbow Music Player");
+    this->setWindowIcon(QIcon(":/icon/res/suspensionWindow.png"));
+    this->setMinimumSize(1200,900);
     this->setAcceptDrops(true);
 
-    //使用调色板设置窗口的背景色
-    QPalette pal_windows(palette());
-    pal_windows.setColor(QPalette::Background, QColor(255, 255, 255));
-    setAutoFillBackground(false);    
-//    resize(1200,900);
-    //设置窗口名称，会发生窗口标题栏改变事件，随之自定义标题栏的标题会更新
+    //初始化窗口布局
+    QVBoxLayout *outerLayout = new QVBoxLayout;
+    outerLayout->addStretch();
+    outerLayout->setSpacing(0);
+    outerLayout->setContentsMargins(0, 0, 0, 0);//设置边距
 
-    //设置窗口图标，会发生窗口图标改变事件，随之自定义标题栏的图标会更新    
-    setWindowIcon(QIcon(":/icon/res/icon.png")); 
-    setPalette(pal_windows);
-    setMinimumSize(400 , 300);
-    //定义自定义标题栏对象
-    pTitleBar = new titleBar(this);
-    installEventFilter(pTitleBar);
-    
-    
-    //窗口布局中加标题栏
-    QVBoxLayout *pLayout1 = new QVBoxLayout();
-    pLayout1->addWidget(pTitleBar);
-    pLayout1->addStretch();
-    pLayout1->setSpacing(0);
-    pLayout1->setContentsMargins(0, 0, 0, 0);//设置边距
-    this->setLayout(pLayout1);
+    //初始化标题栏
+    titleBar  = new TitleBar;
+    titleBar->setObjectName("titleBar");
+    outerLayout->addWidget(titleBar);
 
     //歌单布局
     pSongList = new SongList (this);
     installEventFilter(pSongList);
-    pSongList->setGeometry(0,30,240,this->height()-30);
+//    pSongList->setGeometry(0,30,240,this->height()-30);
 
     //初始化歌词下载
     //默认不进行翻译
@@ -83,31 +47,103 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //初始化底部歌词弹幕
     lyricsBarrage = new miniLyrics;
-        
-    //m_nBorder表示鼠标位于边框缩放范围的宽度，可以设置为5
-    m_nBorderWidth=5;
 
     //初始化当前歌曲的信息
-    //默认第一次打开时还没有播放歌曲
     currentSongInfo = new SongInfo;
     currentSongInfo->title = "暂无歌曲在播放";
     currentSongInfo->artist = "暂无相关信息";
     currentSongInfo->album_cover = ":/icon/res/default_cover.png";
 
     //初始化显示
-    infoShow = new SongInfoShow(this,*currentSongInfo);
-    infoShow->setGeometry(260,40,500,this->height()-60);
+    infoShow = new SongInfoShow(*currentSongInfo);
+//    infoShow->setGeometry(260,40,500,this->height()-60);
 
     //初始化展示歌词的组件
-    lyricsShower = new LyricWidget(this);
-    lyricsShower->setGeometry(760,40,this->width()-760,this->height()-60);
+    lyricsShower = new LyricWidget;
+//    lyricsShower->setGeometry(760,40,this->width()-760,this->height()-60);
 
     //初始化自定义音乐播放栏
-    pMusicPlayBar = new MusicPlayBar(this);
-    pMusicPlayBar->setGeometry(240, 840, 900, 60);
+    musicPlayBar = new MusicPlayBar;
+    musicPlayBar->setObjectName("musicPlayBar");
+    outerLayout->addWidget(musicPlayBar);
+//    pMusicPlayBar->setGeometry(240, 840, 900, 60);
 
-    //判断当前路径下有无下载封面歌词和歌需要的文件
-    //若没有则重新创建
+    //设置窗口布局
+    this->setLayout(outerLayout);
+
+    //初始化保存文件夹
+    initDirectory();
+    //关联信号与槽
+    initSignalsAndSlots();
+}
+
+MainWidget::~MainWidget()
+{
+    delete ui;
+}
+
+
+void MainWidget::createActions()
+{
+
+}
+
+//初始化信号与槽
+void MainWidget::initSignalsAndSlots()
+{
+    //主窗口修改音乐播放器中的逻辑列表(playlist) T
+    connect(this , SIGNAL(changePlaylist(QUrl,int)),
+           musicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
+    //修改显示给用户的歌单 X
+    connect(this,SIGNAL(changeListSongs(QString,int)),
+            pSongList,SLOT(onChangeListSongs(QString,int)));
+    //歌单触发播放音乐事件 X
+    connect(pSongList,SIGNAL(playMusic(int)),
+            musicPlayBar,SLOT(onPlayMusic(int)));
+    //主窗口触发播放音乐事件 T
+    connect(this,SIGNAL(playMusic(int)),
+            musicPlayBar,SLOT(onPlayMusic(int)));
+    //歌单修改音乐播放器中的逻辑列表(playlist) T
+    connect(pSongList , SIGNAL(changePlaylist(QUrl,int)),
+            musicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
+    //播放位置改变时歌词变化 T
+    connect(musicPlayBar,SIGNAL(positionChanged(qint64)),
+            lyricsShower,SLOT(onPositionChanged(qint64)));
+    connect(musicPlayBar,SIGNAL(positionChanged(qint64)),
+            lyricsBarrage,SLOT(onPositionChanged(qint64)));
+    //拖动歌词时阻塞进度条 T
+    connect(lyricsShower,SIGNAL(blockSignals(bool)),
+            musicPlayBar,SLOT(onBlockSignals(bool)));
+    //把阻塞那一时刻的position传回给lyricShower T
+    connect(musicPlayBar,SIGNAL(positionStop(qint64)),
+            lyricsShower,SLOT(on_positionStop(qint64)));
+    //歌词拖动后播放器进度随之更新 T
+    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
+            musicPlayBar,SLOT(onPositionDraggedTo(qint64)));
+    //同时底部弹幕也随之更新 T
+    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
+            lyricsBarrage,SLOT(onPositionChanged(qint64)));
+    //切歌时进行歌曲信息的变化 T
+    //同时进行歌词下载
+    connect(musicPlayBar,SIGNAL(updateAudioTag(QString)),
+            this,SLOT(onUpdateAudioTag(QString)));
+    //显示&隐藏底部弹幕 T
+    connect(musicPlayBar,SIGNAL(showLyricsBarrage(bool)),
+            this,SLOT(onShowLyricsBarrage(bool)));
+    //歌词翻译&取消翻译 T
+    connect(musicPlayBar,SIGNAL(translateChanged()),
+            this,SLOT(onTranslateChanged()));
+    //链接播放状态和圆盘的转动 T
+    connect(musicPlayBar,SIGNAL(becomePausing()),
+            infoShow,SLOT(diskRotateStop()));
+    connect(musicPlayBar,SIGNAL(becomePlaying()),
+            infoShow,SLOT(diskRotateStart()));
+}
+
+//判断当前路径下有无下载封面歌词和歌需要的文件
+//若没有则重新创建
+void MainWidget::initDirectory()
+{
     QDir coverFile(QDir::currentPath()+"/CoverImages");
     if(coverFile.exists())
     {
@@ -118,6 +154,7 @@ MainWidget::MainWidget(QWidget *parent) :
         //如果不存在，则重新创建文件
         coverFile.mkdir(QDir::currentPath()+"/CoverImages");
     }
+
     QDir lyricsFile(QDir::currentPath()+"/Lyrics");
     if(lyricsFile.exists())
     {
@@ -128,6 +165,7 @@ MainWidget::MainWidget(QWidget *parent) :
         //如果不存在，则重新创建文件
         coverFile.mkdir(QDir::currentPath()+"/Lyrics");
     }
+
     QDir songsFile(QDir::currentPath()+"/Songs");
     if(songsFile.exists())
     {
@@ -138,126 +176,6 @@ MainWidget::MainWidget(QWidget *parent) :
         //如果不存在，则重新创建文件
         coverFile.mkdir(QDir::currentPath()+"/Songs");
     }
-
-    //关联信号与槽
-    initSignalsAndSlots();
-}
-
-MainWidget::~MainWidget()
-{
-    delete ui;
-}
-
-//nativeEvent主要用于进程间通信-消息传递，使用这种方式后来实现窗体的缩放 [加上了这函数，窗口也能移动了]
-bool MainWidget::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-    Q_UNUSED(eventType)
-
-    MSG *param = static_cast<MSG *>(message);
-
-    switch (param->message)
-    {
-    case WM_NCHITTEST:
-    {
-        int nX = GET_X_LPARAM(param->lParam) - this->geometry().x();
-        int nY = GET_Y_LPARAM(param->lParam) - this->geometry().y();
-
-        // 如果鼠标位于子控件上，则不进行处理
-        if (childAt(nX, nY) != nullptr)
-            return QWidget::nativeEvent(eventType, message, result);
-
-        *result = HTCAPTION;
-
-        // 鼠标区域位于窗体边框，进行缩放
-        if ((nX > 0) && (nX < m_nBorderWidth))
-            *result = HTLEFT;
-
-        if ((nX > this->width() - m_nBorderWidth) && (nX < this->width()))
-            *result = HTRIGHT;
-
-        if ((nY > 0) && (nY < m_nBorderWidth))
-            *result = HTTOP;
-
-        if ((nY > this->height() - m_nBorderWidth) && (nY < this->height()))
-            *result = HTBOTTOM;
-
-        if ((nX > 0) && (nX < m_nBorderWidth) && (nY > 0)
-                && (nY < m_nBorderWidth))
-            *result = HTTOPLEFT;
-
-        if ((nX > this->width() - m_nBorderWidth) && (nX < this->width())
-                && (nY > 0) && (nY < m_nBorderWidth))
-            *result = HTTOPRIGHT;
-
-        if ((nX > 0) && (nX < m_nBorderWidth)
-                && (nY > this->height() - m_nBorderWidth) && (nY < this->height()))
-            *result = HTBOTTOMLEFT;
-
-        if ((nX > this->width() - m_nBorderWidth) && (nX < this->width())
-                && (nY > this->height() - m_nBorderWidth) && (nY < this->height()))
-            *result = HTBOTTOMRIGHT;
-
-        return true;
-    }
-    }
-    emit windowChange();
-    return QWidget::nativeEvent(eventType, message, result);
-}
-
-void MainWidget::initSignalsAndSlots()
-{
-    //重绘歌单大小
-    connect(this , SIGNAL(windowChange()),
-            pSongList,SLOT(resetGeometry()));
-    //主窗口修改音乐播放器中的逻辑列表(playlist)
-    connect(this , SIGNAL(changePlaylist(QUrl,int)),
-            pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
-    //修改显示给用户的歌单
-    connect(this,SIGNAL(changeListSongs(QString,int)),
-            pSongList,SLOT(onChangeListSongs(QString,int)));
-    //歌单触发播放音乐事件
-    connect(pSongList,SIGNAL(playMusic(int)),
-            pMusicPlayBar,SLOT(onPlayMusic(int)));
-    //主窗口触发播放音乐事件
-    connect(this,SIGNAL(playMusic(int)),
-            pMusicPlayBar,SLOT(onPlayMusic(int)));
-    //歌单修改音乐播放器中的逻辑列表(playlist)
-    connect(pSongList , SIGNAL(changePlaylist(QUrl,int)),
-            pMusicPlayBar,SLOT(onChangePlaylist(QUrl,int)));
-    //播放位置改变时歌词变化
-    connect(pMusicPlayBar,SIGNAL(positionChanged(qint64)),
-            lyricsShower,SLOT(onPositionChanged(qint64)));
-    connect(pMusicPlayBar,SIGNAL(positionChanged(qint64)),
-            lyricsBarrage,SLOT(onPositionChanged(qint64)));
-    //拖动歌词时阻塞进度条
-    connect(lyricsShower,SIGNAL(blockSignals(bool)),
-            pMusicPlayBar,SLOT(onBlockSignals(bool)));
-    //把阻塞那一时刻的position传回给lyricShower
-    connect(pMusicPlayBar,SIGNAL(positionStop(qint64)),
-            lyricsShower,SLOT(on_positionStop(qint64)));
-    //歌词拖动后播放器进度随之更新
-    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
-            pMusicPlayBar,SLOT(onPositionDraggedTo(qint64)));
-    //同时底部弹幕也随之更新
-    connect(lyricsShower,SIGNAL(positionDraggedTo(qint64)),
-            lyricsBarrage,SLOT(onPositionChanged(qint64)));
-    //切歌时进行歌曲信息的变化
-    //同时进行歌词下载
-    connect(pMusicPlayBar,SIGNAL(updateAudioTag(QString)),
-            this,SLOT(onUpdateAudioTag(QString)));
-    //显示&隐藏底部弹幕
-    connect(pMusicPlayBar,SIGNAL(showLyricsBarrage(bool)),
-            this,SLOT(onShowLyricsBarrage(bool)));
-    //歌词翻译&取消翻译
-    connect(pMusicPlayBar,SIGNAL(translateChanged()),
-            this,SLOT(onTranslateChanged()));
-    //链接播放状态和圆盘的转动
-    connect(pMusicPlayBar,SIGNAL(becomePausing()),
-            infoShow,SLOT(diskRotateStop()));
-    connect(pMusicPlayBar,SIGNAL(becomePlaying()),
-            infoShow,SLOT(diskRotateStart()));
-    //重绘主窗口大小
-    connect(this,SIGNAL(windowChange()),this,SLOT(resetGeometry()));
 }
 
 //覆写dragEnterEvent,允许歌曲被拖入
@@ -306,19 +224,7 @@ void MainWidget::dropEvent(QDropEvent *event)
         emit changeListSongs(fileInfo.fileName(),1);
     }
 
-    //**********************************************************************************
-    //播放最新拖入的歌
     emit playMusic(-1);
-}
-
-void MainWidget::resetGeometry()
-{
-    QWidget *pWindow = this->window();
-    QSize pWindowSize = pWindow->size();
-    int sizeY = pWindowSize.height();
-    int sizeX = pWindowSize.width();
-    this->resize(sizeX , sizeY);
-    this->pMusicPlayBar->setGeometry(240, sizeY-60, sizeX-300, 60);
 }
 
 //歌词翻译状态改变，重写爬取歌词

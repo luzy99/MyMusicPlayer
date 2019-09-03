@@ -1,231 +1,241 @@
+#include "titleBar.h"
+#include"mainwidget.h"
 #include <QLabel>
 #include <QPushButton>
-#include <QHBoxLayout>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QApplication>
-#include "titleBar.h"
-#include"mainwidget.h"
+#include <QPalette>
 
-//调用WIN API需要用到的头文件与库
-#ifdef Q_OS_WIN
-#pragma comment(lib, "user32.lib")
-#include <qt_windows.h>
-#endif
 
-titleBar::titleBar(QWidget *parent)
+TitleBar::TitleBar(QWidget *parent)
     : QWidget(parent)
 {
-    setFixedHeight(30);
+//    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setAutoFillBackground(true);
+    QPalette backPalette;
+    backPalette.setColor(QPalette::Window,QColor(25,25,25));
+    this->setPalette(backPalette);
+    this->setFixedHeight(60);
 
-    //给成员变量申请内存
-    m_pIconLabel = new QLabel(this);
-    m_pTitleLabel = new QLabel(this);
-    m_pMinimizeButton = new QPushButton(this);
-    m_pMaximizeButton = new QPushButton(this);
-    m_pCloseButton = new QPushButton(this);
-    m_pSettingButton = new QPushButton(this);
-    m_pSkinButton = new QPushButton(this);
+    //初始化页面布局
+    QHBoxLayout *layout = new QHBoxLayout;
 
-    //初始化图标Label
-    m_pIconLabel->setFixedSize(20, 20);
-    m_pIconLabel->setScaledContents(true);
+    //初始化标图标Label
+    iconLabel = new QLabel;
+    iconLabel->setObjectName("iconLabel");
+    QPixmap iconImage(":/icon/res/suspensionWindow.png");
+    QPixmap labelImage = iconImage.scaled(QSize(35,35),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    iconLabel->setPixmap(labelImage);
+    iconLabel->setFixedWidth(35);
+    layout->addWidget(iconLabel);
 
-    m_pTitleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    //初始化标题Label
+    titleLabel = new QLabel;
+    titleLabel->setObjectName("titleLabel");
+    QFont font("Comic Sans MS", 10, QFont::Normal);
+    titleLabel->setFont(font);
+    titleLabel->setText("Rainbow Music Player");
+    QPalette palette = titleLabel->palette();
+    palette.setColor(QPalette::WindowText,Qt::white);
+    titleLabel->setPalette(palette);
+    layout->addWidget(titleLabel);
 
-    //设置按钮的固定大小、图片、取消边框
-    m_pMinimizeButton->setIconSize(QSize(27,22));
-    m_pMinimizeButton->setIcon(QIcon(":/icon/res/minscreen.png"));
-    m_pMinimizeButton->setFlat(true);
-    m_pMinimizeButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    //--
-    m_pMaximizeButton->setIconSize(QSize(27,22));
-    m_pMaximizeButton->setIcon(QIcon(":/icon/res/maxscreen.png"));
-    m_pMaximizeButton->setFlat(true);
-    m_pMaximizeButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    //--
-    m_pCloseButton->setIconSize(QSize(27,22));
-    m_pCloseButton->setIcon(QIcon(":/icon/res/close.png"));
-    m_pCloseButton->setFlat(true);
-    m_pCloseButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    //--
-    m_pSettingButton->setIconSize(QSize(27,22));
-    m_pSettingButton->setIcon(QIcon(":/icon/res/setting.png"));
-    m_pSettingButton->setFlat(true);
-    m_pSettingButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    //--
-    m_pSkinButton->setIconSize(QSize(27,22));
-    m_pSkinButton->setIcon(QIcon(":/icon/res/skin.png"));
-    m_pSkinButton->setFlat(true);
-    m_pSkinButton->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
+    //初始化皮肤按钮
+    skinBtn = new QPushButton;
+    skinBtn->setObjectName("skinBtn");
+    skinBtn->setAttribute(Qt::WA_TranslucentBackground);
+    skinBtn->setIcon(QIcon(":/icon/res/skin.png"));
+    skinBtn->setIconSize(QSize(35,35));
+    skinBtn->setFixedSize(45,35);
+    skinBtn->setFlat(true);
+    skinBtn->setStyleSheet("border: none;");
+    skinBtn->setToolTip("点击更换皮肤");
+    skinBtn->setAttribute(Qt::WA_Hover,true);
+    skinBtn->installEventFilter(this);
+    layout->addWidget(skinBtn);
+
+    //初始化设置按钮
+    settingsBtn = new QPushButton;
+    settingsBtn->setObjectName("settingsBtn");
+    settingsBtn->setAttribute(Qt::WA_TranslucentBackground);
+    settingsBtn->setIcon(QIcon(":/icon/res/setting.png"));
+    settingsBtn->setIconSize(QSize(25,25));
+    settingsBtn->setFixedSize(45,35);
+    settingsBtn->setFlat(true);
+    settingsBtn->setStyleSheet("border: none;");
+    settingsBtn->setToolTip("点击更换皮肤");
+    settingsBtn->setAttribute(Qt::WA_Hover,true);
+    settingsBtn->installEventFilter(this);
+    layout->addWidget(settingsBtn);
 
 
-    //设置窗口部件的名称
-    m_pTitleLabel->setObjectName("whiteLabel");
-    m_pMinimizeButton->setObjectName("minimizeButton");
-    m_pMaximizeButton->setObjectName("maximizeButton");
-    m_pCloseButton->setObjectName("closeButton");
-    m_pSettingButton->setObjectName("SettingButton");
-    m_pSkinButton->setObjectName("SkinButton");
+    //初始化小窗按钮
+    resizeBtn = new QPushButton;
+    resizeBtn->setObjectName("resizeBtn");
+    resizeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    resizeBtn->setIcon(QIcon(":/icon/res/miniWindow.png"));
+    resizeBtn->setIconSize(QSize(28,28));
+    resizeBtn->setFixedSize(30,30);
+    resizeBtn->setFlat(true);
+    resizeBtn->setStyleSheet("border: none;");
+    resizeBtn->setToolTip("点击进入小窗模式");
+    resizeBtn->setAttribute(Qt::WA_Hover,true);
+    resizeBtn->installEventFilter(this);
+    layout->addWidget(resizeBtn);
 
+    //初始化最小化按钮
+    minimizeBtn = new QPushButton;
+    minimizeBtn->setObjectName("minimizeBtn");
+    minimizeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    minimizeBtn->setIcon(QIcon(":/icon/res/titleMinimize.png"));
+    minimizeBtn->setIconSize(QSize(23,23));
+    minimizeBtn->setFixedSize(25,25);
+    minimizeBtn->setFlat(true);
+    minimizeBtn->setStyleSheet("border: none;");
+    minimizeBtn->setToolTip("点击最小化窗口");
+    minimizeBtn->setAttribute(Qt::WA_Hover,true);
+    minimizeBtn->installEventFilter(this);
+    layout->addWidget(minimizeBtn);
 
-    //给按钮设置静态tooltip，当鼠标移上去时显示tooltip
-    m_pMinimizeButton->setToolTip("Minimize");
-    m_pMaximizeButton->setToolTip("Maximize");
-    m_pCloseButton->setToolTip("Close");
+    //初始化最大化&还原按钮
+    maximizeBtn = new QPushButton;
+    maximizeBtn->setObjectName("maximizeBtn");
+    maximizeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    maximizeBtn->setIcon(QIcon(":/icon/res/titleMaximize.png"));
+    maximizeBtn->setIconSize(QSize(23,23));
+    maximizeBtn->setFixedSize(25,25);
+    maximizeBtn->setFlat(true);
+    maximizeBtn->setStyleSheet("border: none;");
+    maximizeBtn->setToolTip("点击最大化/还原窗口");
+    maximizeBtn->setAttribute(Qt::WA_Hover,true);
+    maximizeBtn->installEventFilter(this);
+    layout->addWidget(maximizeBtn);
 
-    //标题栏布局
-    QHBoxLayout *pLayout = new QHBoxLayout(this);
-    pLayout->addWidget(m_pIconLabel);
-    pLayout->addSpacing(5);
-    pLayout->addWidget(m_pTitleLabel);
-    pLayout->addWidget(m_pSettingButton);
-    pLayout->addWidget(m_pSkinButton);
-    pLayout->addWidget(m_pMinimizeButton);
-    pLayout->addWidget(m_pMaximizeButton);
-    pLayout->addWidget(m_pCloseButton);
+    //初始化关闭窗口
+    closeBtn = new QPushButton;
+    closeBtn->setObjectName("closeBtn");
+    closeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    closeBtn->setIcon(QIcon(":/icon/res/titleClose.png"));
+    closeBtn->setIconSize(QSize(23,23));
+    closeBtn->setFixedSize(25,25);
+    closeBtn->setFlat(true);
+    closeBtn->setToolTip("点击关闭窗口");
+    closeBtn->setAttribute(Qt::WA_Hover,true);
+    closeBtn->installEventFilter(this);
+    layout->addWidget(closeBtn);
 
-    //装入盒子,盒子的目的是设置背景色
-    g_title = new QGroupBox(this) ;
-    g_title->setObjectName("GroupTitle");
-    g_title->setFlat(true);
-    g_title->setGeometry(0, 0, this->width(), 30);
-    g_title->setStyleSheet("background-color: rgb(219, 208, 208);");
-    pLayout->setSpacing(0);
-    pLayout->setContentsMargins(5, 0, 5, 0);
-    g_title->setLayout(pLayout);
-    this->setLayout(pLayout);
+    //添加布局到标题栏组件
+    this->setLayout(layout);
 
-    //连接三个按钮的信号槽
-    connect(m_pMinimizeButton, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(m_pMaximizeButton, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(m_pCloseButton, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
+    //关联信号与槽
+    initSignalsAndSlots();
 }
 
-titleBar::~titleBar()
+//初始化信号与槽
+void TitleBar::initSignalsAndSlots()
+{
+    //点击小窗化按钮通知主界面隐藏主窗体显示悬浮窗
+    connect(resizeBtn,SIGNAL(clicked()),
+            this,SIGNAL(showSuspensionWindow()));
+    //点击最小化按钮通知主窗体最小化
+    connect(minimizeBtn,SIGNAL(clicked()),
+            this,SIGNAL(minimizeWindow()));
+    //点击最大化按钮通知主窗体最大化&还原
+    connect(maximizeBtn,SIGNAL(clicked()),
+            this,SIGNAL(maximizeWindow()));
+    //点击关闭按钮通知主窗体关闭
+    connect(closeBtn,SIGNAL(clicked()),
+            this,SIGNAL(closeWindow()));
+}
+
+TitleBar::~TitleBar()
 {
 
 }
 
-//双击标题栏进行界面的最大化/还原
-void titleBar::mouseDoubleClickEvent(QMouseEvent *event)
+//事件过滤器，按钮按下时高亮
+bool TitleBar::eventFilter(QObject *obj, QEvent *event)
 {
-    Q_UNUSED(event); //没有实质性的作用，只是用来允许event可以不使用，用来避免编译器警告
-
-    emit m_pMaximizeButton->clicked(1);
-}
-
-//进行界面的拖动  [一般情况下，是界面随着标题栏的移动而移动，所以我们将事件写在标题栏中比较合理]
-void titleBar::mousePressEvent(QMouseEvent *event)
-{
-#ifdef Q_OS_WIN
-    if (ReleaseCapture())
+    //小窗化按钮的事件过滤器
+    if(obj->objectName() == "resizeBtn")
     {
-        QWidget *pWindow = this->window();
-        if (pWindow->isTopLevel())
+        if(event->type() == QEvent::HoverEnter)
         {
-           SendMessage(HWND(pWindow->winId()), WM_SYSCOMMAND, SC_MOVE + HTCAPTION, 0);
+            resizeBtn->setIcon(QIcon(":/icon/res/miniWindowHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            resizeBtn->setIcon(QIcon(":/icon/res/miniWindow.png"));
         }
     }
-       event->ignore();
-#else
-#endif
-}
-
-//使用事件过滤器监听标题栏所在的窗体，所以当窗体标题、图标等信息发生改变时，标题栏也应该随之改变
-bool titleBar::eventFilter(QObject *obj, QEvent *event)
-{
-    switch ( event->type() ) //判断发生事件的类型
+    //最小化按钮的事件过滤器
+    if(obj->objectName() == "minimizeBtn")
     {
-        case QEvent::WindowTitleChange: //窗口标题改变事件
+        if(event->type() == QEvent::HoverEnter)
         {
-            QWidget *pWidget = qobject_cast<QWidget *>(obj); //获得发生事件的窗口对象
-            if (pWidget)
-            {
-                //窗体标题改变，则标题栏标题也随之改变
-                m_pTitleLabel->setText(pWidget->windowTitle());
-                return true;
-            }
+            minimizeBtn->setIcon(QIcon(":/icon/res/titleMinimizeHover.png"));
         }
-        break;
-
-        case QEvent::WindowIconChange: //窗口图标改变事件
+        if(event->type() == QEvent::HoverLeave)
         {
-            QWidget *pWidget = qobject_cast<QWidget *>(obj);
-            if (pWidget)
-            {
-                //窗体图标改变，则标题栏图标也随之改变
-                QIcon icon = pWidget->windowIcon();
-                m_pIconLabel->setPixmap(icon.pixmap(m_pIconLabel->size()));
-                return true;
-            }
-        }
-        break;
-
-        case QEvent::Resize:
-            updateMaximize(); //最大化/还原
-            return true;
-
-        default:
-        return QWidget::eventFilter(obj, event);
-    }
-
-    return QWidget::eventFilter(obj, event);
-}
-
-//进行最小化、最大化/还原、关闭操作
-void titleBar::onClicked()
-{
-    //QObject::Sender()返回发送信号的对象的指针，返回类型为QObject *
-    QPushButton *pButton = qobject_cast<QPushButton *>(sender());
-
-    QWidget *pWindow = this->window(); //获得标题栏所在的窗口
-
-    if (pWindow->isTopLevel())
-    {
-        //判断发送信号的对象使哪个按钮
-        if (pButton == m_pMinimizeButton)
-        {
-            pWindow->showMinimized(); //窗口最小化显示
-        }
-        else if (pButton == m_pMaximizeButton)
-        {
-            pWindow->isMaximized() ? pWindow->showNormal() : pWindow->showMaximized();  //窗口最大化/还原显示
-        }
-        else if (pButton == m_pCloseButton)
-        {
-            pWindow->close(); //窗口关闭
+            minimizeBtn->setIcon(QIcon(":/icon/res/titleMinimize.png"));
         }
     }
-    g_title->setGeometry(0, 0, this->width(), 30);
-}
-
-//最大化/还原
-void titleBar::updateMaximize()
-{
-    QWidget *pWindow = this->window(); //获得标题栏所在的窗口
-
-    if (pWindow->isTopLevel())
+    //最大化按钮的事件过滤器
+    if(obj->objectName() == "maximizeBtn")
     {
-        bool bMaximize = pWindow->isMaximized(); //判断窗口是不是最大化状态，是则返回true，否则返回false
-        if (bMaximize)
+        if(event->type() == QEvent::HoverEnter)
         {
-            //目前窗口是最大化状态，则最大化/还原的toolTip设置为"Restore"
-            m_pMaximizeButton->setToolTip(tr("Restore"));
-            //设置按钮的属性名为"maximizeProperty"
-            m_pMaximizeButton->setIcon(QIcon(":/icon/res/normalscreen.png"));
-            m_pMaximizeButton->setProperty("maximizeProperty", "restore");
+            maximizeBtn->setIcon(QIcon(":/icon/res/titleMaximizeHover.png"));
         }
-        else
+        if(event->type() == QEvent::HoverLeave)
         {
-            //目前窗口是还原状态，则最大化/还原的toolTip设置为"Maximize"
-            m_pMaximizeButton->setToolTip(tr("Maximize"));
-            //设置按钮的属性名为"maximizeProperty"
-            m_pMaximizeButton->setIcon(QIcon(":/icon/res/maxscreen.png"));
-            m_pMaximizeButton->setProperty("maximizeProperty", "maximize");
+            maximizeBtn->setIcon(QIcon(":/icon/res/titleMaximize.png"));
         }
-
-        m_pMaximizeButton->setStyle(QApplication::style());
     }
-    g_title->setGeometry(0, 0, this->width(), 30);
+    //关闭按钮的事件过滤器
+    if(obj->objectName() == "closeBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            closeBtn->setIcon(QIcon(":/icon/res/titleCloseHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            closeBtn->setIcon(QIcon(":/icon/res/titleClose.png"));
+        }
+    }
+    //换肤按钮的事件过滤器
+    if(obj->objectName() == "skinBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            skinBtn->setIcon(QIcon(":/icon/res/skinHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            skinBtn->setIcon(QIcon(":/icon/res/skin.png"));
+        }
+    }
+    //设置按钮的事件过滤器
+    if(obj->objectName() == "settingsBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            settingsBtn->setIcon(QIcon(":/icon/res/settingHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            settingsBtn->setIcon(QIcon(":/icon/res/setting.png"));
+        }
+    }
+
+    return QWidget::eventFilter(obj,event);
 }
+
+//双击时产生和点击最大化按钮一样的效果
+void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    emit maximizeWindow();
+}
+

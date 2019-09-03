@@ -3,8 +3,8 @@
 #include<QFont>
 #include<QVBoxLayout>
 
-SongInfoShow::SongInfoShow(QWidget *parent, SongInfo &m_song_info) :
-    QWidget(parent)
+SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
+    : QWidget(parent)
 {
     this->resize(500,parent->height()-100);
     //整体垂直布局
