@@ -10,7 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QEventLoop>
-
+#include<QRegExp>//正则
 class AudioTag
 {
 public:

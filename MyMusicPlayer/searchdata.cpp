@@ -19,7 +19,8 @@ bool SearchData::searchOnline(QString songName,SongInfo *&songInfos)
     QNetworkReply *pReply = manager->get(request);
     //设置事件循环，等待资源下载完毕
     QEventLoop eventLoop;
-    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+    QObject::connect(manager, &QNetworkAccessManager::finished,
+                     &eventLoop, &QEventLoop::quit);
     eventLoop.exec();
 
     //检测http请求的状态码
@@ -42,7 +43,10 @@ bool SearchData::searchOnline(QString songName,SongInfo *&songInfos)
             QJsonArray songsArray =temp["songs"].toArray();
             qDebug()<<songsArray;
             int count =songsArray.count();
-            if (count<=0)return 0;
+            if (count<=0)
+            {
+                return 0;
+            }
             songInfos =new SongInfo[count];//创建SongInfo数组存储列表信息
 
             for(int i=0;i<count;i++)

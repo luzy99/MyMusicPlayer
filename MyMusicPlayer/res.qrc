@@ -69,5 +69,26 @@
         <file>res/settingHover.png</file>
         <file>res/skin.png</file>
         <file>res/dragRegion.png</file>
+        <file>res/addtolistHover.png</file>
+        <file>res/saveSong.png</file>
+        <file>res/saveSongHover.png</file>
+        <file>res/share.png</file>
+        <file>res/shareHover.png</file>
+        <file>res/closeLyrics.png</file>
+        <file>res/heart5.png</file>
+        <file>res/heart6.png</file>
+        <file>res/next6.png</file>
+        <file>res/Pause (Filled) (1).png</file>
+        <file>res/pause12.png</file>
+        <file>res/play8.png</file>
+        <file>res/previous6.png</file>
+        <file>res/15_Next.png</file>
+        <file>res/16_Previous.png</file>
+        <file>res/clear.png</file>
+        <file>res/delete.png</file>
+        <file>res/error.png</file>
+        <file>res/otherlist.ico</file>
+        <file>res/rename.png</file>
+        <file>res/songInfo.ico</file>
     </qresource>
 </RCC>

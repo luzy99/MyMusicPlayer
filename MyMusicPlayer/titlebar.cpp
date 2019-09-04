@@ -1,5 +1,4 @@
 #include "titleBar.h"
-#include"mainwidget.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QEvent>
@@ -7,11 +6,10 @@
 #include <QApplication>
 #include <QPalette>
 
-
 TitleBar::TitleBar(QWidget *parent)
     : QWidget(parent)
 {
-//    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAutoFillBackground(true);
     QPalette backPalette;
     backPalette.setColor(QPalette::Window,QColor(25,25,25));
@@ -68,6 +66,7 @@ TitleBar::TitleBar(QWidget *parent)
     settingsBtn->setAttribute(Qt::WA_Hover,true);
     settingsBtn->installEventFilter(this);
     layout->addWidget(settingsBtn);
+
 
 
     //初始化小窗按钮

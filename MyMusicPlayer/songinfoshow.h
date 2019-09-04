@@ -16,22 +16,29 @@ class SongInfoShow : public QWidget
 public:
     explicit SongInfoShow(SongInfo &m_song_info,QWidget *parent = nullptr);
     SongInfoShow(QWidget *parent = nullptr);
+    void initSignalsAndSlots();
     ~SongInfoShow();
 public slots:
     void changeSong(SongInfo &m_song_info);
     void diskRotateStart();
     void diskRotateStop();
 
+private slots:
+    void on_downloadButton_clicked();
+
 private:
+    QString songId;
+    QString songName;
+
     QLabel *titleShow;
     QLabel *artistShow;
     diskWidget *disk;
-    QVBoxLayout *vLayout;
-    QHBoxLayout *hLayout;
+    QVBoxLayout *outerLayout;
+    QHBoxLayout *buttonLayout;
     QPushButton *likeButton;
     QPushButton *starButton;
-    QPushButton *moreInfoButton;
-    QWidget *buttonBar;
+    QPushButton *downloadButton;
+    QPushButton *shareButton;
 };
 
 #endif // SONGINFOSHOW_H

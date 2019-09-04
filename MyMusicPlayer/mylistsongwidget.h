@@ -22,7 +22,7 @@ signals:
 
     void sendRemoveCommand(QString);
 
-    void sendAddIntoSongListCommand(QString);
+    void sendAddIntoSongListCommand(QString,QString);
 
     void sendShowSongListInfoCommand(QString);
 

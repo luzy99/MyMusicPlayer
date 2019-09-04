@@ -26,11 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMinimumSize(1200,800);
     this->setAcceptDrops(true);
 
+    //初始化保存文件夹
+    initDirectory();
+
     //初始化当前歌曲的信息
     currentSongInfo = new SongInfo;
     currentSongInfo->title = "暂无歌曲在播放";
     currentSongInfo->artist = "暂无相关信息";
-    currentSongInfo->album_cover = ":/icon/res/default_cover.png";
+    currentSongInfo->album_cover = QDir::currentPath()+"/CoverImages/defaultCover.png";
     //初始化歌词下载 ,默认不进行翻译
     lyricsDownloader = new LyricDownload;
     translate = false;
@@ -43,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent)
     //初始化标题栏
     titleBar  = new TitleBar;
     titleBar->setObjectName("titleBar");
+    titleBar->setWindowOpacity(0.9);
     outerLayout->addWidget(titleBar,0,Qt::AlignTop);
 
     //初始化主界面装载多页面切换的容器
@@ -53,10 +57,18 @@ MainWindow::MainWindow(QWidget *parent)
     songListPage = new QWidget;
     mainPageContainer->insertWidget(0,songListPage);
     QHBoxLayout *songListPageLayout = new QHBoxLayout;
+    songListPageLayout->setSpacing(0);
+    songListPageLayout->setContentsMargins(0,0,0,0);
+    QVBoxLayout *leftLayout = new QVBoxLayout;
+    leftLayout->setSpacing(0);
+    leftLayout->setContentsMargins(0,0,0,0);
     //初始化歌单界面
     songList = new SongList;
-    songList->setFixedWidth(400);
-    songListPageLayout->addWidget(songList,0,Qt::AlignLeft);
+    leftLayout->addWidget(songList);
+    //初始化小的歌曲显示栏
+    littleSongBar = new LittleSongBar;
+    leftLayout->addWidget(littleSongBar);
+    songListPageLayout->addLayout(leftLayout);
     songListPage->setLayout(songListPageLayout);
 
     //初始化展示歌曲信息的页面
@@ -77,8 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     songInfoPage->setLayout(songInfoPageLayout);
 
     //将多页容器添加至主界面
-    //&&&&&&&&&&&&&&&&&&&&&&&&&&换页&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    mainPageContainer->setCurrentIndex(1);
+    mainPageContainer->setCurrentIndex(0);
     outerLayout->addWidget(mainPageContainer);
 
     //初始化自定义音乐播放栏
@@ -95,8 +106,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //更新拖动区域
     updateDragRegion();
-    //初始化保存文件夹
-    initDirectory();
     //关联信号与槽
     initSignalsAndSlots();
 }
@@ -213,21 +222,35 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onMaximizeWindow()));
     connect(titleBar,SIGNAL(closeWindow()),
             this,SLOT(onCloseWindow()));
+
+    //这是歌曲播放栏和歌词弹幕之间的信号槽
+    //点击时模拟歌曲播放栏的按钮被按下的效果
+    connect(lyricsBarrage->m_previousBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_previousBtn_clicked()));
+    connect(lyricsBarrage->m_playBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_playBtn_clicked()));
+    connect(lyricsBarrage->m_nextBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_nextBtn_clicked()));
+
+    //这是负责处理主窗口中央StackedWidget的页面切换
+    connect(littleSongBar,SIGNAL(changePage(int)),
+            this,SLOT(onChangePage(int)));
 }
 
 //更新拖动区域
 void MainWindow::updateDragRegion()
 {
     QPoint rightBottomPoint(x()+width(),y()+height());
-    dragRegion = QRect(rightBottomPoint.x()-10,rightBottomPoint.y()-10,10,10);
+    dragRegion = QRect(rightBottomPoint.x()-25,rightBottomPoint.y()-25,25,25);
 }
 
 //高斯模糊并将其结果跟新至背景图
 void MainWindow::GaussianBlurUpdate()
 {
     //将当前封面另存为同一目录下的tempCover文件
+    qDebug()<<currentSongInfo->album_cover;
     QFile coverFile(currentSongInfo->album_cover);
-    if(!coverFile.open(QIODevice::ReadWrite))
+    if(!coverFile.open(QIODevice::ReadOnly))
     {
         qDebug()<<"封面文件读取失败!";
         return;
@@ -314,8 +337,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         int newWidth = newRightButtom.x() - this->x();
         int newHeight = newRightButtom.y() - this->y();
         this->setGeometry(this->x(),this->y(),newWidth,newHeight);
-        updateDragRegion();
+
+        QPalette backPalette;
+        QPixmap Image(QDir::currentPath() + "/CoverImages/tempCover.png");
+        QPixmap backImage = Image.scaledToWidth(songInfoPage->width(),Qt::FastTransformation);
+        backPalette.setBrush(backgroundRole(),backImage);
+        songInfoPage->setPalette(backPalette);
     }
+
+   QString tempCoverPath = QDir::currentPath() + "/CoverImages/tempCover.png";
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -329,6 +359,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     {
         clickedType = No;
         updateDragRegion();
+
+        QPalette backPalette;
+        QPixmap Image(QDir::currentPath() + "/CoverImages/tempCover.png");
+        QPixmap backImage = Image.scaledToWidth(songInfoPage->width(),Qt::FastTransformation);
+        backPalette.setBrush(backgroundRole(),backImage);
+        songInfoPage->setPalette(backPalette);
     }
 }
 
@@ -465,6 +501,7 @@ void MainWindow::onRecieveSongInfo(SongInfo *info)
     lyricsBarrage->setWord_list(lyricsShower->getWord_list());
     lyricsBarrage->setInterval_list(lyricsShower->getInterval_list());
 
+    littleSongBar->changeSong(*currentSongInfo);
     infoShow->changeSong(*currentSongInfo);
 }
 
@@ -480,4 +517,10 @@ void MainWindow::onShowLyricsBarrage(bool show)
     {
         lyricsBarrage->hide();
     }
+}
+
+//切换视图中央的界面
+void MainWindow::onChangePage(int index)
+{
+    mainPageContainer->setCurrentIndex(index);
 }

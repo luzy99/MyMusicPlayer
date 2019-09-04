@@ -4,25 +4,22 @@
 #include<QDebug>
 #include<QHBoxLayout>
 #include<QVBoxLayout>
-#include"minilyrics.h"
 #include<QFile>
-
-
+#include"minilyrics.h"
 #define SCROLL 30
 
 //设置窗口位置，并初始化
 miniLyrics::miniLyrics(QWidget *parent)
-    : QWidget (parent)
+    : AbsFrameLessAutoSize(parent)
 {
-    //设置字体格式
-    setGeometry(200,200,500,240);
-    setOriginalStatus();
-    m_Font.setFamily("微软雅黑");
-    setMaximumSize(1000,280);
-    setMinimumSize(400,180);
-    m_HLColor.setRgb(23,234,11);
-    m_NlColor.setRgb(233,144,23);
+    m_precent=0;
+    m_border=8;
 
+    setMouseTracking(true);
+    setWindowFlags(Qt::FramelessWindowHint|Qt::Tool|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint);
+    //窗体透明，图标可见
+    setAttribute(Qt::WA_TranslucentBackground,true);///半透明
+    initWidgetMISC();//初始化界面
     //初始化型号与槽
     initSignalsAndSlots();
 }
@@ -36,40 +33,272 @@ void miniLyrics::initSignalsAndSlots()
 
 miniLyrics::~miniLyrics()
 {
-
+      initWidgetMISC();
 }
 
 //初始化
 void miniLyrics::initWidgetMISC()
 {
-    clearLrc();
-    leftText=" ";
-    rightText=" ";
-    CurIndex=0;
-    CurPos=0;
-    CurStartPos=0;
-    maskLen=0;
-    CurLrc=" ";
+    //梯度下降画出好看的歌词
+    m_maskGradient.setColorAt(0.1,QColor(110,179,217));
+    m_maskGradient.setColorAt(0.5, QColor(255,192,203));
+    m_maskGradient.setColorAt(0.9, QColor(110,179,217));
+
+    m_normalGradient.setColorAt(0.1, QColor(0, 75, 155));
+    m_normalGradient.setColorAt(0.5, QColor(1, 110, 186));
+    m_normalGradient.setColorAt(0.9, QColor(2, 168, 224));
+    //相关参数设置
+    m_isOriginalState=true;
+    m_isDrawBrush=false;
+
+    setMinimumSize(1000,120);
+    setMaximumHeight(250);
+    setOriginalStatus();
+    QSize m_size(30,30);
+    m_topWid=new QWidget(this);
+
+    //m_topWid->setFixedHeight(20);
+
+    /*QString Str="QPushButton"
+                   "{background:cmyk(0,0,0,75);}"
+                   "QPushButton::hover"
+                   "{background:cmyk(0,0,0,85);}";
+    QString style="QPushButton{border-image:url(:/image/topwidget/btn_close (1).png);background:rgb(0,0,0,75);}"
+                                  "QPushButton::hover{border-image:url(:/image/topwidget/btn_close (2).png);}";*/
+    //按钮布局
+    m_previousBtn=new QPushButton;
+    m_previousBtn->setIcon(QIcon(":/icon/res/16_Previous.png"));
+    m_previousBtn->setIconSize(m_size);
+    m_previousBtn->setFixedSize(30,30);
+    m_previousBtn->setFlat(true);
+    m_previousBtn->setToolTip("上一首");
+
+    m_playBtn=new QPushButton;
+    m_playBtn->setIcon(QIcon(":/icon/res/play8.png"));
+    m_playBtn->setIconSize(m_size);
+    m_playBtn->setFixedSize(30,30);
+    m_playBtn->setFlat(true);
+    m_playBtn->setToolTip("播放");
+
+    m_nextBtn=new QPushButton;
+    m_nextBtn->setFixedSize(30,30);
+    m_nextBtn->setIconSize(m_size);
+    m_nextBtn->setToolTip("下一首");
+    m_nextBtn->setIcon(QIcon(":/icon/res/15_Next.png"));
+    m_nextBtn->setFlat(true);
+
+    m_closeBtn=new QPushButton(this);
+    m_closeBtn->setIcon(QIcon(":/icon/res/closeLyrics.png"));
+    m_closeBtn->setIconSize(m_size);
+    m_closeBtn->setFixedSize(30,30);
+    m_closeBtn->setFlat(true);
+    m_closeBtn->setToolTip("关闭");
+
+    m_forward=new QPushButton;
+    m_forward->setFixedSize(30,30);
+    m_forward->setIconSize(m_size);
+    m_forward->setIcon(QIcon(":/icon/res/previous6.png"));
+    m_forward->setToolTip("歌词前进0.5秒");
+    m_forward->setFlat(true);
+
+    m_backward=new QPushButton;
+    m_backward->setFixedSize(30,30);
+    m_backward->setIconSize(m_size);
+    m_backward->setIcon(QIcon(":/icon/res/next6.png"));
+    m_backward->setFlat(true);
+    m_backward->setToolTip("歌词后退0.5秒");
+
+    QHBoxLayout *hl=new QHBoxLayout;
+    hl->setSpacing(25);
+    hl->setContentsMargins(0,0,0,0);
+    hl->setAlignment(Qt::AlignHCenter);
+    hl->addWidget(m_previousBtn);
+    hl->addWidget(m_playBtn);
+    hl->addWidget(m_nextBtn);
+    hl->addWidget(m_forward);
+    hl->addWidget(m_backward);
+    hl->addWidget(m_closeBtn);
+    m_topWid->setFixedHeight(40);
+
+
+    m_topWid->setLayout(hl);
+    //隐藏相关按钮
+    m_closeBtn->hide();
+    m_playBtn->hide();
+    m_previousBtn->hide();
+    m_nextBtn->hide();
+    m_backward->hide();
+    m_forward->hide();
 }
 
-//调用画图函数
+//画歌词
 void miniLyrics::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
 //    analyzeLrcContent("28854853");
-    DrawItem(painter);
+    // 以下为两部分
+   getCurrentLrc();
+
+   QFont ft=font();
+   QFontMetrics metrics(ft);
+   if(!m_isOriginalState)
+   {
+           int y=((height()-20)/2-metrics.height())/2+20;
+           int bottomwidth=width()-metrics.width(m_Text2);
+        //第一部分
+
+           m_normalGradient.setStart(0, y);
+           m_normalGradient.setFinalStop(0, y+metrics.height());
+
+           painter.setPen(QColor(0, 0, 0, 200));
+           painter.drawText(11, y+1,metrics.width(m_Text1),metrics.height(),Qt::AlignLeft,m_Text1);//左对齐
+
+           painter.setPen(QPen(m_normalGradient,0));
+           painter.drawText(10, y,metrics.width(m_Text1),metrics.height(),Qt::AlignLeft, m_Text1);
+
+
+           //第二部分
+
+           m_normalGradient.setStart(0, y+height()/2);
+           m_normalGradient.setFinalStop(0, y+(height()-20)/2+metrics.height());
+
+
+           painter.setPen(QColor(0, 0, 0, 200));
+           painter.drawText(bottomwidth-9, y+(height()-20)/2+1,metrics.width(m_Text2),metrics.height(),Qt::AlignLeft,m_Text2);//左对齐
+
+           painter.setPen(QPen(m_normalGradient,0));
+           painter.drawText(bottomwidth-10, y+(height()-20)/2,metrics.width(m_Text2),metrics.height(),Qt::AlignLeft, m_Text2);
+
+           if(CurIndex%2==0)
+           {
+                   m_maskGradient.setStart(0, y);
+                   m_maskGradient.setFinalStop(0, y+metrics.height());
+
+                   painter.setPen(QPen(m_maskGradient, 0));
+                   painter.drawText(10, y, maskLen, metrics.height(),Qt::AlignLeft ,m_Text1);
+
+           }
+           else
+           {
+                   m_maskGradient.setStart(0, y+(height()-20)/2);
+                   m_maskGradient.setFinalStop(0, y+(height()-20)/2+metrics.height());
+
+                   painter.setPen(QPen(m_maskGradient, 0));
+                   painter.drawText(bottomwidth-10, y+(height()-20)/2, maskLen,  metrics.height(),Qt::AlignLeft, m_Text2);
+           }
+   }
+
+   else//显示原始歌词
+   {
+       QString str="欢迎使用Rainbow音乐播放器";
+       int y=(height()-20-metrics.height())/2+20;
+       int x=(width()-metrics.width(str))/2;
+       m_normalGradient.setStart(0, y);
+       m_normalGradient.setFinalStop(0, y+metrics.height());
+
+       painter.setPen(QColor(0, 0, 0, 200));
+       painter.drawText(x+1,y+1,metrics.width(str),metrics.height(),Qt::AlignLeft,str);//左对齐
+
+       painter.setPen(QPen(m_normalGradient,0));
+       painter.drawText(x,y,metrics.width(str),metrics.height(),Qt::AlignLeft,str);//左对齐
+   }
+
+   if(m_isDrawBrush)//显示歌词操作框
+   {
+       painter.setPen(QPen(QColor(0,0,0,75),1,Qt::DotLine));
+       painter.setBrush(QColor(0,0,0,75));
+       painter.drawRect(1,20,width()-2,height()-21);
+   }
+}
+//初始化大小
+void miniLyrics::resizeEvent(QResizeEvent *)
+{
+    m_topWid->setGeometry(0,0,width(),20);
+    QFont font;
+    font.setFamily("微软雅黑");
+    font.setPointSize(height()/4);
+    setFont(font);
+}
+//鼠标进入事件
+void miniLyrics::enterEvent(QEvent *)
+{
+    setCursor(Qt::SizeAllCursor);
+    m_closeBtn->show();
+    m_playBtn->show();
+    m_previousBtn->show();
+    m_nextBtn->show();
+    m_forward->show();
+    m_backward->show();
+    m_isDrawBrush=true;
+    update();
+}
+//鼠标离开事件
+void miniLyrics::leaveEvent(QEvent *)
+{
+     m_isDrawBrush=false;
+     setCursor(Qt::ArrowCursor);
+     m_closeBtn->hide();
+     m_playBtn->hide();
+     m_previousBtn->hide();
+     m_nextBtn->hide();
+     m_backward->hide();
+     m_forward->hide();
+     update();
+}
+
+void miniLyrics::mouseMoveEvent(QMouseEvent *e)
+{
+    AbsFrameLessAutoSize::mouseMoveEvent(e);
+    m_isDrawBrush=true;
+
+    m_closeBtn->show();
+    m_playBtn->show();
+    m_previousBtn->show();
+    m_nextBtn->show();
+    m_forward->show();
+    m_backward->show();
+    update();
 }
 //初始化
 void miniLyrics::setOriginalStatus()
 {
-    percent=0;
-    maskLen=0;
-    leftText=" ";
-    rightText=" ";
-    CurPos=0;
+    m_Text1="";
+    m_Text2="";
+    m_isOriginalState=true;
     CurIndex=0;
-    CurLrc=" ";
-    CurStartPos=0;
+    clearLrc();
+    update();
+}
+
+void miniLyrics::setCurrentAndNextLrc(const QString &, const QString &)
+{
+
+}
+
+//获取两句可显示歌词的前一句和后一句并获取当前高亮歌词
+void miniLyrics::getCurrentLrc()
+{
+    //clearLrc();
+    //analyzeLrcContent("28854853");
+    int index=CurIndex;
+    if(index<m_lineMap.count())
+    {
+    if(index%2==0)
+    {
+       m_Text1=m_lineMap.values()[index];
+        if(index!=m_lineMap.count()-1)
+        {
+        m_Text2=m_lineMap.values()[index+1];}
+        else {
+            m_Text2=" ";
+        }
+    }
+    else if(index%2==1)
+    {
+        m_Text1=m_lineMap.values()[index-1];
+        m_Text2=m_lineMap.values()[index];
+    }
+    }
 }
 
 QString miniLyrics::GetLrcByIndex(int index)
@@ -201,85 +430,15 @@ void miniLyrics::clearLrc()
     m_lineMap.clear();
 }
 
-void miniLyrics::DrawItem(QPainter &Painter)
-{
-    float offset=abs(width()-height());
-    if(width()>height())
-    {
-    m_Font.setPixelSize((height()/7+width()/(20+offset))/2);//得到字的像素
-    }
-    else if(width()<=height())
-    {
-        m_Font.setPixelSize((height()/(7+offset)+width()/20)/2);
-    }
-    else
-    {
-    }
-    /*else {
-        m_Font.setPixelSize((height()+width())/14);
-    }*/
-
-    float relativeW=width()/20;//设置相对宽度
-    float relativeH=height()/6;//设置相对高度
-    //int index=CurIndex/2;
-    //leftText=DualLyc.keys()[index];
-    //rightText=DualLyc.values()[index];
-    int index=CurIndex;
-    Painter.setFont(m_Font);
-    Painter.setPen(m_NlColor);
-    QFontMetrics metric(m_Font);
-    int xRight=(width()-metric.QFontMetrics::horizontalAdvance(rightText)-relativeW);
-    int yRight=(height()-metric.height()-relativeH);
-    GetMaskLen();
-    if(index%2==0)
-    {
-        leftText=m_lineMap.values()[index];
-        if(index!=m_lineMap.count()-1)
-        {
-        rightText=m_lineMap.values()[index+1];
-        }
-        else
-        {
-            rightText=" ";
-        }
-        Painter.drawText(relativeW,relativeH,width(),metric.height(),Qt::AlignLeft,leftText);
-        Painter.drawText(xRight,yRight,width(),metric.height(),Qt::AlignLeft,rightText);
-        Painter.setPen(m_HLColor);
-        Painter.drawText(relativeW,relativeH,maskLen,metric.height(),Qt::AlignLeft,leftText);
-    }
-    else
-    {
-        leftText=m_lineMap.values()[index-1];
-        rightText=m_lineMap.values()[index];
-        Painter.drawText(relativeW,relativeH,width(),metric.height(),Qt::AlignLeft,leftText);
-        Painter.drawText(xRight,yRight,width(),metric.height(),Qt::AlignLeft,rightText);
-        Painter.setPen(m_HLColor);
-        Painter.drawText(xRight,yRight,maskLen,metric.height(),Qt::AlignLeft,rightText);
-    }
-
-
-   /* Painter.drawText(width()/10,width()/10,width(),metric.height(),Qt::AlignLeft,leftText);
-    Painter.drawText(xRight,yRight,width(),metric.height(),Qt::AlignLeft,rightText);
-    if(CurIndex%2==0)
-    {
-        Painter.setPen(m_HLColor);
-        Painter.drawText(0,0,maskLen,metric.height(),Qt::AlignLeft,leftText);
-    }
-    else {
-        Painter.setPen(m_HLColor);
-        Painter.drawText(xRight,35,maskLen,metric.height(),Qt::AlignLeft,rightText);
-    }*/
-}
-
 QString miniLyrics::GetLrcByTime(qint64 time)
 {
-    int index=GetIndexByTime(time);
+    int index = GetIndexByTime(time);
     return m_lineMap.values().value(index);
 }
 
 void miniLyrics::getPosInfo(int &keyTime, int &interval, float &precent, QString &str)
 {
-    if(m_word_list.size()<=CurIndex)
+    if(m_word_list.size() <= CurIndex)
     {
         return;
     }
@@ -288,10 +447,10 @@ void miniLyrics::getPosInfo(int &keyTime, int &interval, float &precent, QString
 
     const QMap<int ,int> & interval_map= m_interval_list.at(CurIndex);
 
-    int subvalue=abs(CurPos-CurStartPos);
-    int lt=0;
-    int rt= interval_map.keys().count();
-    int mid=0;
+    int subvalue = abs(CurPos-CurStartPos);
+    int lt = 0;
+    int rt = interval_map.keys().count();
+    int mid = 0;
 
     while (lt < rt-1)
     {
@@ -319,20 +478,20 @@ void miniLyrics::GetMaskLen()
         return;
       }
 
-    static float s_fPercent=0.0f;
-    static float s_keyLen=0.0f;
-    static float s_curLen=0.0f;
+    static float s_fPercent = 0.0f;
+    static float s_keyLen = 0.0f;
+    static float s_curLen = 0.0f;
 
-    int keyTime=0;
-    int interval=0;
+    int keyTime = 0;
+    int interval = 0;
     //是这个字占这一句总的百分比
-    float percent1=0;
+    float percent1 = 0;
     //这个一个字已经播的占它总播放进度的百分比
-    float percent2=0.0;
+    float percent2 = 0.0;
     QString strKeyWord(" ");
     //获取正在播放的那一个字的开始时间，间隔，在所有字数中的百分比，那一个字
     getPosInfo(keyTime,interval,percent,strKeyWord);
-    QFont fontTemp=m_Font;
+    QFont fontTemp=font();
     QFontMetrics metrics(fontTemp);
     if(s_fPercent != percent)
     {
@@ -340,13 +499,13 @@ void miniLyrics::GetMaskLen()
         s_fPercent=percent;
     }
 
-    if(interval!=0)
+    if(interval != 0)
     {
        //percent2=(float)(m_nCurPos-m_nCurStartPos-keyTime)/interval;
         percent2=(float)(CurPos-keyTime)/interval;
        s_curLen=s_keyLen+metrics.QFontMetrics::horizontalAdvance(strKeyWord)*percent2;
        maskLen=s_curLen;
-       if(percent2<=1.0f && s_curLen >= maskLen)
+       if(percent2 <=1.0f && s_curLen >= maskLen)
           {
            maskLen=s_curLen;
           }
@@ -387,8 +546,9 @@ void miniLyrics::onPositionChanged(qint64 length)
     CurStartPos=GetPosByindex(CurIndex);
     CurLrc=GetLrcByIndex(CurIndex);
      maskLen=0.0f;
-     m_timer.start(SCROLL);
+     m_isOriginalState=false;
      GetMaskLen();
+     m_timer.start(SCROLL);
      update();
 }
 

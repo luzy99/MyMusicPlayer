@@ -17,6 +17,7 @@
 #include "songinfo.h" //代表歌曲信息的头文件
 #include "songinfoshow.h" //展示歌曲信息的头文件
 #include "audiotag.h" //爬取歌曲信息的组件
+#include "littlesongbar.h"
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -59,6 +60,8 @@ private slots:
     void onRecieveSongInfo(SongInfo *info); //接受歌单爬取的歌曲信息并更新至主页面
     void onShowLyricsBarrage(bool show); //显示&隐藏底部歌词弹幕
 
+    //这是切换界面的槽函数
+    void onChangePage(int index);
 
 private:
     TitleBar *titleBar; //自定义标题栏
@@ -78,6 +81,7 @@ private:
 
     QWidget *songListPage; //展示歌单信息页面
     SongList *songList; //歌单列表
+    LittleSongBar *littleSongBar; //底部小的歌曲信息展示
 
     QWidget *songInfoPage; //展示歌曲信息页面
     SongInfoShow *infoShow; //歌曲信息显示

@@ -58,7 +58,7 @@ public slots:
     void setSongLiked(QString);
     void setSongDisliked(QString);
     void setSongRemove(QString);
-    void setSongAddInto(QString);
+    void setSongAddInto(QString,QString);
     void setSongInfoShowed(QString);
     //拖拽或者添加文件的槽函数
     void addNewSong(QString);

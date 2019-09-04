@@ -27,10 +27,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    absframelessautosize.cpp \
+    addintosonglist.cpp \
     audiotag.cpp \
     createsonglistdialog.cpp \
     diskwidget.cpp \
     downloadwindow.cpp \
+    errorwindow.cpp \
+    littlesongbar.cpp \
     lyricdownload.cpp \
     lyricwidget.cpp \
         main.cpp \
@@ -48,10 +52,14 @@ SOURCES += \
     titlebar.cpp
 
 HEADERS += \
+    absframelessautosize.h \
+    addintosonglist.h \
     audiotag.h \
     createsonglistdialog.h \
     diskwidget.h \
     downloadwindow.h \
+    errorwindow.h \
+    littlesongbar.h \
     lyricdownload.h \
     lyricwidget.h \
     mainwindow.h \

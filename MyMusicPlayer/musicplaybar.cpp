@@ -714,6 +714,7 @@ void MusicPlayBar::on_showLyricsBtn_clicked()
     if(player->mediaStatus() != QMediaPlayer::NoMedia)
     {
         bool allowHover = !(showLyricsBtn->isChecked());
+
         showLyricsBtn->setAttribute(Qt::WA_Hover,allowHover);
         if(!allowHover)
         {
@@ -724,8 +725,8 @@ void MusicPlayBar::on_showLyricsBtn_clicked()
             showLyricsBtn->setIcon(QIcon(":/icon/res/lyrics.png"));
         }
 
-            //发送信号,决定底部弹幕的显示或隐藏
-            emit showLyricsBarrage(!allowHover);
+       //发送信号,决定底部弹幕的显示或隐藏
+       emit showLyricsBarrage(!allowHover);
     }
     else
     {

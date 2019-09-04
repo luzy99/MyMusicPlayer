@@ -18,7 +18,6 @@ public:
 
 private slots:
     void on_renameButtonClicked();
-
     void on_cancelButtonClicked();
 
 private:
