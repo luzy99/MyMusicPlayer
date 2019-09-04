@@ -362,7 +362,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
         QPalette backPalette;
         QPixmap Image(QDir::currentPath() + "/CoverImages/tempCover.png");
-        QPixmap backImage = Image.scaledToWidth(songInfoPage->width(),Qt::FastTransformation);
+        QPixmap backImage = Image.scaledToWidth(songInfoPage->width(),Qt::SmoothTransformation);
         backPalette.setBrush(backgroundRole(),backImage);
         songInfoPage->setPalette(backPalette);
     }

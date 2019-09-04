@@ -26,205 +26,89 @@ SongList::SongList(QWidget *parent)
         qDebug()<<"数据库打开失败";
     }
 
-    //数据成员初始化，各个窗口父子关系确认
-    g_container = new QGroupBox (this);
-    scrollSongs = new QScrollArea (g_container);
-    scrollLists = new QScrollArea (g_container);
-    scrollListsWidget = new QWidget(scrollLists);
-    scrollSongsWidget = new QWidget (scrollSongs);
-    listList = new MyListListWidget(scrollListsWidget);
-    listSongs = new MyListSongWidget(scrollSongsWidget);
-    labelLists = new QLabel(scrollListsWidget);
-    labelSongs = new QLabel(scrollSongsWidget);
+    //初始化窗体信息
+    this->setWindowFlags(Qt::FramelessWindowHint);
 
-    addSongBtn = new QPushButton(scrollSongsWidget);
-    createMusicListButton = new QPushButton(scrollListsWidget);
+    //整体采用垂直布局
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setContentsMargins(0,0,0,0);
 
-
-    //各个窗口位置确认
-    g_container->setGeometry(0, 0, 240 , 870);
-    scrollLists->setGeometry(0, 0, 240, 290);
-    scrollSongs->setGeometry(0, 290, 240, 580);
-
-    scrollListsWidget->setGeometry(0, 0, 230, 290);
-    scrollListsWidget->setMinimumSize(230, 290);
-
-    scrollSongsWidget->setGeometry(0, 0, 230 , 580);
-    scrollSongsWidget->setMinimumSize(230, 580);
-
-    labelLists->setGeometry(0, 0 , 230 ,30);
-    labelSongs->setGeometry(0, 0, 230, 30);
-
-    listList->setGeometry(0, 30, 230, 260);
-    listSongs->setGeometry(0, 30, 230, 550);
-
-    createMusicListButton->setGeometry(200, 0, 30, 30);
-    addSongBtn->setGeometry(200, 0, 30, 30);
-    //设置两个滚轮区无边框
-    scrollLists->setFrameShape(QFrame::NoFrame);
-    scrollSongs->setFrameShape(QFrame::NoFrame);
-
-    //消除滚轮区内部的窗口边框
-    listList->setFrameShape(QFrame::NoFrame);
-    listSongs->setFrameShape(QFrame::NoFrame);
-
-    //标签文字
+    //初始化歌单标签区域
+    QHBoxLayout *listHLayout = new QHBoxLayout;
+    listHLayout->setSpacing(0);
+    listHLayout->setContentsMargins(10,0,0,0);
+    labelLists = new QLabel;
+    labelLists->setFixedHeight(30);
     labelLists->setText(" 我的歌单");
-    labelSongs->setText(" 播放列表");
-    labelLists->setStyleSheet("color:rgb(139, 139, 139);");
-    labelSongs->setStyleSheet("color:rgb(139, 139, 139);");
-
-    //新建歌单按钮样式
+    labelLists->setFont(QFont("Microsoft YaHei", 10, 25));
+    listHLayout->addWidget(labelLists);
+    //初始化新建歌单的按钮
+    createMusicListButton = new QPushButton;
+    createMusicListButton->setObjectName("createMusicListButton");
     createMusicListButton->setFlat(true);
     createMusicListButton->setIcon(QIcon(":/icon/res/add.png"));
-//    createMusicListButton->setStyleSheet("QPushButton {"
-//                                             "border: 0px solid #8f8f91;"
-//                                             "border-radius:15px;"
-//                                             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-//                                             "stop: 0 #f6f7fa, stop: 1 #dadbde);"
-//                                             "min-width: 10px;"
-//                                         "}");
-    //添加歌曲按钮
-    addSongBtn->setFlat(true);
-    addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
+    createMusicListButton->setIconSize(QSize(20,20));
+    createMusicListButton->setFixedSize(30,30);
+    listHLayout->addWidget(createMusicListButton);
+    layout->addLayout(listHLayout);
 
-    //滚轮属性
-    scrollLists->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    scrollSongs->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-
-    //设置滚轮样式
+    //初始化歌单显示区域
+    scrollLists = new QScrollArea;
+    scrollLists->setFrameShape(QFrame::NoFrame);
+    QHBoxLayout *scrollListsLayout = new QHBoxLayout;
+    scrollListsLayout->setSpacing(0);
+    scrollListsLayout->setContentsMargins(0,0,0,0);
+    listList = new MyListListWidget;
+    listList->setFrameShape(QFrame::NoFrame);
+    listList->setMouseTracking(true); //此处极为关键，若不设置的话，itemEnter()函数将异常
+    scrollListsLayout->addWidget(listList);
+    scrollLists->setLayout(scrollListsLayout);
+    scrollListsWidget = new QWidget;
     scrollLists->setWidget(scrollListsWidget);
-    scrollSongs->setWidget(scrollSongsWidget);
+    layout->addWidget(scrollLists);
 
-    QString scrollStyleSheet = "QScrollBar:vertical"
-                               "{   width:8px;  "
-                               "   background:rgba(0,0,0,0%);"
-                               "    margin:0px,0px,0px,0px;"
-                                "   padding-top:9px;"
-                                "   padding-bottom:9px;"
-                              " }"
-                               "QScrollBar::handle:vertical"
-                               "{"
-                                   "width:8px;"
-                                  " background:rgba(0,0,0,25%);"
-                                  " border-radius:4px;"
-                                   "min-height:20;"
-                               "}"
-                               "QScrollBar::handle:vertical:hover"
-                               "{"
-                                  " width:8px;"
-                                  " background:rgba(0,0,0,50%);"
-                                  " border-radius:4px;"
-                                  " min-height:20;"
-                               "}"
-                               "QScrollBar::add-line:vertical"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/3.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:vertical"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/1.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-line:vertical:hover"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/4.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:vertical:hover"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/2.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical"
-                               "{"
-                                   "background:rgba(0,0,0,10%);"
-                                   "border-radius:4px;"
-                               "}"
+    //初始化歌曲标签区域
+     QHBoxLayout *songHLayout = new QHBoxLayout;
+     songHLayout->setSpacing(0);
+     songHLayout->setContentsMargins(10,0,0,0);
+     labelSongs = new QLabel;
+     labelSongs->setFixedHeight(30);
+     labelSongs->setText(" 播放列表");
+     labelSongs->setFont(QFont("Microsoft YaHei", 10, 25));
+     songHLayout->addWidget(labelSongs);
+     //初始化添加歌曲的按钮
+     addSongBtn = new QPushButton;
+     addSongBtn->setObjectName("addSongBtn");
+     addSongBtn->setFlat(true);
+     addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
+     addSongBtn->setIconSize(QSize(20,20));
+     addSongBtn->setFixedSize(30,30);
+     songHLayout->addWidget(addSongBtn);
+     layout->addLayout(songHLayout);
 
-                               "QScrollBar:horizontal"
-                               "{"
-                                   "width:8px;"
-                                   "background:rgba(0,0,0,0%);"
-                                   "margin:0px,0px,0px,0px;"
-                                   "padding-top:9px;"
-                                   "padding-bottom:9px;"
-                               "}"
-                               "QScrollBar::handle:horizontal"
-                               "{"
-                                  " width:8px;"
-                                  " background:rgba(0,0,0,25%);"
-                                  " border-radius:4px;"
-                                   "min-height:20;"
-                               "}"
-                               "QScrollBar::handle:horizontal:hover"
-                               "{"
-                                   "width:8px;"
-                                  " background:rgba(0,0,0,50%);"
-                                   "border-radius:4px;"
-                                  " min-height:20;"
-                               "}"
-                               "QScrollBar::add-line:horizontal"
-                               "{"
-                                  " height:9px;width:8px;"
-                                  " border-image:url(:/images/a/3.png);"
-                                  " subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:horizontal"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/1.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-line:horizontal:hover"
-                              " {"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/4.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:horizontal:hover"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/2.png);"
-                                   "subcontrol-position:left;"
-                              " }"
-                               "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal "
-                               "{"
-                                   "background:rgba(0,0,0,10%);"
-                                   "border-radius:4px;"
-                               "}";
-
-    scrollLists->setStyleSheet(scrollStyleSheet);
-
-    scrollSongs->setStyleSheet(scrollStyleSheet);
+     //初始化歌曲显示区域
+     scrollSongs = new QScrollArea;
+     scrollSongs->setFrameShape(QFrame::NoFrame);
+     QHBoxLayout *scrollSongsLayout = new QHBoxLayout;
+     scrollSongsLayout->setSpacing(0);
+     scrollSongsLayout->setContentsMargins(0,0,0,0);
+     listSongs = new MyListSongWidget;
+     listSongs->setFrameShape(QFrame::NoFrame);
+     listSongs->setMouseTracking(true);
+     scrollSongsLayout->addWidget(listSongs);
+     scrollSongs->setLayout(scrollSongsLayout);
+     layout->addWidget(scrollSongs);
 
     //初始化歌单
     initSonglist();
     showSongsOfList("我喜欢的音乐");
 
-
-    listList->setMouseTracking(true); //此处极为关键，若不设置的话，itemEnter()函数将异常
-
-    listSongs->setMouseTracking(true);
-
     tempInfo = new SongInfo;
     tempInfo->title = "暂无歌曲在播放";
     tempInfo->artist = "暂无相关信息";
 
-    //让部件显示
-    g_container->show();
-    scrollLists->show();
-    scrollSongs->show();
-    scrollListsWidget->show();
-    scrollSongsWidget->show();
-    listList->show();
-    listSongs->show();
+    this->setLayout(layout);
 
     initSignalsAndSlots();
 }
@@ -358,39 +242,6 @@ void SongList::refuseChangeList(int status)
     errordlg->show();
     errordlg->showInstantly();
 }
-
-//当窗口发生改变的时候，歌单部分按照比例缩放
-void SongList::resetGeometry()
-{
-    QWidget *pWindow = this->window();
-    QSize pWindowSize = pWindow->size();
-    int sizeY = pWindowSize.height();
-    int sizeX = pWindowSize.width();
-    this->resize(sizeX , sizeY);
-    g_container->setGeometry(0, 0, 240 , sizeY-30);
-
-    scrollLists->setGeometry(0, 0, 240,  ((sizeY-30 ))/3);
-    scrollSongs->setGeometry(0, ((sizeY-30 ))/3, 240, (2*(sizeY-30))/3);
-
-//    scrollListsWidget->setGeometry(0, 0, 230, ((sizeY-30 ))/3);
-//    scrollListsWidget->setMinimumSize(230, ((sizeY-30))/3);
-
-//    scrollSongsWidget->setGeometry(0, 0, 230 , (2*(sizeY-30))/3);
-//    scrollSongsWidget->setMinimumSize(230, (2*(sizeY-30))/3);
-
-
-//    listList->setGeometry(0, 30, 230, ((sizeY-30 ))/3 - 30);
-//    listList->setMinimumSize(230 , 260);
-//    listSongs->setGeometry(0, 30, 230, (2*(sizeY-30))/3 - 30);
-//    listSongs->setMinimumSize(230 , 550);
-}
-
-//void SongList::onListSongsDoubleClicked(const QModelIndex &index)
-//{
-//    int curRow = index.row();
-//    emit playMusic(curRow);
-//}
-
 
 //当歌单里的项被点击时
 void SongList::onListListItemClicked(QListWidgetItem *item)

@@ -38,7 +38,6 @@ signals:
     void sendSongInfo(SongInfo *);
 
 public slots:
-    void resetGeometry();
     //void onListSongsDoubleClicked(const QModelIndex &index); //双击歌曲项时的槽函数
     //void onChangeListSongs(QString fileName, int behaviorIndex); //处理changeListSongs信号的槽函数
 
@@ -67,7 +66,6 @@ public slots:
 private:
     QSqlDatabase db;
 
-    QGroupBox *g_container;
     QScrollArea *scrollLists;
     QScrollArea *scrollSongs;
     QWidget *scrollListsWidget;
