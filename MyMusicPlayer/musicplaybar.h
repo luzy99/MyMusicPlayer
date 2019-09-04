@@ -56,6 +56,9 @@ public slots:
     void on_translateBtn_clicked(); //翻译歌词时触发
     void on_playSpeedBtn_clicked(); //切换倍速时触发
 
+    void onCloseLyrics(); //底部歌词弹幕自己关闭自己时
+    void onRemotePlay(); //底部歌词弹幕改变播放状态时
+
 private:
     QHBoxLayout *layout;
 

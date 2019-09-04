@@ -55,8 +55,12 @@ protected:
 
 private slots:
     void slot_timer();
+
+
 public slots:
     void onPositionChanged(qint64 length);//歌曲播放信息变化时发出的信号
+    void onBecomePlaying(); //表示接下来播放
+    void onBecomePausing(); //表示接下来暂停
 
 private:
 

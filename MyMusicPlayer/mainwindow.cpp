@@ -228,9 +228,15 @@ void MainWindow::initSignalsAndSlots()
     connect(lyricsBarrage->m_previousBtn,SIGNAL(clicked()),
             musicPlayBar,SLOT(on_previousBtn_clicked()));
     connect(lyricsBarrage->m_playBtn,SIGNAL(clicked()),
-            musicPlayBar,SLOT(on_playBtn_clicked()));
+            musicPlayBar,SLOT(onRemotePlay()));
     connect(lyricsBarrage->m_nextBtn,SIGNAL(clicked()),
             musicPlayBar,SLOT(on_nextBtn_clicked()));
+    connect(lyricsBarrage->m_closeBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(onCloseLyrics()));
+    connect(musicPlayBar,SIGNAL(becomePlaying()),
+            lyricsBarrage,SLOT(onBecomePlaying()));
+    connect(musicPlayBar,SIGNAL(becomePausing()),
+            lyricsBarrage,SLOT(onBecomePausing()));
 
     //这是负责处理主窗口中央StackedWidget的页面切换
     connect(littleSongBar,SIGNAL(changePage(int)),

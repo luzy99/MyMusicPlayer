@@ -29,6 +29,8 @@ void miniLyrics::initSignalsAndSlots()
 {
     connect(&m_timer,SIGNAL(timeout()),
             this,SLOT(slot_timer()));
+    connect(m_closeBtn,SIGNAL(clicked()),
+            this,SLOT(hide()));
 }
 
 miniLyrics::~miniLyrics()
@@ -74,7 +76,7 @@ void miniLyrics::initWidgetMISC()
     m_previousBtn->setToolTip("上一首");
 
     m_playBtn=new QPushButton;
-    m_playBtn->setIcon(QIcon(":/icon/res/play8.png"));
+    m_playBtn->setIcon(QIcon(":/icon/res/Pause (Filled) (1).png"));
     m_playBtn->setIconSize(m_size);
     m_playBtn->setFixedSize(30,30);
     m_playBtn->setFlat(true);
@@ -537,6 +539,18 @@ void miniLyrics::slot_timer()
 {
     GetMaskLen();
     repaint();
+}
+
+//表示接下来播放
+void miniLyrics::onBecomePlaying()
+{
+    m_playBtn->setIcon(QIcon(":/icon/res/Pause (Filled) (1).png"));
+}
+
+//表示接下来暂停
+void miniLyrics::onBecomePausing()
+{
+    m_playBtn->setIcon(QIcon(":/icon/res/play8.png"));
 }
 
 void miniLyrics::onPositionChanged(qint64 length)

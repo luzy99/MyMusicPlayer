@@ -443,13 +443,12 @@ void MusicPlayBar::onStateChanged(QMediaPlayer::State state)
    bool isPlaying = (state == QMediaPlayer::PlayingState);
    if(isPlaying)
    {
-       playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
-       playBtn->setToolTip("播放");
+       playBtn->setToolTip("暂停");
    }
    else
    {
-       playBtn->setIcon(QIcon(":/icon/res/playHover.png"));
-       playBtn->setToolTip("暂停");
+
+       playBtn->setToolTip("播放");
    }
 }
 
@@ -561,6 +560,7 @@ void MusicPlayBar::on_playBtn_clicked()
     //播放
     if(player->state() == QMediaPlayer::PlayingState )
     {
+        playBtn->setIcon(QIcon(":/icon/res/playHover.png"));
         player->pause();
         emit becomePausing();
     }
@@ -570,6 +570,8 @@ void MusicPlayBar::on_playBtn_clicked()
         {
             playlist->setCurrentIndex(0);
         }
+
+        playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
         player->play();
         emit becomePlaying();
     }
@@ -795,6 +797,34 @@ void MusicPlayBar::on_playSpeedBtn_clicked()
     else
     {
 
+    }
+}
+
+//底部歌词弹幕自己关闭自己时
+void MusicPlayBar::onCloseLyrics()
+{
+    showLyricsBtn->setIcon(QIcon(":/icon/res/lyrics.png"));
+    showLyricsBtn->setChecked(false);
+}
+
+void MusicPlayBar::onRemotePlay()
+{
+    //播放
+    if(player->state() == QMediaPlayer::PlayingState )
+    {
+        player->pause();
+        playBtn->setIcon(QIcon(":/icon/res/play.png"));
+        emit becomePausing();
+    }
+    else
+    {
+        if(playlist->currentIndex()<0)
+        {
+            playlist->setCurrentIndex(0);
+        }
+        player->play();
+        playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+        emit becomePlaying();
     }
 }
 
