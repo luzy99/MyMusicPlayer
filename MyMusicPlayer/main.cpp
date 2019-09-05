@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 //***************************测试用：
-#include "errorwindow.h"
+#include "lyricspost.h"
 
 #include <QApplication>
 #include <QSqlDatabase>
@@ -10,11 +10,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-     MainWindow w;
-     w.show();
-//    ErrorWindow w("测试");
-//    w.show();
-//    w.showInstantly();
+//     MainWindow w;
+//     w.show();
+
+    LyricsPost w("28854853");
+    w.show();
 
     return a.exec();
 }

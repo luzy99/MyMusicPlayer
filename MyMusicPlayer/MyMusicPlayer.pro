@@ -36,6 +36,7 @@ SOURCES += \
     errorwindow.cpp \
     littlesongbar.cpp \
     lyricdownload.cpp \
+    lyricspost.cpp \
     lyricwidget.cpp \
         main.cpp \
     mainwindow.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     errorwindow.h \
     littlesongbar.h \
     lyricdownload.h \
+    lyricspost.h \
     lyricwidget.h \
     mainwindow.h \
     minilyrics.h \

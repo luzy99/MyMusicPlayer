@@ -91,4 +91,21 @@
         <file>res/rename.png</file>
         <file>res/songInfo.ico</file>
     </qresource>
+    <qresource prefix="/providedPosts">
+        <file>res/1.JPG</file>
+        <file>res/2.JPG</file>
+        <file>res/3.JPG</file>
+        <file>res/4.JPG</file>
+        <file>res/5.JPG</file>
+        <file>res/6.JPG</file>
+        <file>res/7.JPG</file>
+        <file>res/8.JPG</file>
+        <file>res/9.JPG</file>
+        <file>res/10.JPG</file>
+        <file>res/11.JPG</file>
+        <file>res/12.JPG</file>
+        <file>res/13.JPG</file>
+        <file>res/14.JPG</file>
+        <file>res/15.JPG</file>
+    </qresource>
 </RCC>
