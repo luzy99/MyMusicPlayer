@@ -1,4 +1,5 @@
 #include "lyricspost.h"
+#include "errorwindow.h"
 #include <QFile>
 #include <QDir>
 #include <QDebug>
@@ -8,7 +9,8 @@
 #include <QFileDialog>
 
 LyricsPost::LyricsPost(QString songId,QWidget *parent)
-    :QWidget (parent)
+    :QWidget (parent),
+     m_Songid(songId)
 {
     //设置窗口大小
     this->setFixedSize(600,1000);
@@ -47,7 +49,6 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     m_pTabWidegt->setGeometry(0,555,600,397);
     m_LyricLabel->setGeometry(0,290,600,20);
     m_pButtonWidget->setGeometry(0,952,600,48);
-
 
     //设置m_pPictureWidget组件大小样式
     QHBoxLayout* lyriclayout=new QHBoxLayout;
@@ -95,7 +96,8 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
         //生成图像objPixmap
         QPixmap objPixmap(strPath);
         //生成QListWidgetItem对象(注意：其Icon图像进行了伸缩[96*96])---scaled函数
-        QListWidgetItem *pItem = new QListWidgetItem(QPixmap(objPixmap.scaled(QSize(120,120))),"animal tiger pig");
+        QListWidgetItem *pItem = new QListWidgetItem(QPixmap(objPixmap.scaled(QSize(120,120))),
+                                                     strPath);
         //设置单元项的宽度和高度
         pItem->setSizeHint(QSize(120,100));
         m_pPictureListWidget->insertItem(nIndex, pItem);
@@ -103,7 +105,6 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
         m_index=15;//有了15张图
 
     }
-
 
     //设置m_pLyricsListWidget窗口的样式
     m_pLyricsListWidget->setStyleSheet("font:20px \"幼圆\";");
@@ -191,9 +192,9 @@ void LyricsPost::analyzeLyrics(QString song_id)
 void LyricsPost::on_itemClicked1(int currow)
 {
     QPalette palette = m_pPictureWidget->palette();
-    QString path=":/providedPosts/res/%1.JPG";
-    QString index=QString::number(currow+1);
-    path=path.arg(index);
+    QListWidgetItem *pItem = m_pPictureListWidget->item(currow);
+    QString path = pItem->text();
+    qDebug()<<path;
     palette.setBrush(QPalette::Window,QBrush(QPixmap(path).scaled(m_pPictureWidget->size(),
                                              Qt::IgnoreAspectRatio,
                                              Qt::SmoothTransformation)));// 使用平滑的缩放方式
@@ -227,10 +228,14 @@ void LyricsPost::on_btnAddPicture_clicked()
     {
         QString file = fileList.at(i);
         QFileInfo fileInfo(file);
-        qDebug()<<fileInfo.filePath();
+        //qDebug()<<fileInfo.filePath();
+        QListWidgetItem *pItem = new QListWidgetItem(QPixmap(fileInfo.filePath()).scaled(QSize(120,120)),
+                                                     fileInfo.filePath());
+        //设置单元项的宽度和高度
+        pItem->setSizeHint(QSize(120,100));
+        m_pPictureListWidget->insertItem(m_index, pItem);
+        m_index++;
     }
-//    m_pPictureListWidget->insertItem(m_index, pItem);
-//    m_index++;
 }
 
 void LyricsPost::on_btnChangeFont_clicked()
@@ -249,15 +254,36 @@ void LyricsPost::on_btnChangeFont_clicked()
 
 void LyricsPost::on_btnSave_clicked()
 {
-    //截图，保存靠你了姐妹
     QRect rect=m_pPictureWidget->geometry();
     QPixmap ptosave=m_pPictureWidget->grab(QRect(0,0,600,600));
-    QString filepath="C:\\Users\\Lenovo\\Desktop\\背景图片\\haha.png";
-    if(!ptosave.save(filepath,"png"))
+    QString filepath;
+    QString saveDirectory = QDir::toNativeSeparators(QFileDialog::getExistingDirectory(this,
+                                                                                  tr("选择文件的保存路径"),
+                                                                                  QDir::currentPath()));
 
-        {
+    if(!saveDirectory.isEmpty())
+    {
+        filepath = saveDirectory+"\\歌词海报"+m_Songid+".png";
+    }
+    else
+    {
+         ErrorWindow *pathFail = new ErrorWindow("请输入正确的文件路径");
+         pathFail->show();
+         pathFail->showInstantly();
+    }
 
-            qDebug()<<"save widget screen failed"<<endl;
-
-        }
+    if(!ptosave.save(filepath))
+    {
+        ErrorWindow *saveFail = new ErrorWindow("图片保存失败");
+        saveFail->show();
+        saveFail->showInstantly();
+        this->close();
+    }
+    else
+    {
+        ErrorWindow *saveSuccess = new ErrorWindow("图片保存成功");
+        saveSuccess->show();
+        saveSuccess->showInstantly();
+        this->close();
+    }
 }
