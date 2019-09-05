@@ -7,6 +7,7 @@
 QT       += core gui
 QT       += sql
 QT       += multimedia
+QT       += multimediawidgets
 QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -42,6 +43,7 @@ SOURCES += \
     mainwindow.cpp \
     minilyrics.cpp \
     musicplaybar.cpp \
+    mvplayer.cpp \
     mylistlistwidget.cpp \
     mylistsongwidget.cpp \
     myprogressbar.cpp \
@@ -68,6 +70,7 @@ HEADERS += \
     mainwindow.h \
     minilyrics.h \
     musicplaybar.h \
+    mvplayer.h \
     mylistlistwidget.h \
     mylistsongwidget.h \
     myprogressbar.h \

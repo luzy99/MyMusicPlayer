@@ -646,6 +646,7 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
             query.exec(QString("update %1 set cover_image = '%2' where songUrl = '%3' ").arg(playingSongList, songInfo->album_cover,filePath));
         }
         tag.idMatch();
+        tag.mvIdMatch();
         qDebug()<<songInfo->song_id;
         emit sendSongInfo(songInfo);
 

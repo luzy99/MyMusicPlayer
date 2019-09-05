@@ -93,6 +93,8 @@
         <file>res/search.png</file>
         <file>res/searchHover.png</file>
         <file>res/defaultUser.png</file>
+        <file>res/exitfullscreen.png</file>
+        <file>res/fullscreen.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>
