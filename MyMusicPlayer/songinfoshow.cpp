@@ -1,6 +1,7 @@
 #include "songinfoshow.h"
 #include "downloadwindow.h"
 #include "lyricspost.h"
+#include "addintosonglist.h"
 #include<QLabel>
 #include<QFont>
 #include<QVBoxLayout>
@@ -45,22 +46,7 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
     buttonLayout->setMargin(0);
     buttonLayout->setSpacing(15);
     buttonLayout->setAlignment(Qt::AlignLeft);
-    //初始化喜欢按钮
-    likeButton =new QPushButton("喜欢");
-    likeButton->setObjectName("likeButton");
-    likeButton->setFont(QFont("Microsoft YaHei", 10, 45));
-    likeButton->setIcon(QIcon(":/icon/res/favourite_d.ico"));
-    likeButton->setIconSize(QSize(25,25));
-    likeButton->setFixedSize(QSize(85,35));
-    //likeButton->setFlat(true);
-    likeButton->setToolTip("点击添加为喜欢的歌");
-    likeButton->setStyleSheet ("border:2px groove gray;" \
-                               "border-radius:10px;" \
-                               "padding:2px 4px;" \
-                               "color: #dbdbdb;");
-    likeButton->setAttribute(Qt::WA_Hover,true);
-    likeButton->installEventFilter(this);
-    buttonLayout->addWidget(likeButton);
+
     //初始化收藏按钮
     starButton =new QPushButton("收藏");
     starButton->setObjectName("starButton");
@@ -70,13 +56,15 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
     starButton->setFixedSize(QSize(85,35));
     //starButton->setFlat(true);
     starButton->setToolTip("点击添加至歌单");
-    starButton->setStyleSheet ("border:2px groove gray;" \
+    starButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
                                "border-radius:10px;" \
                                "padding:2px 4px;" \
-                               "color: #dbdbdb;");
+                               "color: rgb(0,0,0);" \
+                               "background-color: rgba(255,255,255,0.5);");
     starButton->setAttribute(Qt::WA_Hover,true);
     starButton->installEventFilter(this);
     buttonLayout->addWidget(starButton);
+
     //初始化下载按钮
     downloadButton =new QPushButton("下载");
     downloadButton->setObjectName("downloadButton");
@@ -86,13 +74,15 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
     downloadButton->setFixedSize(QSize(85,35));
     //starButton->setFlat(true);
     downloadButton->setToolTip("点击下载歌曲");
-    downloadButton->setStyleSheet ("border:2px groove gray;" \
-                               "border-radius:10px;" \
-                               "padding:2px 4px;" \
-                               "color: #dbdbdb;");
+    downloadButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                   "border-radius:10px;" \
+                                   "padding:2px 4px;" \
+                                   "color: rgb(0,0,0);" \
+                                   "background-color: rgba(255,255,255,0.5);");
     downloadButton->setAttribute(Qt::WA_Hover,true);
     downloadButton->installEventFilter(this);
     buttonLayout->addWidget(downloadButton);
+
     //初始化分享按钮
     shareButton =new QPushButton("分享");
     shareButton->setObjectName("shareButton");
@@ -102,14 +92,33 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
     shareButton->setFixedSize(QSize(85,35));
     //starButton->setFlat(true);
     shareButton->setToolTip("点击分享歌词海报");
-    shareButton->setStyleSheet ("border:2px groove gray;" \
-                               "border-radius:10px;" \
-                               "padding:2px 4px;" \
-                               "color: #dbdbdb;");
+    shareButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                "border-radius:10px;" \
+                                "padding:2px 4px;" \
+                                "color: rgb(0,0,0);" \
+                                "background-color: rgba(255,255,255,0.5);");
     shareButton->setAttribute(Qt::WA_Hover,true);
     shareButton->installEventFilter(this);
     buttonLayout->addWidget(shareButton);
     outerLayout->addLayout(buttonLayout);
+
+    //初始化返回首页按钮
+    pageBackButton =new QPushButton("返回");
+    pageBackButton->setObjectName("pageBackButton");
+    pageBackButton->setFont(QFont("Microsoft YaHei", 10, 45));
+    pageBackButton->setIcon(QIcon(":/icon/res/exitSongInfo.png"));
+    pageBackButton->setIconSize(QSize(25,25));
+    pageBackButton->setFixedSize(QSize(85,35));
+    //pageBackButton->setFlat(true);
+    pageBackButton->setToolTip("点击返回首页");
+    pageBackButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                               "border-radius:10px;" \
+                               "padding:2px 4px;" \
+                               "color: rgb(0,0,0);" \
+                               "background-color: rgba(255,255,255,0.5);");
+    pageBackButton->setAttribute(Qt::WA_Hover,true);
+    pageBackButton->installEventFilter(this);
+    buttonLayout->addWidget(pageBackButton);
 
 //    vLayout->setStretchFactor(titleShow,1);
 //    vLayout->setStretchFactor(artistShow,1);
@@ -130,11 +139,18 @@ SongInfoShow::SongInfoShow(QWidget *parent):
 //初始化信号与槽
 void SongInfoShow::initSignalsAndSlots()
 {
+    //点击收藏按钮添加至歌单
+    connect(starButton,SIGNAL(clicked()),
+            this,SLOT(on_starButton_clicked()));
     //点击下载按钮开始当前歌曲的下载
     connect(downloadButton,SIGNAL(clicked()),
             this,SLOT(on_downloadButton_clicked()));
+    //点击进行歌词海报的分享
     connect(shareButton,SIGNAL(clicked()),
             this,SLOT(on_shareButton_clicked()));
+    //点击返回按钮进行页面切换
+    connect(pageBackButton,SIGNAL(clicked()),
+            this,SLOT(on_pageBackButton_clicked()));
 }
 
 SongInfoShow::~SongInfoShow()
@@ -142,6 +158,93 @@ SongInfoShow::~SongInfoShow()
     delete titleShow;
     delete artistShow;
     delete disk;
+}
+
+//事件过滤器
+bool SongInfoShow::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj->objectName() == "starButton")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            starButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.7);");
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            starButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.5);");
+        }
+    }
+    else if(obj->objectName() == "downloadButton")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            downloadButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.7);");
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            downloadButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.5);");
+        }
+    }
+    else if(obj->objectName() == "shareButton")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            shareButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.7);");
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            shareButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.5);");
+        }
+    }
+    else if(obj->objectName() == "pageBackButton")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            pageBackButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.7);");
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            pageBackButton->setStyleSheet ("border:2px groove rgb(0,0,0);" \
+                                       "border-radius:10px;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(0,0,0);" \
+                                       "background-color: rgba(255,255,255,0.5);");
+        }
+    }
+    else
+    {
+
+    }
+
+    return QWidget::eventFilter(obj,event);
 }
 
 void SongInfoShow::changeSong(SongInfo &m_song_info)
@@ -176,4 +279,25 @@ void SongInfoShow::on_shareButton_clicked()
 {
     LyricsPost *newLyricsPost = new LyricsPost(songId);
     newLyricsPost->show();
+}
+
+//点击进行页面切换
+void SongInfoShow::on_pageBackButton_clicked()
+{
+    emit changePage(0);
+}
+
+//点击添加至歌单
+void SongInfoShow::on_starButton_clicked()
+{
+    QString listName;
+    AddIntoSongList window;
+    int status = window.exec();
+    qDebug()<<status;
+    if(status)
+    {
+        listName = window.getAddedSongList();
+        qDebug()<< listName;
+        emit(sendAddIntoSongListCommand(songName, listName));
+    }
 }

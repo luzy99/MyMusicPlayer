@@ -5,6 +5,7 @@
 #include"songinfo.h"
 #include<QLabel>
 #include"diskwidget.h"
+#include <QEvent>
 #include<QHBoxLayout>
 #include<QVBoxLayout>
 #include<QPushButton>
@@ -18,6 +19,12 @@ public:
     SongInfoShow(QWidget *parent = nullptr);
     void initSignalsAndSlots();
     ~SongInfoShow();
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+signals:
+   void changePage(int index);
+   void sendAddIntoSongListCommand(QString,QString);
+
 public slots:
     void changeSong(SongInfo &m_song_info);
     void diskRotateStart();
@@ -26,6 +33,8 @@ public slots:
 private slots:
     void on_downloadButton_clicked();
     void on_shareButton_clicked();
+    void on_pageBackButton_clicked();
+    void on_starButton_clicked();
 
 private:
     QString songId;
@@ -36,10 +45,10 @@ private:
     diskWidget *disk;
     QVBoxLayout *outerLayout;
     QHBoxLayout *buttonLayout;
-    QPushButton *likeButton;
     QPushButton *starButton;
     QPushButton *downloadButton;
     QPushButton *shareButton;
+    QPushButton *pageBackButton;
 };
 
 #endif // SONGINFOSHOW_H

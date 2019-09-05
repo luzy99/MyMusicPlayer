@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 //***************************测试用：
-#include "lyricspost.h"
 
 #include <QApplication>
 #include <QSqlDatabase>
@@ -12,9 +11,6 @@ int main(int argc, char *argv[])
 
      MainWindow w;
      w.show();
-
-//    LyricsPost w("28854853");
-//    w.show();
 
     return a.exec();
 }

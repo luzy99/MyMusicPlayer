@@ -69,11 +69,8 @@
         <file>res/settingHover.png</file>
         <file>res/skin.png</file>
         <file>res/dragRegion.png</file>
-        <file>res/addtolistHover.png</file>
         <file>res/saveSong.png</file>
-        <file>res/saveSongHover.png</file>
         <file>res/share.png</file>
-        <file>res/shareHover.png</file>
         <file>res/closeLyrics.png</file>
         <file>res/heart5.png</file>
         <file>res/heart6.png</file>
@@ -95,6 +92,7 @@
         <file>res/defaultUser.png</file>
         <file>res/exitfullscreen.png</file>
         <file>res/fullscreen.png</file>
+        <file>res/exitSongInfo.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>

@@ -2,6 +2,7 @@
 #define TITLEBAR_H
 
 #include <QLabel>
+#include <QEvent>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -28,7 +29,12 @@ signals:
     void maximizeWindow(); //表示最大化主窗口
     void closeWindow(); //表示关闭窗口
 
+    void Editlengthchanged(int); //搜索框字段变化
+
 public slots:
+
+private slots:
+    void onEditchanged(QString);
 
 private:
     QLabel *iconLabel; //标题栏图标

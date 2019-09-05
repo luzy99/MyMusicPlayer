@@ -247,8 +247,15 @@ void MainWindow::initSignalsAndSlots()
     connect(musicPlayBar,SIGNAL(becomePausing()),
             lyricsBarrage,SLOT(onBecomePausing()));
 
+    //这是歌曲展示页和歌单之前的信号槽
+    //添加至歌单
+    connect(infoShow, SIGNAL(sendAddIntoSongListCommand(QString,QString)),
+            songList,SLOT(setSongAddInto(QString,QString)));
+
     //这是负责处理主窗口中央StackedWidget的页面切换
     connect(littleSongBar,SIGNAL(changePage(int)),
+            this,SLOT(onChangePage(int)));
+    connect(infoShow,SIGNAL(changePage(int)),
             this,SLOT(onChangePage(int)));
 }
 

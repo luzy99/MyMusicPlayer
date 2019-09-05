@@ -308,3 +308,8 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     emit maximizeWindow();
 }
 
+void TitleBar::onEditchanged(QString)
+{
+
+}
+

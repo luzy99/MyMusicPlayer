@@ -2,16 +2,16 @@
 #define SEARCHDATA_H
 
 #include <QObject>
-#include<QFile>
-#include<QMap>
+#include <QFile>
+#include <QMap>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkAccessManager>
-#include<QJsonDocument>
-#include<QJsonArray>
-#include<QJsonObject>
-#include<QEventLoop>
-#include"songinfo.h"
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QEventLoop>
+#include "songinfo.h"
 
 class SearchData : public QObject
 {

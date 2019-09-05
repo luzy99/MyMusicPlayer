@@ -90,8 +90,10 @@ void AnimatedWallWG::initLRButton()
     m_pLRButton[0]->hide();
     m_pLRButton[1]->hide();
 
-    connect(m_pLRButton[0], SIGNAL(clicked()), this, SLOT(moveToRight()));
-    connect(m_pLRButton[1], SIGNAL(clicked()), this, SLOT(moveToLeft()));
+    connect(m_pLRButton[0], SIGNAL(clicked()),
+            this, SLOT(moveToRight()));
+    connect(m_pLRButton[1], SIGNAL(clicked()),
+            this, SLOT(moveToLeft()));
 
     //设置按钮的图标
     QString style1 = QString("QPushButton{border: 0px; background: url(:/Image/MoveL.png) center no-repeat;}"
@@ -119,12 +121,18 @@ void AnimatedWallWG::initIndexButton()
         m_pIndexButton[index]->setStyleSheet(style1);
 
     }
-    connect(m_pIndexButton[0],SIGNAL(clicked()),this,SLOT(on_btnClicked0()));
-    connect(m_pIndexButton[1],SIGNAL(clicked()),this,SLOT(on_btnClicked1()));
-    connect(m_pIndexButton[2],SIGNAL(clicked()),this,SLOT(on_btnClicked2()));
-    connect(m_pIndexButton[3],SIGNAL(clicked()),this,SLOT(on_btnClicked3()));
-    connect(m_pIndexButton[4],SIGNAL(clicked()),this,SLOT(on_btnClicked4()));
-    connect(m_pIndexButton[5],SIGNAL(clicked()),this,SLOT(on_btnClicked5()));
+    connect(m_pIndexButton[0],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked0()));
+    connect(m_pIndexButton[1],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked1()));
+    connect(m_pIndexButton[2],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked2()));
+    connect(m_pIndexButton[3],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked3()));
+    connect(m_pIndexButton[4],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked4()));
+    connect(m_pIndexButton[5],SIGNAL(clicked()),
+            this,SLOT(on_btnClicked5()));
 
 
     QHBoxLayout *hy1=new QHBoxLayout;
@@ -263,7 +271,8 @@ void AnimatedWallWG::moveToLeft()
 
     //左
     pAnimation[0] = new QPropertyAnimation(m_pWall[i], "geometry");
-    connect(pAnimation[0], SIGNAL(finished()), pAnimation[0], SLOT(deleteLater()));
+    connect(pAnimation[0], SIGNAL(finished()),
+            pAnimation[0], SLOT(deleteLater()));
     pAnimation[0]->setDuration(DURATION);
     pAnimation[0]->setEasingCurve(EASINGCURVE);
     pAnimation[0]->setKeyValueAt(0, m_rtWall[0]);
@@ -272,7 +281,8 @@ void AnimatedWallWG::moveToLeft()
 
     //中
     pAnimation[1] = new QPropertyAnimation(m_pWall[j], "geometry");
-    connect(pAnimation[1], SIGNAL(finished()), pAnimation[1], SLOT(deleteLater()));
+    connect(pAnimation[1], SIGNAL(finished()),
+            pAnimation[1], SLOT(deleteLater()));
     pAnimation[1]->setDuration(DURATION);
     pAnimation[1]->setEasingCurve(EASINGCURVE);
     pAnimation[1]->setKeyValueAt(0, m_rtWall[1]);
@@ -281,7 +291,8 @@ void AnimatedWallWG::moveToLeft()
 
     //右
     pAnimation[2] = new QPropertyAnimation(m_pWall[k], "geometry");
-    connect(pAnimation[2], SIGNAL(finished()), pAnimation[2], SLOT(deleteLater()));
+    connect(pAnimation[2], SIGNAL(finished()),
+            pAnimation[2], SLOT(deleteLater()));
     connect(pAnimation[2], SIGNAL(valueChanged(QVariant)), this, SLOT(onValueChanged(QVariant)));
     pAnimation[2]->setDuration(DURATION);
     pAnimation[2]->setEasingCurve(EASINGCURVE);
@@ -291,7 +302,8 @@ void AnimatedWallWG::moveToLeft()
 
     //待出现
     pAnimation[3] = new QPropertyAnimation(m_pWall[l], "geometry");
-    connect(pAnimation[3], SIGNAL(finished()), pAnimation[3], SLOT(deleteLater()));
+    connect(pAnimation[3], SIGNAL(finished()),
+            pAnimation[3], SLOT(deleteLater()));
     pAnimation[3]->setDuration(DURATION);
     pAnimation[3]->setEasingCurve(EASINGCURVE);
     pAnimation[3]->setKeyValueAt(0, m_rtRChange[0]);
@@ -309,7 +321,10 @@ void AnimatedWallWG::moveToLeft()
     pGroup->start();
 
     //序号++
-    if (++m_iWall >= 6) m_iWall = 0;
+    if (++m_iWall >= 6)
+    {
+        m_iWall = 0;
+    }
 }
 
 //从左往右移动
@@ -329,8 +344,10 @@ void AnimatedWallWG::moveToRight()
 
     //左
     pAnimation[0] = new QPropertyAnimation(m_pWall[i], "geometry");
-    connect(pAnimation[0], SIGNAL(finished()), pAnimation[0], SLOT(deleteLater()));
-    connect(pAnimation[0], SIGNAL(valueChanged(QVariant)), this, SLOT(onValueChanged(QVariant)));
+    connect(pAnimation[0], SIGNAL(finished()),
+            pAnimation[0], SLOT(deleteLater()));
+    connect(pAnimation[0], SIGNAL(valueChanged(QVariant)),
+            this, SLOT(onValueChanged(QVariant)));
     pAnimation[0]->setDuration(DURATION);
     pAnimation[0]->setEasingCurve(EASINGCURVE);
     pAnimation[0]->setKeyValueAt(0, m_rtWall[0]);
@@ -339,7 +356,8 @@ void AnimatedWallWG::moveToRight()
 
     //中
     pAnimation[1] = new QPropertyAnimation(m_pWall[j], "geometry");
-    connect(pAnimation[1], SIGNAL(finished()), pAnimation[1], SLOT(deleteLater()));
+    connect(pAnimation[1], SIGNAL(finished()),
+            pAnimation[1], SLOT(deleteLater()));
     pAnimation[1]->setDuration(DURATION);
     pAnimation[1]->setEasingCurve(EASINGCURVE);
     pAnimation[1]->setKeyValueAt(0, m_rtWall[1]);
@@ -348,7 +366,8 @@ void AnimatedWallWG::moveToRight()
 
     //右
     pAnimation[2] = new QPropertyAnimation(m_pWall[k], "geometry");
-    connect(pAnimation[2], SIGNAL(finished()), pAnimation[2], SLOT(deleteLater()));
+    connect(pAnimation[2], SIGNAL(finished()),
+            pAnimation[2], SLOT(deleteLater()));
     pAnimation[2]->setDuration(DURATION);
     pAnimation[2]->setEasingCurve(EASINGCURVE);
     pAnimation[2]->setKeyValueAt(0, m_rtWall[2]);
@@ -357,7 +376,8 @@ void AnimatedWallWG::moveToRight()
 
     //待出现
     pAnimation[3] = new QPropertyAnimation(m_pWall[l], "geometry");
-    connect(pAnimation[3], SIGNAL(finished()), pAnimation[3], SLOT(deleteLater()));
+    connect(pAnimation[3], SIGNAL(finished()),
+            pAnimation[3], SLOT(deleteLater()));
     pAnimation[3]->setDuration(DURATION);
     pAnimation[3]->setEasingCurve(EASINGCURVE);
     pAnimation[3]->setKeyValueAt(0, m_rtLChange[0]);
@@ -366,8 +386,10 @@ void AnimatedWallWG::moveToRight()
 
     //组
     QParallelAnimationGroup *pGroup = new QParallelAnimationGroup(this);
-    connect(pGroup, SIGNAL(finished()), pGroup, SLOT(deleteLater()));
-    connect(pGroup, SIGNAL(finished()), this, SLOT(finished()));
+    connect(pGroup, SIGNAL(finished()),
+            pGroup, SLOT(deleteLater()));
+    connect(pGroup, SIGNAL(finished()),
+            this, SLOT(finished()));
     pGroup->addAnimation(pAnimation[0]);
     pGroup->addAnimation(pAnimation[1]);
     pGroup->addAnimation(pAnimation[2]);
@@ -375,7 +397,10 @@ void AnimatedWallWG::moveToRight()
     pGroup->start();
 
     //序号--
-    if (--m_iWall < 0) m_iWall = 6 - 1;
+    if (--m_iWall < 0)
+    {
+        m_iWall = 6 - 1;
+    }
 }
 
 
@@ -384,7 +409,10 @@ void AnimatedWallWG::onValueChanged(QVariant variant)
 {
     Q_UNUSED(variant);
     QPropertyAnimation *pAnimation = qobject_cast<QPropertyAnimation *>(sender());
-    if (pAnimation == NULL) return;
+    if (pAnimation == NULL)
+    {
+        return;
+    }
 
     if (pAnimation->currentTime() > DURATION * EASINGTIME)
     {
@@ -596,27 +624,25 @@ void AnimatedWallWG::on_btnClicked5()
 
 //事件过滤器
 bool AnimatedWallWG::eventFilter(QObject *watched, QEvent *event)
-{ switch ((int)event->type())
+{
+    switch ((int)event->type())
     {
-
     case QEvent::Resize:
-
-        qDebug()<<"resize";
-        qDebug()<<this->width();
+        //qDebug()<<"resize";
+        //qDebug()<<this->width();
         setWallRect();
         setLRButtonRect();
         initIndexButton();
-
         break;
 
     case QEvent::Enter:
-        //        qDebug()<<"enter";
+        // qDebug()<<"enter";
         m_pLRButton[0]->show();
         m_pLRButton[1]->show();
         break;
 
     case QEvent::Leave:
-        //        qDebug()<<"leave";
+        //qDebug()<<"leave";
         m_pLRButton[0]->hide();
         m_pLRButton[1]->hide();
         break;
@@ -648,7 +674,10 @@ bool AnimatedWallWG::eventFilter(QObject *watched, QEvent *event)
 //计时器
 void AnimatedWallWG::timerEvent(QTimerEvent *event)
 {
-    if (event->timerId() != m_idTimer) return;
+    if (event->timerId() != m_idTimer)
+    {
+        return;
+    }
 
     //默认从右到左
     moveToLeft();

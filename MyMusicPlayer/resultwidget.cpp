@@ -60,7 +60,11 @@ ResultWidget::ResultWidget(QWidget *parent)
     m_resultWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_resultWidget->setMovement(QListView::Static);
     m_resultWidget->setResizeMode(QListView::Adjust);
-    m_resultWidget->setStyleSheet(tr("QListWidget::Item{width: 600px;height:40px;color:black;font:'幼圆' 20px;background-color:rgba(255,255,255,90);}"));
+    m_resultWidget->setStyleSheet(tr("QListWidget::Item{width: 600px;" \
+                                     "height:40px;" \
+                                     "color:black;" \
+                                     "font:'幼圆' 20px;" \
+                                     "background-color:rgba(255,255,255,90);}"));
 //    m_titleLabel->setFont(QFont("幼圆",12));
 //    m_artistLabel->setFont(QFont("幼圆",10));
 //    m_artistLabel->setStyleSheet("color:rgba(0,0,0,75);");
