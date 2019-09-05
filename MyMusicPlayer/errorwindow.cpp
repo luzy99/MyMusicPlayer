@@ -39,7 +39,8 @@ ErrorWindow::ErrorWindow(QString msg ,QWidget *parent) :
 
 
     animation = new QPropertyAnimation(this, "windowOpacity");
-    connect(animation, SIGNAL(finished()), this, SLOT(close()));
+    connect(animation, SIGNAL(finished()),
+            this, SLOT(close()));
 }
 
 ErrorWindow::~ErrorWindow()

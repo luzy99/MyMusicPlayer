@@ -47,6 +47,29 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     suspensionBtn->installEventFilter(this);
     suspensionBtn->setStyleSheet("border: none;");
 
+    //初始化按钮
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->setSpacing(5);
+    buttonLayout->setContentsMargins(2,2,2,2);
+    previousBtn = new QPushButton;
+    previousBtn->setFlat(true);
+    previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
+    previousBtn->setIconSize(QSize(25,25));
+    previousBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(previousBtn);
+    playBtn = new QPushButton;
+    playBtn->setFlat(true);
+    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+    playBtn->setIconSize(QSize(30,30));
+    playBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(playBtn);
+    nextBtn = new QPushButton;
+    nextBtn->setFlat(true);
+    nextBtn->setIcon(QIcon(":/icon/res/next.png"));
+    nextBtn->setIconSize(QSize(25,25));
+    nextBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(nextBtn);
+
     //初始化专辑封面t5
     coverLabel = new QLabel;
     coverLabel->setObjectName("coverLabel");
@@ -113,6 +136,8 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
 //初始化型号与槽
 void SuspensionWindow::initSignalsAndSlots()
 {
+    connect(resizeBtn,SIGNAL(clicked()),
+            this,SIGNAL(hideWindow()));
 }
 
 //初始化右键菜单的Actions
@@ -201,8 +226,7 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
             showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
         }
     }
-
-    if(obj->objectName() == "resizeBtn")
+    else if(obj->objectName() == "resizeBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -213,16 +237,31 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
             resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
         }
     }
-
-    if(obj->objectName() == "suspensionBtn")
+    else if(obj->objectName() == "suspensionBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
             moveIn();
         }
     }
+    else
+    {
+
+    }
 
     return QWidget::eventFilter(obj,event);
+}
+
+//表示接下来播放
+void SuspensionWindow::onBecomePlaying()
+{
+    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+}
+
+//表示接下来暂停
+void SuspensionWindow::onBecomePausing()
+{
+    playBtn->setIcon(QIcon(":/icon/res/play.png"));
 }
 
 void SuspensionWindow::on_showListBtn_clicked(bool checked)

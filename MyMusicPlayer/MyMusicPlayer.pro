@@ -30,6 +30,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     absframelessautosize.cpp \
     addintosonglist.cpp \
+    animatedwallwg.cpp \
     audiotag.cpp \
     createsonglistdialog.cpp \
     diskwidget.cpp \
@@ -58,6 +59,7 @@ SOURCES += \
 HEADERS += \
     absframelessautosize.h \
     addintosonglist.h \
+    animatedwallwg.h \
     audiotag.h \
     createsonglistdialog.h \
     diskwidget.h \

@@ -176,7 +176,8 @@ bool MvPlayer::getMvUrls(QString mv_id)
         QNetworkReply *pReply = manager->get(request);
         //设置事件循环，等待资源下载完毕
         QEventLoop eventLoop;
-        QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+        QObject::connect(manager, &QNetworkAccessManager::finished,
+                         &eventLoop, &QEventLoop::quit);
         eventLoop.exec();
 
         //检测http请求的状态码
@@ -442,8 +443,10 @@ void MvPlayer::handleError()//错误处理
 
 void MvPlayer::initSignalsAndSlots()
 {
-    connect(playButton, SIGNAL(clicked(bool)),this, SLOT(play()));//播放按钮
-    connect(positionSlider, SIGNAL(sliderMoved(int)),this, SLOT(setPosition(int)));//滑动条
+    connect(playButton, SIGNAL(clicked(bool)),
+            this, SLOT(play()));//播放按钮
+    connect(positionSlider, SIGNAL(sliderMoved(int)),
+            this, SLOT(setPosition(int)));//滑动条
     connect(&mediaPlayer, SIGNAL(stateChanged(QMediaPlayer::State)),
             this, SLOT(mediaStateChanged(QMediaPlayer::State)));    //播放状态
     connect(&mediaPlayer, SIGNAL(positionChanged(qint64)),

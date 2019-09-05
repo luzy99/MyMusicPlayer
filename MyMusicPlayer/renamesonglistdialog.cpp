@@ -63,8 +63,10 @@ RenameSongListDialog::RenameSongListDialog(QWidget *parent) :
                                 "color:#BF1202;"
                                 "}");
 
-    connect(renameButton, SIGNAL(clicked()), this, SLOT(on_renameButtonClicked()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(on_cancelButtonClicked()));
+    connect(renameButton, SIGNAL(clicked()),
+            this, SLOT(on_renameButtonClicked()));
+    connect(cancelButton, SIGNAL(clicked()),
+            this, SLOT(on_cancelButtonClicked()));
 
 }
 

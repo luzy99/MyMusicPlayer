@@ -32,6 +32,10 @@ public:
     void moveOut(); //移出
     void moveIn(); //移入
 
+    QPushButton *previousBtn; //上一首的按钮
+    QPushButton *playBtn; //播放按钮
+    QPushButton *nextBtn; //下一首按钮
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -40,8 +44,11 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
+    void hideWindow(); //恢复小窗
 
 public slots:
+    void onBecomePlaying(); //表示接下来播放
+    void onBecomePausing(); //表示接下来暂停
 
 private slots:
     void on_showListBtn_clicked(bool checked); //显示播放列表按钮按下时触发

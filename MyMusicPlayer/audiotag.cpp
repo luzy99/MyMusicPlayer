@@ -167,7 +167,8 @@ bool AudioTag::idMatch()
     QNetworkReply *pReply = manager->get(request);
     //设置事件循环，等待资源下载完毕
     QEventLoop eventLoop;
-    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+    QObject::connect(manager, &QNetworkAccessManager::finished,
+                     &eventLoop, &QEventLoop::quit);
     eventLoop.exec();
 
     //检测http请求的状态码
@@ -239,7 +240,8 @@ bool AudioTag::downloadPic()
         QNetworkReply *pReply = manager->get(request);
         //设置事件循环，等待资源下载完毕
         QEventLoop eventLoop;
-        QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+        QObject::connect(manager, &QNetworkAccessManager::finished,
+                         &eventLoop, &QEventLoop::quit);
         eventLoop.exec();
         //检测http请求的状态码
         int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
@@ -281,7 +283,8 @@ bool AudioTag::mvIdMatch()
         QNetworkReply *pReply = manager->get(request);
         //设置事件循环，等待资源下载完毕
         QEventLoop eventLoop;
-        QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+        QObject::connect(manager, &QNetworkAccessManager::finished,
+                         &eventLoop, &QEventLoop::quit);
         eventLoop.exec();
 
          //检测http请求的状态码

@@ -14,12 +14,14 @@ diskWidget::diskWidget(QWidget *parent, int r)
     diskPic.load(":/icon/res/disk.png");//加载唱片图
     needlePic.load(":/icon/res/ic_needle.png");//加载唱针图
     timer = new QTimer;//初始化计时器
-    connect(timer, SIGNAL(timeout()), this, SLOT(rotate()));
+    connect(timer, SIGNAL(timeout()),
+            this, SLOT(rotate()));
     timer->setInterval(30);
     timer->start();
 
     stopTimer = new QTimer;//初始化暂停动画计时器
-    connect(stopTimer, SIGNAL(timeout()), this, SLOT(rotate()));
+    connect(stopTimer, SIGNAL(timeout()),
+            this, SLOT(rotate()));
     stopTimer->setInterval(30);
 
     needleFlag =0;

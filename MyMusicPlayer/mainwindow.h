@@ -17,7 +17,8 @@
 #include "songinfo.h" //代表歌曲信息的头文件
 #include "songinfoshow.h" //展示歌曲信息的头文件
 #include "audiotag.h" //爬取歌曲信息的组件
-#include "littlesongbar.h"
+#include "littlesongbar.h" //首页地下小的歌曲标签
+#include"animatedwallwg.h" //动画滚轮
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -52,6 +53,9 @@ private slots:
     void onMaximizeWindow();
     void onCloseWindow();
 
+    //这里接受悬浮窗对主窗体发出的一些信号
+    void onHideSuspensionWindow();
+
     //这是对歌单的一些操作
     void showCreateSongListDialog();
 
@@ -82,6 +86,7 @@ private:
     QWidget *songListPage; //展示歌单信息页面
     SongList *songList; //歌单列表
     LittleSongBar *littleSongBar; //底部小的歌曲信息展示
+    AnimatedWallWG *adsWall; //动画滚轮
 
     QWidget *songInfoPage; //展示歌曲信息页面
     SongInfoShow *infoShow; //歌曲信息显示

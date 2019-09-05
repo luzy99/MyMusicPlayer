@@ -68,8 +68,17 @@ MainWindow::MainWindow(QWidget *parent)
     //初始化小的歌曲显示栏
     littleSongBar = new LittleSongBar;
     leftLayout->addWidget(littleSongBar);
-    songListPageLayout->addLayout(leftLayout);
+    songListPageLayout->addLayout(leftLayout,2);
     songListPage->setLayout(songListPageLayout);
+    //初始化动画滚轮
+    QVBoxLayout *adsLayout = new QVBoxLayout;
+    adsLayout->setSpacing(10);
+    adsLayout->setContentsMargins(10,10,10,10);
+    adsWall = new AnimatedWallWG;
+    adsWall->setWindowFlags(Qt::FramelessWindowHint);
+    adsWall->setAttribute(Qt::WA_TranslucentBackground);
+    adsLayout->addWidget(adsWall,Qt::AlignTop);
+    songListPageLayout->addLayout(adsLayout,7);
 
     //初始化展示歌曲信息的页面
     songInfoPage = new QWidget;
@@ -432,6 +441,19 @@ void MainWindow::onShowSuspensionWindow()
     suspensionWindow = new SuspensionWindow;
     //小窗在关闭时delete
     suspensionWindow->setAttribute(Qt::WA_DeleteOnClose);
+    //这是主窗口和悬浮窗之间的信号槽,主要用于窗体的切换
+    connect(suspensionWindow,SIGNAL(hideWindow()),
+            this,SLOT(onHideSuspensionWindow()));
+    connect(suspensionWindow->previousBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_previousBtn_clicked()));
+    connect(suspensionWindow->playBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(onRemotePlay()));
+    connect(suspensionWindow->nextBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_nextBtn_clicked()));
+    connect(musicPlayBar,SIGNAL(becomePlaying()),
+            suspensionWindow,SLOT(onBecomePlaying()));
+    connect(musicPlayBar,SIGNAL(becomePausing()),
+            suspensionWindow,SLOT(onBecomePausing()));
     this->hide();
     suspensionWindow->show();
 }
@@ -456,6 +478,13 @@ void MainWindow::onMaximizeWindow()
 void MainWindow::onCloseWindow()
 {
     this->close();
+}
+
+//停止小窗化,显示大窗
+void MainWindow::onHideSuspensionWindow()
+{
+    suspensionWindow->hide();
+    this->show();
 }
 
 //弹出歌单的对话框

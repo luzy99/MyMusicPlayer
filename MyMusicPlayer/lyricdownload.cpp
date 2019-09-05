@@ -38,7 +38,8 @@ bool LyricDownload::DownloadLyric(const QString& song_id, bool download_translat
 
     //设置事件循环，等待歌词资源下载完毕
     QEventLoop eventLoop;
-    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+    QObject::connect(manager, &QNetworkAccessManager::finished,
+                     &eventLoop, &QEventLoop::quit);
     eventLoop.exec();
 
     //检测http请求的状态码
