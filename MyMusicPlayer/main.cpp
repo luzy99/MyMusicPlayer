@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QDebug>
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     w.show();
 //    SuspensionWindow w;
 //    w.show();
+
 
     return a.exec();
 }

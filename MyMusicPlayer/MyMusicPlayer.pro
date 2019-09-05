@@ -39,7 +39,8 @@ SOURCES += \
     suspensionwindow.cpp \
     titlebar.cpp \
     searchdata.cpp \
-    mvplayer.cpp
+    mvplayer.cpp \
+    resultwidget.cpp
 
 HEADERS += \
     audiotag.h \
@@ -54,7 +55,8 @@ HEADERS += \
     suspensionwindow.h \
     titlebar.h \
     searchdata.h \
-    mvplayer.h
+    mvplayer.h \
+    resultwidget.h
 
 FORMS += \
         mainwidget.ui

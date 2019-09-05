@@ -30,7 +30,6 @@ struct SongInfo
     QString year="";		//年份
     QString album_cover{};		//专辑封面保存的路径
 
-
     int tag_type{};		//标签的类型（0：其他；1：ID3v1；2：ID3v2）
     bool info_acquired{ false };		//如果已经获取到了信息，则为ture
     QString pic_url="";             //专辑封面地址
@@ -39,7 +38,6 @@ struct SongInfo
     int listen_time{};			//歌曲累计听的时间（单位为秒）
     bool online_lyric{ false };         //如果为true，则不在线下载歌词
     bool has_cover{ false };   //如果为true，则不在线下载专辑封面
-    bool is_favourite{ false };
 
 };
 

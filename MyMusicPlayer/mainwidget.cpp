@@ -100,9 +100,15 @@ MainWidget::MainWidget(QWidget *parent) :
     initSignalsAndSlots();
 
     //test mv
-    MvPlayer *m =new MvPlayer;
+    MvPlayer *m =new MvPlayer();
     m->getMvUrls("524116");//输入mv id
     m->show();
+
+    ResultWidget *rw=new ResultWidget;
+    SearchData *ss=new SearchData;
+    connect(ss,SIGNAL(searchFinished(QMap<QString,SongInfo>)),
+            rw,SLOT(on_searchReply(QMap<QString,SongInfo>)));
+    ss->searchSongsOnline("薛之谦");
 }
 
 MainWidget::~MainWidget()

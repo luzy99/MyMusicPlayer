@@ -6,7 +6,7 @@ MvPlayer::MvPlayer(QWidget *parent)
     , mediaPlayer(0, QMediaPlayer::VideoSurface)
 {
     this->resize(960, 540);
-    this->setStyleSheet("background-color:rgb(0,0,0)");
+    this->setStyleSheet("background-color:rgb(0,0,0);");
     //视频窗口
     QVBoxLayout *layout=new QVBoxLayout();
     videoWidget = new QVideoWidget(this);
