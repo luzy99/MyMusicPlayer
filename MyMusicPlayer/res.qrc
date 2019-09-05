@@ -90,6 +90,9 @@
         <file>res/otherlist.ico</file>
         <file>res/rename.png</file>
         <file>res/songInfo.ico</file>
+        <file>res/search.png</file>
+        <file>res/searchHover.png</file>
+        <file>res/defaultUser.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>

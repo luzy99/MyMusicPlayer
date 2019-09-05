@@ -33,6 +33,10 @@ public slots:
 private:
     QLabel *iconLabel; //标题栏图标
     QLabel *titleLabel; //标题栏标题
+    QLineEdit *searchBar; //搜索栏
+    QLabel *spacingLabel;
+    QPushButton *searchBtn; //搜索按钮
+    QPushButton *userBtn; //用户登录的按钮
     QPushButton *skinBtn; //换肤按钮
     QPushButton *settingsBtn; //设置按钮
     QPushButton *resizeBtn; //小窗化按钮

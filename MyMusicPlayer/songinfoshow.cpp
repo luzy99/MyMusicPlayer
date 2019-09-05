@@ -1,5 +1,6 @@
 #include "songinfoshow.h"
 #include "downloadwindow.h"
+#include "lyricspost.h"
 #include<QLabel>
 #include<QFont>
 #include<QVBoxLayout>
@@ -132,6 +133,8 @@ void SongInfoShow::initSignalsAndSlots()
     //点击下载按钮开始当前歌曲的下载
     connect(downloadButton,SIGNAL(clicked()),
             this,SLOT(on_downloadButton_clicked()));
+    connect(shareButton,SIGNAL(clicked()),
+            this,SLOT(on_shareButton_clicked()));
 }
 
 SongInfoShow::~SongInfoShow()
@@ -163,7 +166,14 @@ void SongInfoShow::diskRotateStop()
 //点击开始下载歌曲
 void SongInfoShow::on_downloadButton_clicked()
 {
-    qDebug()<<songId<<songName;
+    //qDebug()<<songId<<songName;
     DownloadWindow *newDownload = new DownloadWindow(songId,songName);
     newDownload->show();
+}
+
+//点击开始分享歌词海报
+void SongInfoShow::on_shareButton_clicked()
+{
+    LyricsPost *newLyricsPost = new LyricsPost(songId);
+    newLyricsPost->show();
 }

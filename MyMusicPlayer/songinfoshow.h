@@ -25,6 +25,7 @@ public slots:
 
 private slots:
     void on_downloadButton_clicked();
+    void on_shareButton_clicked();
 
 private:
     QString songId;

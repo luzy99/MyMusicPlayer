@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QPalette>
+#include <QDebug>
 
 TitleBar::TitleBar(QWidget *parent)
     : QWidget(parent)
@@ -34,10 +35,60 @@ TitleBar::TitleBar(QWidget *parent)
     QFont font("Comic Sans MS", 10, QFont::Normal);
     titleLabel->setFont(font);
     titleLabel->setText("Rainbow Music Player");
+    titleLabel->setFixedWidth(200);
     QPalette palette = titleLabel->palette();
     palette.setColor(QPalette::WindowText,Qt::white);
     titleLabel->setPalette(palette);
     layout->addWidget(titleLabel);
+
+    //初始化搜索框
+    searchBar = new QLineEdit;
+    QHBoxLayout *searchLayout = new QHBoxLayout;
+    searchLayout->addStretch();
+    searchLayout->setSpacing(0);
+    searchLayout->setContentsMargins(0,2,2,2);
+    searchBtn = new QPushButton(searchBar);
+    searchBtn->setObjectName("searchBtn");
+    searchBtn->setIcon(QIcon(":/icon/res/search.png"));
+    searchBtn->setIconSize(QSize(15,15));
+    searchBtn->setFlat(true);
+    searchBtn->setStyleSheet("border: none;");
+    searchBtn->setAttribute(Qt::WA_TranslucentBackground);
+    searchBtn->installEventFilter(this);
+    searchBtn->setToolTip("点击开始搜索");
+    searchBtn->setCursor(QCursor(Qt::ArrowCursor));
+    searchLayout->addWidget(searchBtn);
+    searchBar->setObjectName("searchBar");
+    searchBar->setFixedWidth(250);
+    searchBar->setPlaceholderText("输入搜索信息");
+    searchBar->setStyleSheet("background: rgb(50,50,50);" \
+                             "border:1px solid rgb(70,70,70);" \
+                             "border-radius: 10px;" \
+                             "color: white;");
+    searchBar->setTextMargins(0,0,searchBtn->width(),0);
+    searchBar->setLayout(searchLayout);
+    layout->addWidget(searchBar);
+
+    //初始化填充空行的
+    spacingLabel = new QLabel;
+    spacingLabel->setAttribute(Qt::WA_TranslucentBackground);
+    layout->addWidget(spacingLabel);
+
+    //初始化用户登录按钮
+    userBtn = new QPushButton;
+    userBtn->setObjectName("userBtn");
+    userBtn->setFixedSize(120,30);
+    userBtn->setAttribute(Qt::WA_TranslucentBackground);
+    userBtn->setFlat(true);
+    userBtn->setIcon(QIcon(":/icon/res/defaultUser.png"));
+    userBtn->setIconSize(QSize(30,30));
+    userBtn->setText(" 未登录");
+    userBtn->setAttribute(Qt::WA_Hover,true);
+    userBtn->installEventFilter(this);
+    userBtn->setStyleSheet("color: #dcdcdc;" \
+                           "border: none;" \
+                           "font-family: Microsoft YaHei;" );
+    layout->addWidget(userBtn);
 
     //初始化皮肤按钮
     skinBtn = new QPushButton;
@@ -66,8 +117,6 @@ TitleBar::TitleBar(QWidget *parent)
     settingsBtn->setAttribute(Qt::WA_Hover,true);
     settingsBtn->installEventFilter(this);
     layout->addWidget(settingsBtn);
-
-
 
     //初始化小窗按钮
     resizeBtn = new QPushButton;
@@ -169,7 +218,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
         }
     }
     //最小化按钮的事件过滤器
-    if(obj->objectName() == "minimizeBtn")
+    else if(obj->objectName() == "minimizeBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -181,7 +230,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
         }
     }
     //最大化按钮的事件过滤器
-    if(obj->objectName() == "maximizeBtn")
+    else if(obj->objectName() == "maximizeBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -193,7 +242,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
         }
     }
     //关闭按钮的事件过滤器
-    if(obj->objectName() == "closeBtn")
+    else if(obj->objectName() == "closeBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -205,7 +254,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
         }
     }
     //换肤按钮的事件过滤器
-    if(obj->objectName() == "skinBtn")
+    else if(obj->objectName() == "skinBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -217,7 +266,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
         }
     }
     //设置按钮的事件过滤器
-    if(obj->objectName() == "settingsBtn")
+    else if(obj->objectName() == "settingsBtn")
     {
         if(event->type() == QEvent::HoverEnter)
         {
@@ -228,6 +277,26 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
             settingsBtn->setIcon(QIcon(":/icon/res/setting.png"));
         }
     }
+    //搜索按钮的事件过滤器
+    else if(obj->objectName() == "userBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            userBtn->setStyleSheet("color: #ffffff;" \
+                                   "border: none;" \
+                                   "font-family: Microsoft YaHei;" );
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            userBtn->setStyleSheet("color: #dcdcdc;" \
+                                   "border: none;" \
+                                   "font-family: Microsoft YaHei;" );
+        }
+    }
+    else
+    {
+
+    }
 
     return QWidget::eventFilter(obj,event);
 }
@@ -235,6 +304,7 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
 //双击时产生和点击最大化按钮一样的效果
 void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     emit maximizeWindow();
 }
 

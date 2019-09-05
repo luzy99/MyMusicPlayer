@@ -10,11 +10,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-//     MainWindow w;
-//     w.show();
+     MainWindow w;
+     w.show();
 
-    LyricsPost w("28854853");
-    w.show();
+//    LyricsPost w("28854853");
+//    w.show();
 
     return a.exec();
 }

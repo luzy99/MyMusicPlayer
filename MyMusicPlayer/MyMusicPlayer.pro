@@ -46,6 +46,7 @@ SOURCES += \
     mylistsongwidget.cpp \
     myprogressbar.cpp \
     renamesonglistdialog.cpp \
+    resultwidget.cpp \
     searchdata.cpp \
     songinfoshow.cpp \
     songlist.cpp \
@@ -71,6 +72,7 @@ HEADERS += \
     mylistsongwidget.h \
     myprogressbar.h \
     renamesonglistdialog.h \
+    resultwidget.h \
     searchdata.h \
     songinfo.h \
     songinfoshow.h \

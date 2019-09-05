@@ -116,7 +116,6 @@ private:
     QLabel* lab_showtime;
 
     QPoint m_mouseStartPoint; //鼠标的初始位置
-
 };
 
 #endif // LYRICWIDGET_H

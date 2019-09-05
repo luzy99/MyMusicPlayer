@@ -194,7 +194,7 @@ void LyricsPost::on_itemClicked1(int currow)
     QPalette palette = m_pPictureWidget->palette();
     QListWidgetItem *pItem = m_pPictureListWidget->item(currow);
     QString path = pItem->text();
-    qDebug()<<path;
+    //qDebug()<<path;
     palette.setBrush(QPalette::Window,QBrush(QPixmap(path).scaled(m_pPictureWidget->size(),
                                              Qt::IgnoreAspectRatio,
                                              Qt::SmoothTransformation)));// 使用平滑的缩放方式
@@ -248,7 +248,7 @@ void LyricsPost::on_btnChangeFont_clicked()
     }
     else
     {
-        qDebug()<<"没有选择字体";
+        //qDebug()<<"没有选择字体";
     }
 }
 
