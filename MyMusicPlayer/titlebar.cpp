@@ -69,6 +69,9 @@ TitleBar::TitleBar(QWidget *parent)
     searchBar->setLayout(searchLayout);
     layout->addWidget(searchBar);
 
+    //初始化搜索结果的组件
+    searchResult = new ResultWidget;
+
     //初始化填充空行的
     spacingLabel = new QLabel;
     spacingLabel->setAttribute(Qt::WA_TranslucentBackground);
@@ -219,6 +222,12 @@ void TitleBar::initActions()
     connect(actSearchOnline,SIGNAL(triggered()),
             this,SLOT(on_actSearchOnline_triggered()));
     searchMenu->addAction(actSearchOnline);
+    searchMenu->addSeparator();
+    QAction *actSearchMV = new QAction;
+    actSearchMV->setText("搜索Mv >>>>");
+    connect(actSearchMV,SIGNAL(triggered()),
+            this,SLOT(on_actSearchMV_triggered()));
+    searchMenu->addAction(actSearchMV);
 }
 
 TitleBar::~TitleBar()
@@ -353,6 +362,7 @@ void TitleBar::on_actSearchOnline_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
     emit beginSearchOnline(searchContents);
+    searchMenu->hide();
 }
 
 //点击在本地搜索时
@@ -360,5 +370,12 @@ void TitleBar::on_actSearchLocal_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
     emit beginSearchLocal(searchContents);
+}
+
+//点击搜索MV
+void TitleBar::on_actSearchMV_triggered()
+{
+    QString searchContents = searchBar->text().trimmed();
+    emit beginSearchMv(searchContents);
 }
 

@@ -23,6 +23,7 @@ ResultWidget::ResultWidget(QWidget *parent)
     //设置窗口部件名称
     m_tipLabel->setObjectName(tr("tiplabel"));
     m_btnClose->setObjectName(tr("btnclose"));
+    m_btnClose->setIcon(QIcon(":/icon/res/close.png"));
     m_resultWidget->setObjectName(tr("resultwidget"));
 //    m_songInfoWidget->setObjectName("songinfowidget");
 //    m_titleLabel->setObjectName("titlelabel");
@@ -95,7 +96,7 @@ void ResultWidget::addsonginfoItems(int cur)
     QLabel* m_artistLabel=new QLabel("hhh");
     QLabel* m_pictureLabel=new QLabel("hhhh");
     QString curindex=curindex.number(cur);
-    QString filepath="./song_picture/"+curindex+".png";
+    QString filepath="./searchPictures/"+curindex+".png";
 //    QPixmap* songPicture=new QPixmap(filepath);
 //    qDebug()<<curindex;
 //    qDebug()<<filepath;
@@ -148,13 +149,10 @@ void ResultWidget::on_replyFinished(QNetworkReply *reply)
 //    m_pictureLabel->setAutoFillBackground(true);
 //    m_pictureLabel->setPixmap(m_songPicture->scaled(QSize(100,100)));
     QString index=index.number(curindex);
-    QString filepath="./song_picture/"+index+".png";
+    QString filepath="./searchPictures/"+index+".png";
     if(!m_songPicture->save(filepath,"png"))
-
     {
-
         qDebug()<<"save widget screen failed"<<endl;
-
     }
     else
     {

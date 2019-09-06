@@ -26,6 +26,7 @@ public slots:
     bool searchSongsOnline(QString songName);
     void searchLocal(QString songName);
     bool searchMv(QString songName);
+
 private:
     QMap<QString,SongInfo> searchResults;//<id,Songinfo结构体>
     QMap<QString,QMap<QString,QString>> mvResults;

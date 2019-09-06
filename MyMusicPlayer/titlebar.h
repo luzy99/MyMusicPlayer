@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QMenu>
+#include "resultwidget.h"
 
 class TitleBar : public QWidget
 {
@@ -20,6 +21,7 @@ public:
     void initActions(); //初始化菜单
     ~TitleBar();
 
+    ResultWidget *searchResult; //搜索的结果栏
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
@@ -32,6 +34,7 @@ signals:
 
     void beginSearchOnline(QString searchContents); //点击了全网搜索的按钮
     void beginSearchLocal(QString searchContents); //点击了本地搜索的按钮
+    void beginSearchMv(QString searchContents);
 
 public slots:
 
@@ -39,6 +42,7 @@ private slots:
     void onEditFinished();
     void on_actSearchOnline_triggered();
     void on_actSearchLocal_triggered();
+    void on_actSearchMV_triggered();
 
 private:
     QLabel *iconLabel; //标题栏图标

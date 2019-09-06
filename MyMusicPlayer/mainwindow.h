@@ -19,7 +19,7 @@
 #include "audiotag.h" //爬取歌曲信息的组件
 #include "littlesongbar.h" //首页地下小的歌曲标签
 #include "animatedwallwg.h" //动画滚轮
-#include "searchdata.h" //搜索
+#include "searchdata.h" //搜索框对应的搜索器
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -83,6 +83,7 @@ private:
     LyricDownload *lyricsDownloader; //歌词下载
     SongInfo *currentSongInfo; //当前播放的歌曲的信息
     bool translate; //歌词是否翻译
+    SearchData *searcher; //搜索框的逻辑的部件
 
     QWidget *songListPage; //展示歌单信息页面
     SongList *songList; //歌单列表

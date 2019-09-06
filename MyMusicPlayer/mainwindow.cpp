@@ -38,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent)
     lyricsDownloader = new LyricDownload;
     translate = false;
 
+    //初始化搜索框的逻辑部件
+    searcher = new SearchData;
+
     //初始化窗口布局
     QVBoxLayout *outerLayout = new QVBoxLayout;
     outerLayout->setSpacing(0);
@@ -145,7 +148,7 @@ void MainWindow::initDirectory()
     else
     {
         //如果不存在，则重新创建文件
-        coverFile.mkdir(QDir::currentPath()+"/Lyrics");
+        lyricsFile.mkdir(QDir::currentPath()+"/Lyrics");
     }
 
     QDir songsFile(QDir::currentPath()+"/Songs");
@@ -156,8 +159,20 @@ void MainWindow::initDirectory()
     else
     {
         //如果不存在，则重新创建文件
-        coverFile.mkdir(QDir::currentPath()+"/Songs");
+        songsFile.mkdir(QDir::currentPath()+"/Songs");
     }
+
+    QDir searchFile(QDir::currentPath()+"/searchPictures");
+    if(searchFile.exists())
+    {
+        //如果已经存在则什么也不做
+    }
+    else
+    {
+        //如果不存在，则重新创建文件
+        searchFile.mkdir(QDir::currentPath()+"/searchPictures");
+    }
+
 }
 
 //初始化信号与槽
@@ -234,6 +249,17 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onMaximizeWindow()));
     connect(titleBar,SIGNAL(closeWindow()),
             this,SLOT(onCloseWindow()));
+
+    //这是标题栏(搜索框)和搜索器之间的信号槽
+    //完成一个搜索的逻辑
+    connect(titleBar,SIGNAL(beginSearchOnline(QString)),
+            searcher,SLOT(searchSongsOnline(QString)));
+    connect(titleBar,SIGNAL(beginSearchLocal(QString)),
+            searcher,SLOT(searchLocal(QString)));
+    connect(titleBar,SIGNAL(beginSearchMv(QString)),
+            searcher,SLOT(searchMv(QString)));
+    connect(searcher,SIGNAL(searchFinished(QMap<QString,SongInfo>)),
+            titleBar->searchResult,SLOT(on_searchReply(QMap<QString,SongInfo>)));
 
     //这是歌曲播放栏和歌词弹幕之间的信号槽
     //点击时模拟歌曲播放栏的按钮被按下的效果
