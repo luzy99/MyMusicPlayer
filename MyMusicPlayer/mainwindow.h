@@ -18,7 +18,8 @@
 #include "songinfoshow.h" //展示歌曲信息的头文件
 #include "audiotag.h" //爬取歌曲信息的组件
 #include "littlesongbar.h" //首页地下小的歌曲标签
-#include"animatedwallwg.h" //动画滚轮
+#include "animatedwallwg.h" //动画滚轮
+#include "searchdata.h" //搜索
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 

@@ -2,10 +2,11 @@
 
 SearchData::SearchData(QObject *parent) : QObject(parent)
 {
-
+    searchResults.empty();
+    mvResults.empty();
 }
 
-bool SearchData::searchOnline(QString songName,SongInfo *&songInfos)
+bool SearchData::searchSongsOnline(QString songName)
 {
     QString url ="http://music.163.com/api/search/pc/?s="
             +songName
@@ -13,14 +14,15 @@ bool SearchData::searchOnline(QString songName,SongInfo *&songInfos)
     //构造请求
     QNetworkRequest request;
     request.setUrl(QUrl(url));
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
+
     //构造网络管理
     QNetworkAccessManager* manager=new QNetworkAccessManager;
     // 发送请求
     QNetworkReply *pReply = manager->get(request);
     //设置事件循环，等待资源下载完毕
     QEventLoop eventLoop;
-    QObject::connect(manager, &QNetworkAccessManager::finished,
-                     &eventLoop, &QEventLoop::quit);
+    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
     eventLoop.exec();
 
     //检测http请求的状态码
@@ -41,32 +43,92 @@ bool SearchData::searchOnline(QString songName,SongInfo *&songInfos)
             qDebug()<<"toJson SUCCESS";
             QJsonObject temp =jsonResult.object().value("result").toObject();
             QJsonArray songsArray =temp["songs"].toArray();
-            qDebug()<<songsArray;
+            //qDebug()<<songsArray;
             int count =songsArray.count();
-            if (count<=0)
-            {
-                return 0;
-            }
-            songInfos =new SongInfo[count];//创建SongInfo数组存储列表信息
-
             for(int i=0;i<count;i++)
             {
+                SongInfo songinfo;
                 QJsonObject tempObject =songsArray[i].toObject();
-                songInfos[i].title=tempObject.value("name").toString();                         //标题
-                songInfos[i].song_id=QString::number(tempObject.value("id").toInt());   //ID
-                songInfos[i].artist=tempObject.value("artists").toArray()[0]                    //艺术家
+                songinfo.title=tempObject.value("name").toString();                         //标题
+                songinfo.song_id=QString::number(tempObject.value("id").toInt());   //ID
+                songinfo.artist=tempObject.value("artists").toArray()[0]                    //艺术家
                         .toObject().value("name").toString();
-                songInfos[i].album=tempObject.value("album").toObject().value("name").toString();//专辑名
-                songInfos[i].pic_url=tempObject.value("album").toObject().value("picUrl").toString();//专辑封面url
+                songinfo.album=tempObject.value("album").toObject().value("name").toString();//专辑名
+                songinfo.pic_url=tempObject.value("album").toObject().value("picUrl").toString();//专辑封面url
+                searchResults.insert(songinfo.song_id,songinfo);//加入map
             }
+            qDebug()<<searchResults.keys();
+            emit searchFinished(searchResults);
             return 1;
         }
     }
+    qDebug()<<"searchinfo ERROR";
     return 0;
 }
 
 void SearchData::searchLocal(QString songName)
 {
 
+}
+
+bool SearchData::searchMv(QString songName)
+{
+    QString url ="http://music.163.com/api/search/pc/?s="
+            +songName
+            +"&limit=20&type=1004&offset=0";
+    //构造请求
+    QNetworkRequest request;
+    request.setUrl(QUrl(url));
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
+
+    //构造网络管理
+    QNetworkAccessManager* manager=new QNetworkAccessManager;
+    // 发送请求
+    QNetworkReply *pReply = manager->get(request);
+    //设置事件循环，等待资源下载完毕
+    QEventLoop eventLoop;
+    QObject::connect(manager, &QNetworkAccessManager::finished, &eventLoop, &QEventLoop::quit);
+    eventLoop.exec();
+
+    //检测http请求的状态码
+    int nHttpCode = pReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();//http返回码
+    qDebug()<<"搜索："<<songName<<nHttpCode;
+
+    QByteArray bytes = pReply->readAll();
+    QString Qresult=bytes;
+    //qDebug()<<Qresult;
+    QJsonParseError error;
+    QJsonDocument jsonResult =QJsonDocument::fromJson(Qresult.toUtf8(),&error);
+
+
+    if (error.error == QJsonParseError::NoError) // 解析未发生错误
+    {
+        if(jsonResult.isObject())
+        {
+            qDebug()<<"toJson SUCCESS";
+            QJsonObject temp =jsonResult.object().value("result").toObject();
+            QJsonArray songsArray =temp["mvs"].toArray();
+            //qDebug()<<songsArray;
+            int count =songsArray.count();
+            QMap<QString,QString> mvInfo;
+
+            for(int i=0;i<count;i++)
+            {
+                QJsonObject tempObject =songsArray[i].toObject();
+                QString id=QString::number(tempObject.value("id").toInt());//ID
+
+                mvInfo.insert("mv_id",id);                                                      //ID
+                mvInfo.insert("title",tempObject.value("name").toString());                //标题
+                mvInfo.insert("artist",tempObject.value("artistName").toString()); //歌手
+                mvInfo.insert("pic_url",tempObject.value("cover").toString());//封面图片url
+                mvResults.insert(id,mvInfo);//加入map
+            }
+            qDebug()<<"mvResults"<<mvResults.keys();
+            emit searchMvFinished(mvResults);
+            return 1;
+        }
+    }
+    qDebug()<<"searchMv ERROR";
+    return 0;
 }
 

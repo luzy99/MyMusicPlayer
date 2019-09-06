@@ -48,6 +48,7 @@ private:
     QPushButton *m_pbtnAddPicture;
     QPushButton *m_pbtnChangeFont;
     QPushButton *m_pbtnSave;
+    QPushButton *m_pbtnClose;
     int m_index;//新加的记录已经有了几张图片，给自己加背景用的
 };
 

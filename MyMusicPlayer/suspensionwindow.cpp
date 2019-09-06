@@ -12,6 +12,9 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
 {
     //设置窗口样式
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setObjectName("SuspensionWindow");
+    this->setAttribute(Qt::WA_Hover,true);
+    this->installEventFilter(this);
     this->setWindowOpacity(0.9);
     this->setStyleSheet("background-color: rgb(255,255,255)");
     this->setFixedSize(350,60); //悬浮窗大小不可改变
@@ -33,6 +36,8 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
 
     //水平布局
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setSpacing(5);
+    layout->setContentsMargins(0,0,5,0);
 
     //初始化小窗标签按钮
     suspensionBtn = new QPushButton;
@@ -47,29 +52,6 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     suspensionBtn->installEventFilter(this);
     suspensionBtn->setStyleSheet("border: none;");
 
-    //初始化按钮
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
-    buttonLayout->setSpacing(5);
-    buttonLayout->setContentsMargins(2,2,2,2);
-    previousBtn = new QPushButton;
-    previousBtn->setFlat(true);
-    previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
-    previousBtn->setIconSize(QSize(25,25));
-    previousBtn->setStyleSheet("border: none;");
-    buttonLayout->addWidget(previousBtn);
-    playBtn = new QPushButton;
-    playBtn->setFlat(true);
-    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
-    playBtn->setIconSize(QSize(30,30));
-    playBtn->setStyleSheet("border: none;");
-    buttonLayout->addWidget(playBtn);
-    nextBtn = new QPushButton;
-    nextBtn->setFlat(true);
-    nextBtn->setIcon(QIcon(":/icon/res/next.png"));
-    nextBtn->setIconSize(QSize(25,25));
-    nextBtn->setStyleSheet("border: none;");
-    buttonLayout->addWidget(nextBtn);
-
     //初始化专辑封面t5
     coverLabel = new QLabel;
     coverLabel->setObjectName("coverLabel");
@@ -78,18 +60,58 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     coverLabel->setPixmap(newImage);
     layout->addWidget(coverLabel);
 
+    stackedLayout = new QStackedLayout;
+    stackedLayout->setStackingMode(QStackedLayout::StackOne);
+    stackedLayout->setContentsMargins(0,0,0,0);
+
+    //初始化按钮组
+    buttonWidget = new QWidget;
+    buttonWidget->setWindowFlags(Qt::FramelessWindowHint);
+    buttonWidget->setAttribute(Qt::WA_TranslucentBackground);
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->setSpacing(0);
+    buttonLayout->setContentsMargins(2,2,2,2);
+    previousBtn = new QPushButton;
+    previousBtn->setFlat(true);
+    previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
+    previousBtn->setIconSize(QSize(30,30));
+    previousBtn->setFixedSize(30,30);
+    previousBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(previousBtn);
+    playBtn = new QPushButton;
+    playBtn->setFlat(true);
+    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+    playBtn->setIconSize(QSize(35,35));
+    playBtn->setFixedSize(35,35);
+    playBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(playBtn);
+    nextBtn = new QPushButton;
+    nextBtn->setFlat(true);
+    nextBtn->setIcon(QIcon(":/icon/res/next.png"));
+    nextBtn->setIconSize(QSize(30,30));
+    nextBtn->setFixedSize(30,30);
+    nextBtn->setStyleSheet("border: none;");
+    buttonLayout->addWidget(nextBtn);
+    buttonWidget->setLayout(buttonLayout);
+    buttonWidget->setFixedHeight(60);
+    stackedLayout->insertWidget(0,buttonWidget);
+
     //初始化歌词滚动的标签
     lyricsLabel = new QLabel;
     lyricsLabel->setObjectName("lyricsLabel");
-    lyricsLabel->setText("暂时无音乐播放");
-    layout->addWidget(lyricsLabel);
+    lyricsLabel->setText("  暂时无音乐播放");
+    lyricsLabel->setFixedHeight(60);
+    stackedLayout->insertWidget(1,lyricsLabel);
+    stackedLayout->setCurrentIndex(1);
+
+    layout->addLayout(stackedLayout);
 
     //初始化我喜欢按钮
     likeBtn = new QPushButton;
     likeBtn->setFlat(true);
     likeBtn->setIcon(QIcon(":/icon/res/favourite_d.ico"));
     likeBtn->setIconSize(QSize(25,25));
-    likeBtn->setMaximumSize(27,27);
+    likeBtn->setFixedSize(27,27);
     layout->addWidget(likeBtn);
 
     //初始化显示播放列表的按钮
@@ -101,7 +123,7 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     showListsBtn->setToolTip("点击显示歌单");
     showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
     showListsBtn->setIconSize(QSize(27,27));
-    showListsBtn->setMaximumSize(29,29);
+    showListsBtn->setFixedSize(29,29);
     //开启鼠标悬停事件
     showListsBtn->setAttribute(Qt::WA_Hover,true);
     //安装事件过滤器
@@ -116,7 +138,7 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     resizeBtn->setToolTip("点击切换窗口模式");
     resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
     resizeBtn->setIconSize(QSize(25,25));
-    resizeBtn->setMaximumSize(27,27);
+    resizeBtn->setFixedSize(27,27);
     resizeBtn->setAttribute(Qt::WA_Hover,true);
     resizeBtn->installEventFilter(this);
     layout->addWidget(resizeBtn);
@@ -214,6 +236,18 @@ void SuspensionWindow::contextMenuEvent(QContextMenuEvent *event)
 //事件过滤器
 bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
 {
+    if(obj->objectName()=="SuspensionWindow")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            stackedLayout->setCurrentIndex(0);
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            stackedLayout->setCurrentIndex(1);
+        }
+    }
+
     //"显示歌单"按钮的事件过滤器
     if(obj->objectName() == "showListsBtn")
     {
@@ -346,6 +380,14 @@ void SuspensionWindow::moveIn()
     //弹出后不在收回
     suspensionBtn->hide();
     status = Normal;
+}
+
+void SuspensionWindow::changeSong(SongInfo &info)
+{
+    QPixmap image(info.album_cover);
+    QPixmap coverImage = image.scaled(QSize(60,60), Qt::KeepAspectRatio,Qt::FastTransformation);
+    coverLabel->setPixmap(coverImage);
+    lyricsLabel->setText("  " + info.title + ' ' + info.artist);
 }
 
 //修改正在播放的歌曲的信息

@@ -176,6 +176,8 @@ TitleBar::TitleBar(QWidget *parent)
     //添加布局到标题栏组件
     this->setLayout(layout);
 
+    //初始化搜索菜单
+    initActions();
     //关联信号与槽
     initSignalsAndSlots();
 }
@@ -195,6 +197,28 @@ void TitleBar::initSignalsAndSlots()
     //点击关闭按钮通知主窗体关闭
     connect(closeBtn,SIGNAL(clicked()),
             this,SIGNAL(closeWindow()));
+
+    //搜索栏文字变化时的操作
+    connect(searchBar,SIGNAL(editingFinished()),
+            this,SLOT(onEditFinished()));
+}
+
+//初始化搜索菜单
+void TitleBar::initActions()
+{
+    //初始化搜索结果菜单
+    searchMenu = new QMenu;
+    QAction *actSearchLocal = new QAction;
+    actSearchLocal->setText("在本地搜索结果 >>>>");
+    connect(actSearchLocal,SIGNAL(triggered()),
+            this,SLOT(on_actSearchLocal_triggered()));
+    searchMenu->addAction(actSearchLocal);
+    searchMenu->addSeparator();
+    QAction *actSearchOnline = new QAction;
+    actSearchOnline->setText("在网易云搜索结果 >>>>");
+    connect(actSearchOnline,SIGNAL(triggered()),
+            this,SLOT(on_actSearchOnline_triggered()));
+    searchMenu->addAction(actSearchOnline);
 }
 
 TitleBar::~TitleBar()
@@ -308,8 +332,33 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     emit maximizeWindow();
 }
 
-void TitleBar::onEditchanged(QString)
+//输入结束时
+void TitleBar::onEditFinished()
 {
+    //获得去除两边空格的字符串
+    QString searchContents = searchBar->text().trimmed();
+    if(searchContents != "")
+    {
+        QPoint showPoint = QWidget::mapToGlobal(searchBar->pos()) + QPoint(0,40);
+        searchMenu->exec(showPoint);
+    }
+    else
+    {
+        searchMenu->hide();
+    }
+}
 
+//点击在网易云搜索时
+void TitleBar::on_actSearchOnline_triggered()
+{
+    QString searchContents = searchBar->text().trimmed();
+    emit beginSearchOnline(searchContents);
+}
+
+//点击在本地搜索时
+void TitleBar::on_actSearchLocal_triggered()
+{
+    QString searchContents = searchBar->text().trimmed();
+    emit beginSearchLocal(searchContents);
 }
 

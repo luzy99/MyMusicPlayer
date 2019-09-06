@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //初始化首页
     songListPage = new QWidget;
+    songListPage->setStyleSheet("background-color: rgb(255,255,255)");
     mainPageContainer->insertWidget(0,songListPage);
     QHBoxLayout *songListPageLayout = new QHBoxLayout;
     songListPageLayout->setSpacing(0);
@@ -110,6 +111,8 @@ MainWindow::MainWindow(QWidget *parent)
     lyricsBarrage = new miniLyrics;
     lyricsBarrage->setObjectName("lyricsBarrage");
 
+    //初始化悬浮小窗
+    suspensionWindow = new SuspensionWindow;
     //设置窗口布局
     this->setLayout(outerLayout);
 
@@ -257,6 +260,21 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onChangePage(int)));
     connect(infoShow,SIGNAL(changePage(int)),
             this,SLOT(onChangePage(int)));
+
+    //这是悬浮窗之间的一些信号槽,主要用于窗体的切换
+    //和远程超控音乐播放器的状态
+    connect(suspensionWindow,SIGNAL(hideWindow()),
+            this,SLOT(onHideSuspensionWindow()));
+    connect(suspensionWindow->previousBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_previousBtn_clicked()));
+    connect(suspensionWindow->playBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(onRemotePlay()));
+    connect(suspensionWindow->nextBtn,SIGNAL(clicked()),
+            musicPlayBar,SLOT(on_nextBtn_clicked()));
+    connect(musicPlayBar,SIGNAL(becomePlaying()),
+            suspensionWindow,SLOT(onBecomePlaying()));
+    connect(musicPlayBar,SIGNAL(becomePausing()),
+            suspensionWindow,SLOT(onBecomePausing()));
 }
 
 //更新拖动区域
@@ -445,22 +463,6 @@ void MainWindow::dropEvent(QDropEvent *event)
 //对窗口进行小窗化处理
 void MainWindow::onShowSuspensionWindow()
 {
-    suspensionWindow = new SuspensionWindow;
-    //小窗在关闭时delete
-    suspensionWindow->setAttribute(Qt::WA_DeleteOnClose);
-    //这是主窗口和悬浮窗之间的信号槽,主要用于窗体的切换
-    connect(suspensionWindow,SIGNAL(hideWindow()),
-            this,SLOT(onHideSuspensionWindow()));
-    connect(suspensionWindow->previousBtn,SIGNAL(clicked()),
-            musicPlayBar,SLOT(on_previousBtn_clicked()));
-    connect(suspensionWindow->playBtn,SIGNAL(clicked()),
-            musicPlayBar,SLOT(onRemotePlay()));
-    connect(suspensionWindow->nextBtn,SIGNAL(clicked()),
-            musicPlayBar,SLOT(on_nextBtn_clicked()));
-    connect(musicPlayBar,SIGNAL(becomePlaying()),
-            suspensionWindow,SLOT(onBecomePlaying()));
-    connect(musicPlayBar,SIGNAL(becomePausing()),
-            suspensionWindow,SLOT(onBecomePausing()));
     this->hide();
     suspensionWindow->show();
 }
@@ -527,7 +529,6 @@ void MainWindow::onTranslateChanged()
 //切歌时接受歌单爬取的歌曲信息并更新至主页面
 void MainWindow::onRecieveSongInfo(SongInfo *info)
 {
-
     currentSongInfo = new SongInfo(*info);
     //qDebug()<<currentSongInfo->song_id;
 
@@ -543,8 +544,10 @@ void MainWindow::onRecieveSongInfo(SongInfo *info)
     lyricsBarrage->setWord_list(lyricsShower->getWord_list());
     lyricsBarrage->setInterval_list(lyricsShower->getInterval_list());
 
+    //更新其他展示页面的歌曲信息
     littleSongBar->changeSong(*currentSongInfo);
     infoShow->changeSong(*currentSongInfo);
+    suspensionWindow->changeSong(*currentSongInfo);
 }
 
 //显示&隐藏底部歌词弹幕的槽函数

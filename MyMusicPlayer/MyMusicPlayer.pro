@@ -36,6 +36,7 @@ SOURCES += \
     diskwidget.cpp \
     downloadwindow.cpp \
     errorwindow.cpp \
+    gesturecontrol.cpp \
     littlesongbar.cpp \
     lyricdownload.cpp \
     lyricspost.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     diskwidget.h \
     downloadwindow.h \
     errorwindow.h \
+    gesturecontrol.h \
     littlesongbar.h \
     lyricdownload.h \
     lyricspost.h \
@@ -98,3 +100,4 @@ LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_im
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_calib3d411.dll
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_imgcodecs411.dll
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_video411.dll
+LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_videoio411.dll

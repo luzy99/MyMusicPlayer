@@ -13,6 +13,7 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
      m_Songid(songId)
 {
     //设置窗口大小
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(600,1000);
 
     //初始化窗口组件
@@ -25,6 +26,7 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     m_pbtnAddPicture=new QPushButton;
     m_pbtnChangeFont=new QPushButton;
     m_pbtnSave=new QPushButton;
+    m_pbtnClose=new QPushButton;
     m_index=0;
 
     //设置事件过滤器
@@ -43,6 +45,7 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     m_pbtnAddPicture->setObjectName("Btn_addpicture");
     m_pbtnChangeFont->setObjectName("Btn_changefont");
     m_pbtnSave->setObjectName("Btn_save");
+    m_pbtnClose->setObjectName("Btn_close");
 
     //设置窗口布局
     m_pPictureWidget->setGeometry(0,0,600,600);
@@ -144,14 +147,19 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     m_pbtnSave->setText(tr("保存 "));
     m_pbtnSave->setStyleSheet("background-color:rgba(0,0,0,10);color:white");
     m_pbtnSave->setFont(QFont("幼圆",10));
+    m_pbtnClose->setText(tr("关闭"));
+    m_pbtnClose->setStyleSheet("background-color:rgba(0,0,0,10);color:white");
+    m_pbtnClose->setFont(QFont("幼圆",10));
     QHBoxLayout *btnLayout=new QHBoxLayout;
-    btnLayout->addSpacing(60);
+    btnLayout->addSpacing(35);
     btnLayout->addWidget(m_pbtnAddPicture);
-    btnLayout->addSpacing(60);
+    btnLayout->addSpacing(35);
     btnLayout->addWidget(m_pbtnChangeFont);
-    btnLayout->addSpacing(60);
+    btnLayout->addSpacing(35);
     btnLayout->addWidget(m_pbtnSave);
-    btnLayout->addSpacing(60);
+    btnLayout->addSpacing(35);
+    btnLayout->addWidget(m_pbtnClose);
+    btnLayout->addSpacing(35);
     m_pButtonWidget->setLayout(btnLayout);
     m_pButtonWidget->setStyleSheet("background-color:rgba(0,0,0,90);");
 
@@ -165,6 +173,8 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
             this,SLOT(on_btnChangeFont_clicked()));
     connect(m_pbtnSave,SIGNAL(clicked()),
             this,SLOT(on_btnSave_clicked()));
+    connect(m_pbtnClose,SIGNAL(clicked()),
+            this,SLOT(close()));
 }
 
 void LyricsPost::analyzeLyrics(QString song_id)

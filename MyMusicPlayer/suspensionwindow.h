@@ -13,6 +13,8 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QPropertyAnimation>
+#include <QStackedLayout>
+#include "songinfo.h"
 
 //定义窗体状态的枚举类型
 enum WindowsStatus {Normal, LeftOut, RightOut};
@@ -31,6 +33,8 @@ public:
 
     void moveOut(); //移出
     void moveIn(); //移入
+
+    void changeSong(SongInfo &info);
 
     QPushButton *previousBtn; //上一首的按钮
     QPushButton *playBtn; //播放按钮
@@ -56,6 +60,8 @@ private slots:
 private:
     QLabel *coverLabel; //展示封面的标签
     QLabel *lyricsLabel; //展示歌词的标签
+    QStackedLayout *stackedLayout;
+    QWidget *buttonWidget; //按钮组
     QPushButton *likeBtn; //我喜欢按钮
     QPushButton *showListsBtn; //显示播放列表
     QPushButton *resizeBtn; //恢复大窗口

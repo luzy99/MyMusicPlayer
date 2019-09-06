@@ -669,8 +669,6 @@ bool AnimatedWallWG::eventFilter(QObject *watched, QEvent *event)
     return QWidget::eventFilter(watched, event);
 }
 
-
-
 //计时器
 void AnimatedWallWG::timerEvent(QTimerEvent *event)
 {
@@ -683,13 +681,12 @@ void AnimatedWallWG::timerEvent(QTimerEvent *event)
     moveToLeft();
 }
 
-
 // 画背景色
 void AnimatedWallWG::paintEvent(QPaintEvent *event)
 {
     QPainter paint(this);
     paint.setPen(Qt::NoPen);
-    paint.setBrush(QBrush(QColor(250, 250, 252)));
+    paint.setBrush(QBrush(QColor(255, 255, 255)));
     paint.drawRect(rect());
 
     QWidget::paintEvent(event);

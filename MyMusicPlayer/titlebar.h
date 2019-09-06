@@ -17,6 +17,7 @@ class TitleBar : public QWidget
 public:
     explicit TitleBar(QWidget *parent = nullptr);
     void initSignalsAndSlots(); //初始化信号与槽
+    void initActions(); //初始化菜单
     ~TitleBar();
 
 protected:
@@ -29,19 +30,23 @@ signals:
     void maximizeWindow(); //表示最大化主窗口
     void closeWindow(); //表示关闭窗口
 
-    void Editlengthchanged(int); //搜索框字段变化
+    void beginSearchOnline(QString searchContents); //点击了全网搜索的按钮
+    void beginSearchLocal(QString searchContents); //点击了本地搜索的按钮
 
 public slots:
 
 private slots:
-    void onEditchanged(QString);
+    void onEditFinished();
+    void on_actSearchOnline_triggered();
+    void on_actSearchLocal_triggered();
 
 private:
     QLabel *iconLabel; //标题栏图标
     QLabel *titleLabel; //标题栏标题
     QLineEdit *searchBar; //搜索栏
-    QLabel *spacingLabel;
+    QMenu *searchMenu; //搜索菜单
     QPushButton *searchBtn; //搜索按钮
+    QLabel *spacingLabel; //用来制造空格的组件
     QPushButton *userBtn; //用户登录的按钮
     QPushButton *skinBtn; //换肤按钮
     QPushButton *settingsBtn; //设置按钮
