@@ -17,8 +17,8 @@ LittleSongBar::LittleSongBar(QWidget *parent)
 
     //初始化界面布局(水平布局)
     QHBoxLayout *layout = new QHBoxLayout;
-    layout->setSpacing(0);
-    layout->setContentsMargins(5,5,5,5);
+    layout->setSpacing(8);
+    layout->setContentsMargins(5,0,5,0);
 
     //初始化显示封面的Label
     coverLabel = new QLabel;
@@ -26,6 +26,7 @@ LittleSongBar::LittleSongBar(QWidget *parent)
     QPixmap image(":/icon/res/default_cover.png");
     coverImage = image.scaled(QSize(50,50), Qt::KeepAspectRatio,Qt::FastTransformation);
     coverLabel->setPixmap(coverImage);
+    coverLabel->setFixedWidth(50);
     coverLabel->setToolTip("点击查看歌曲详细信息");
     coverLabel->setWindowFlags(Qt::FramelessWindowHint);
     opacityEffect=new QGraphicsOpacityEffect;
@@ -38,7 +39,7 @@ LittleSongBar::LittleSongBar(QWidget *parent)
     //初始化标签界面的
     QVBoxLayout *labelLayout = new QVBoxLayout;
     labelLayout->setSpacing(0);
-    labelLayout->setContentsMargins(5,0,0,0);
+    labelLayout->setContentsMargins(0,0,0,0);
     //初始化显示标题的Label
     titleLabel = new QLabel;
     titleLabel->setObjectName("titleLabel");

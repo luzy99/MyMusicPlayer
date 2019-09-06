@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     mainPageContainer = new QStackedWidget;
     mainPageContainer->setObjectName("mainPageContainer");
 
-    //初始化展示歌单信息的界面
+    //初始化首页
     songListPage = new QWidget;
     mainPageContainer->insertWidget(0,songListPage);
     QHBoxLayout *songListPageLayout = new QHBoxLayout;

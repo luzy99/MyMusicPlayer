@@ -31,6 +31,8 @@ void miniLyrics::initSignalsAndSlots()
             this,SLOT(slot_timer()));
     connect(m_closeBtn,SIGNAL(clicked()),
             this,SLOT(hide()));
+    connect(m_forward,SIGNAL(clicked()),
+            this,SLOT(on_forward_clicked()));
 }
 
 miniLyrics::~miniLyrics()
@@ -539,6 +541,11 @@ void miniLyrics::slot_timer()
 {
     GetMaskLen();
     repaint();
+}
+
+//前进0.5秒的按钮按下了
+void miniLyrics::on_forward_clicked()
+{
 }
 
 //表示接下来播放

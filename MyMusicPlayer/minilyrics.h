@@ -55,6 +55,7 @@ protected:
 
 private slots:
     void slot_timer();
+    void on_forward_clicked();
 
 
 public slots:

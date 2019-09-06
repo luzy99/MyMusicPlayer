@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QMouseEvent>
+#include <QDateTime>
 
 #define SCROLL_TIME 300
 #define SCROLL_TIMER_TIME 30
@@ -14,12 +15,13 @@ LyricWidget::LyricWidget(QWidget *parent)
     //初始化改变播放按钮
     btnPlaythis = new QPushButton;
     btnPlaythis->setFlat(true);
-    btnPlaythis->setIcon(QIcon(":/icon/res/play.png"));
+    btnPlaythis->setIcon(QIcon(":/icon/res/currentRow.png"));
     btnPlaythis->setIconSize(QSize(20,20));
     btnPlaythis->setStyleSheet("background-color:rgba(0,0,0,0)");
 
     //初始化显示事件的标签
-    lab_showtime=new QLabel("10:00");
+    lab_showtime=new QLabel;
+    lab_showtime->setText("10:00");
 
 //    QWidget *pWindow = this->window();
 //    QSize pWindowSize = pWindow->size();
@@ -28,11 +30,10 @@ LyricWidget::LyricWidget(QWidget *parent)
 //    btnPlaythis->setGeometry(0,(pWindowSize.height()-45)/2,45,45);
 
     QHBoxLayout *HLay1=new QHBoxLayout(this);
+    HLay1->setContentsMargins(0,0,5,0);
 
-    btnPlaythis->setGeometry(0,0,45,45);
-    HLay1->addWidget(btnPlaythis);
-    HLay1->addSpacing(400);
-    HLay1->addWidget(lab_showtime);
+    HLay1->addWidget(btnPlaythis,0,Qt::AlignLeft);
+    HLay1->addWidget(lab_showtime,0,Qt::AlignRight);
 
     //设置歌词的信息参数
     m_strCurLrc="";
@@ -432,6 +433,9 @@ void LyricWidget::slot_timer()
 //这应该是进度条触发后处理的槽函数
 void LyricWidget::onPositionChanged(qint64 length)
 {
+    QDateTime time = QDateTime::fromMSecsSinceEpoch(length);
+    lab_showtime->setText(time.toString("mm:ss"));
+
     m_nCurPos=length;
     //用二元搜索现在这句歌词的编号
     int index = GetIndexByTime(m_nCurPos);

@@ -93,6 +93,7 @@
         <file>res/exitfullscreen.png</file>
         <file>res/fullscreen.png</file>
         <file>res/exitSongInfo.png</file>
+        <file>res/currentRow.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>
