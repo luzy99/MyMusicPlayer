@@ -56,7 +56,7 @@ protected:
 private slots:
     void slot_timer();
     void on_forward_clicked();
-
+    void on_backward_clicked();
 
 public slots:
     void onPositionChanged(qint64 length);//歌曲播放信息变化时发出的信号
@@ -79,6 +79,7 @@ private:
 
     float percent;//百分比
     float maskLen;//蒙版长度
+    int addition; //偏移量
 
     QString leftText;//左上角歌词
     QString rightText;//右下角歌词

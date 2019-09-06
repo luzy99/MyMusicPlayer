@@ -12,8 +12,9 @@
 miniLyrics::miniLyrics(QWidget *parent)
     : AbsFrameLessAutoSize(parent)
 {
-    m_precent=0;
-    m_border=8;
+    m_precent = 0;
+    m_border = 8 ;
+    addition = 0;
 
     setMouseTracking(true);
     setWindowFlags(Qt::FramelessWindowHint|Qt::Tool|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint);
@@ -33,6 +34,8 @@ void miniLyrics::initSignalsAndSlots()
             this,SLOT(hide()));
     connect(m_forward,SIGNAL(clicked()),
             this,SLOT(on_forward_clicked()));
+    connect(m_backward,SIGNAL(clicked()),
+            this,SLOT(on_backward_clicked()));
 }
 
 miniLyrics::~miniLyrics()
@@ -101,14 +104,14 @@ void miniLyrics::initWidgetMISC()
     m_forward=new QPushButton;
     m_forward->setFixedSize(30,30);
     m_forward->setIconSize(m_size);
-    m_forward->setIcon(QIcon(":/icon/res/previous6.png"));
+    m_forward->setIcon(QIcon(":/icon/res/next6.png"));
     m_forward->setToolTip("歌词前进0.5秒");
     m_forward->setFlat(true);
 
     m_backward=new QPushButton;
     m_backward->setFixedSize(30,30);
     m_backward->setIconSize(m_size);
-    m_backward->setIcon(QIcon(":/icon/res/next6.png"));
+    m_backward->setIcon(QIcon(":/icon/res/previous6.png"));
     m_backward->setFlat(true);
     m_backward->setToolTip("歌词后退0.5秒");
 
@@ -546,6 +549,13 @@ void miniLyrics::slot_timer()
 //前进0.5秒的按钮按下了
 void miniLyrics::on_forward_clicked()
 {
+    addition+=500;
+}
+
+//后退0.5的按钮按下了
+void miniLyrics::on_backward_clicked()
+{
+    addition-=500;
 }
 
 //表示接下来播放
@@ -562,7 +572,7 @@ void miniLyrics::onBecomePausing()
 
 void miniLyrics::onPositionChanged(qint64 length)
 {
-    CurPos=length;
+    CurPos=length+addition;
     CurIndex=GetIndexByTime(CurPos);
     CurStartPos=GetPosByindex(CurIndex);
     CurLrc=GetLrcByIndex(CurIndex);
