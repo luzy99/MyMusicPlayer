@@ -4,7 +4,6 @@
 #include <QObject>
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
-#include<iostream>
 #include<QTime>
 using namespace cv;
 using namespace std;
@@ -15,8 +14,12 @@ class GestureControl : public QObject
 public:
     explicit GestureControl(QObject *parent = nullptr);
     void mainProcess();//主函数（只要调这个）
+    void setKeyboard(char value);
+
 signals:
-    void gestureSignal(bool);//0为向左，1为向右
+    void gestureLeft();
+    void gestureRight();
+
 public slots:
 
 private:

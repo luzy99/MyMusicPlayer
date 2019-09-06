@@ -32,9 +32,12 @@ signals:
     void maximizeWindow(); //表示最大化主窗口
     void closeWindow(); //表示关闭窗口
 
-    void beginSearchOnline(QString searchContents); //点击了全网搜索的按钮
-    void beginSearchLocal(QString searchContents); //点击了本地搜索的按钮
-    void beginSearchMv(QString searchContents);
+    void beginSearchOnline(QString searchContents); //点击了全网搜索
+    void beginSearchLocal(QString searchContents); //点击了本地搜索
+    void beginSearchMv(QString searchContents); //点击了搜索MV
+
+    void beginGesture(); //开启手势识别
+    void closeGesture(); //关闭手势识别
 
 public slots:
 
@@ -43,6 +46,7 @@ private slots:
     void on_actSearchOnline_triggered();
     void on_actSearchLocal_triggered();
     void on_actSearchMV_triggered();
+    void on_gestureBtn_clicked();
 
 private:
     QLabel *iconLabel; //标题栏图标
@@ -53,11 +57,14 @@ private:
     QLabel *spacingLabel; //用来制造空格的组件
     QPushButton *userBtn; //用户登录的按钮
     QPushButton *skinBtn; //换肤按钮
+    QPushButton *gestureBtn; //手势按钮
     QPushButton *settingsBtn; //设置按钮
     QPushButton *resizeBtn; //小窗化按钮
     QPushButton *minimizeBtn; //最小化按钮
     QPushButton *maximizeBtn; //最大化/还原按钮
     QPushButton *closeBtn; //关闭按钮
+
+    bool gestureControl; //是否手势控制
 };
 
 #endif // TITLEBAR_H

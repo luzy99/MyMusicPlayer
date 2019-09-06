@@ -1,4 +1,5 @@
 #include "titleBar.h"
+#include "errorwindow.h"
 #include <QLabel>
 #include <QPushButton>
 #include <QEvent>
@@ -71,6 +72,7 @@ TitleBar::TitleBar(QWidget *parent)
 
     //初始化搜索结果的组件
     searchResult = new ResultWidget;
+    searchResult->setWindowFlags(Qt::FramelessWindowHint);
 
     //初始化填充空行的
     spacingLabel = new QLabel;
@@ -106,6 +108,21 @@ TitleBar::TitleBar(QWidget *parent)
     skinBtn->setAttribute(Qt::WA_Hover,true);
     skinBtn->installEventFilter(this);
     layout->addWidget(skinBtn);
+
+    //初始化手势按钮
+    gestureBtn = new QPushButton;
+    gestureBtn->setObjectName("gestureBtn");
+    gestureBtn->setAttribute(Qt::WA_TranslucentBackground);
+    gestureBtn->setIcon(QIcon(":/icon/res/gesture.png"));
+    gestureBtn->setIconSize(QSize(27,27));
+    gestureBtn->setFixedSize(45,35);
+    gestureBtn->setFlat(true);
+    gestureBtn->setStyleSheet("border: none;");
+    gestureBtn->setToolTip("点击开启手势识别");
+    gestureBtn->setAttribute(Qt::WA_Hover,true);
+    gestureBtn->installEventFilter(this);
+    layout->addWidget(gestureBtn);
+    gestureControl = false;
 
     //初始化设置按钮
     settingsBtn = new QPushButton;
@@ -188,6 +205,10 @@ TitleBar::TitleBar(QWidget *parent)
 //初始化信号与槽
 void TitleBar::initSignalsAndSlots()
 {
+    //点击手势识别按钮开启&关闭手势识别
+    connect(gestureBtn,SIGNAL(clicked()),
+            this,SLOT(on_gestureBtn_clicked()));
+
     //点击小窗化按钮通知主界面隐藏主窗体显示悬浮窗
     connect(resizeBtn,SIGNAL(clicked()),
             this,SIGNAL(showSuspensionWindow()));
@@ -326,6 +347,18 @@ bool TitleBar::eventFilter(QObject *obj, QEvent *event)
                                    "font-family: Microsoft YaHei;" );
         }
     }
+    //手势按钮事件过滤器
+    else if(obj->objectName() == "gestureBtn")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            gestureBtn->setIcon(QIcon(":/icon/res/gestureHover.png"));
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            gestureBtn->setIcon(QIcon(":/icon/res/gesture.png"));
+        }
+    }
     else
     {
 
@@ -377,5 +410,28 @@ void TitleBar::on_actSearchMV_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
     emit beginSearchMv(searchContents);
+}
+
+//点击开启&关闭手势识别
+void TitleBar::on_gestureBtn_clicked()
+{
+    //开启手势识别
+    if(!gestureControl)
+    {
+        gestureControl = true;
+        ErrorWindow *startGesture = new ErrorWindow("打开手势识别功能");
+        startGesture->show();
+        startGesture->showInstantly();
+        emit beginGesture();
+    }
+    //关闭手势识别
+    else
+    {
+        gestureControl = false;
+        ErrorWindow *stopGesture = new ErrorWindow("关闭手势识别功能");
+        stopGesture->show();
+        stopGesture->showInstantly();
+        emit closeGesture();
+    }
 }
 

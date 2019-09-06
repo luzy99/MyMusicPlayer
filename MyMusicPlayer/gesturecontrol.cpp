@@ -1,4 +1,5 @@
 #include "gesturecontrol.h"
+#include <QDebug>
 
 GestureControl::GestureControl(QObject *parent) : QObject(parent)
 {
@@ -17,14 +18,15 @@ void GestureControl::mainProcess()
     keyboard = 0;
     while (keyboard != 'q')
     {
+        //qDebug()<<"in while";
         if(m_time.elapsed()>5000)
         {
             //cout<<"reset!!!!!\n";
             recordIndex =0;
         }
         if (!capture.read(frame)) {
-            cerr << "Unable to read next frame." << endl;
-            cerr << "Exiting..." << endl;
+            //cerr << "Unable to read next frame." << endl;
+            //cerr << "Exiting..." << endl;qq
             exit(EXIT_FAILURE);
         }
         flip(frame, frame, 1);
@@ -87,9 +89,21 @@ void GestureControl::mainProcess()
         cvtColor(img_color, img_color, COLOR_BGR2GRAY);
         threshold(img_color, img_color, 1, 255, cv::THRESH_BINARY);//二值化
         drawRect(img_color, frame);
-        keyboard = (char)waitKey(30);
+        if(keyboard == 'q')
+        {
+            break;
+        }
+        waitKey(30);
     }
     capture.release();
+    cv::destroyWindow("FG Mask MOG 2");
+    cv::destroyWindow("remove");
+    cv::destroyWindow("trackObject");
+}
+
+void GestureControl::setKeyboard(char value)
+{
+    keyboard = value;
 }
 
 void GestureControl::drawRect(Mat MOG2, Mat frame)
@@ -173,8 +187,8 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
         circle(frame, center, 5, Scalar(0, 255, 0), -1);
         trackCenter.insert(trackCenter.begin() + recordIndex, center);
         recordIndex++;
-        cout << recordIndex;
-        cout << center << endl;
+        //cout << recordIndex;
+        //cout << center << endl;
         cv::imshow("trackObject", frame);
         return;
     }
@@ -194,15 +208,15 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
 
             //fittedCurve(in_point, 5);
             recordIndex = 0;
-            cout<<"left\n";
-            emit gestureSignal(direction);
+            //cout<<"left\n";
+            emit gestureLeft();
             return;
         }
         circle(frame, center, 5, Scalar(0, 255, 0), -1);
         trackCenter.insert(trackCenter.begin() + recordIndex, center);
         recordIndex++;
-        cout << recordIndex << endl;
-        cout << center;
+        //cout << recordIndex << endl;
+        //cout << center;
 
     }
     else if (direction == 1)//起始点在左边
@@ -219,16 +233,16 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
             in_point.insert(in_point.begin(), trackCenter.begin(), trackCenter.begin() + recordIndex);
             //reserve(recordIndex);
             //fittedCurve(in_point, 5);
-            cout<<"right\n";
-            emit gestureSignal(direction);
+            //cout<<"right\n";
+            emit gestureRight();
             recordIndex = 0;
             return;
         }
         circle(frame, center, 5, Scalar(0, 255, 0), -1);
         trackCenter.insert(trackCenter.begin() + recordIndex, center);
         recordIndex++;
-        cout << recordIndex << endl;
-        cout << center;
+        //cout << recordIndex << endl;
+        //cout << center;
 
     }
     cv::imshow("trackObject", frame);
@@ -257,7 +271,7 @@ Mat GestureControl::polyfit(vector<Point> &in_point, int n)
     //矩阵运算，获得系数矩阵K
     Mat mat_k(x_num, 1, CV_64F);
     mat_k = (mat_u.t()*mat_u).inv()*mat_u.t()*mat_y;
-    cout << mat_k << endl;
+    //cout << mat_k << endl;
     return mat_k;
 }
 

@@ -16,7 +16,7 @@ LyricWidget::LyricWidget(QWidget *parent)
     btnPlaythis = new QPushButton;
     btnPlaythis->setFlat(true);
     btnPlaythis->setIcon(QIcon(":/icon/res/currentRow.png"));
-    btnPlaythis->setIconSize(QSize(20,20));
+    btnPlaythis->setIconSize(QSize(30,30));
     btnPlaythis->setStyleSheet("background-color:rgba(0,0,0,0)");
 
     //初始化显示事件的标签

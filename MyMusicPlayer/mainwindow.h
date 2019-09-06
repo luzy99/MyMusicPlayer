@@ -20,6 +20,7 @@
 #include "littlesongbar.h" //首页地下小的歌曲标签
 #include "animatedwallwg.h" //动画滚轮
 #include "searchdata.h" //搜索框对应的搜索器
+#include "gesturecontrol.h" //手势识别
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -54,6 +55,11 @@ private slots:
     void onMaximizeWindow();
     void onCloseWindow();
 
+    void onResendSongInfo(SongInfo &chosenSong);
+    //开启&关闭手势识别
+    void onBeginGesture();
+    void onCloseGesture();
+
     //这里接受悬浮窗对主窗体发出的一些信号
     void onHideSuspensionWindow();
 
@@ -84,6 +90,7 @@ private:
     SongInfo *currentSongInfo; //当前播放的歌曲的信息
     bool translate; //歌词是否翻译
     SearchData *searcher; //搜索框的逻辑的部件
+    GestureControl *gestureControl; //控制手势识别
 
     QWidget *songListPage; //展示歌单信息页面
     SongList *songList; //歌单列表

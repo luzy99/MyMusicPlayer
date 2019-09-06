@@ -71,6 +71,8 @@ ResultWidget::ResultWidget(QWidget *parent)
 //    m_artistLabel->setStyleSheet("color:rgba(0,0,0,75);");
 
 //    addsonginfoItems();
+    connect(m_btnClose,SIGNAL(clicked()),
+            this,SLOT(close()));
     connect(m_resultWidget,SIGNAL(currentRowChanged(int)),
             this,SLOT(on_itemclicked(int)));
 }
@@ -81,7 +83,7 @@ void ResultWidget::getOnlinePic(QString song_url)
     QNetworkAccessManager *manager;
     manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)),
-    this, SLOT(on_replyFinished(QNetworkReply*)));
+         this, SLOT(on_replyFinished(QNetworkReply*)));
     QNetworkRequest request;
     request.setUrl(QUrl(song_url));
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
@@ -197,7 +199,6 @@ void ResultWidget::on_searchReply1(QMap<QString, QMap<QString, QString> > mvResu
 
 void ResultWidget::on_itemclicked(int cur)
 {
-    qDebug()<<"clicked";
     switch (m_mode)
     {
     case 0:

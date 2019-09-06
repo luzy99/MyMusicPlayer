@@ -25,7 +25,7 @@ public:
     void addsonginfoItems(int cur);
 
 signals:
-    void resendSongInfo(SongInfo);
+    void resendSongInfo(SongInfo &);
     void resendnvId(QString);
 
 public slots:

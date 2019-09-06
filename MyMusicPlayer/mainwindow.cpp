@@ -249,6 +249,11 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onMaximizeWindow()));
     connect(titleBar,SIGNAL(closeWindow()),
             this,SLOT(onCloseWindow()));
+    //用于开启&关闭手势识别
+    connect(titleBar,SIGNAL(beginGesture()),
+            this,SLOT(onBeginGesture()));
+    connect(titleBar,SIGNAL(closeGesture()),
+            this,SLOT(onCloseGesture()));
 
     //这是标题栏(搜索框)和搜索器之间的信号槽
     //完成一个搜索的逻辑
@@ -260,6 +265,8 @@ void MainWindow::initSignalsAndSlots()
             searcher,SLOT(searchMv(QString)));
     connect(searcher,SIGNAL(searchFinished(QMap<QString,SongInfo>)),
             titleBar->searchResult,SLOT(on_searchReply(QMap<QString,SongInfo>)));
+    connect(titleBar->searchResult,SIGNAL(resendSongInfo(SongInfo &)),
+            this,SLOT(onResendSongInfo(SongInfo &)));
 
     //这是歌曲播放栏和歌词弹幕之间的信号槽
     //点击时模拟歌曲播放栏的按钮被按下的效果
@@ -513,6 +520,33 @@ void MainWindow::onMaximizeWindow()
 void MainWindow::onCloseWindow()
 {
     this->close();
+}
+
+//网络歌曲的播发
+void MainWindow::onResendSongInfo(SongInfo &chosenSong)
+{
+    qDebug()<<"reach process function";
+
+    QString chosenSongUrl = QString("http://music.163.com/song/media/outer/url?id=%1.mp3").arg(chosenSong.song_id);
+    emit clearMusic();
+    emit addIntoPlayList(chosenSongUrl);
+    emit playMusic(0);
+}
+
+//开始手势识别
+void MainWindow::onBeginGesture()
+{
+    gestureControl = new GestureControl;
+    connect(gestureControl,SIGNAL(gestureLeft()),
+            musicPlayBar,SLOT(on_previousBtn_clicked()));
+    connect(gestureControl,SIGNAL(gestureRight()),
+            musicPlayBar,SLOT(on_nextBtn_clicked()));
+    gestureControl->mainProcess();
+}
+//关闭手势识别
+void MainWindow::onCloseGesture()
+{
+    gestureControl->setKeyboard('q');
 }
 
 //停止小窗化,显示大窗
