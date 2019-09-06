@@ -695,6 +695,7 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
         }
         tag.mvIdMatch();
         qDebug()<<songInfo->song_id;
+        qDebug()<<songInfo->mv_id;
         emit sendSongInfo(songInfo);
 
         query.exec(QString("delete from 播放历史 where songName = '%1' ;").arg(songInfo->title));

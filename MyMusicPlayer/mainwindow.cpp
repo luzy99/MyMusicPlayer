@@ -92,13 +92,13 @@ MainWindow::MainWindow(QWidget *parent)
     //初始化歌曲信息显示
     infoShow = new SongInfoShow(*currentSongInfo,this);
     infoShow->setObjectName("infoShow");
-    songInfoPageLayout->addWidget(infoShow);
+    songInfoPageLayout->addWidget(infoShow,1);
     //初始化歌词界面
     lyricsShower = new LyricWidget;
     lyricsShower->setObjectName("lyricsShower");
     lyricsShower->setWindowFlags(Qt::FramelessWindowHint);
     lyricsShower->setAttribute(Qt::WA_TranslucentBackground);
-    songInfoPageLayout->addWidget(lyricsShower);
+    songInfoPageLayout->addWidget(lyricsShower,1);
     songInfoPage->setLayout(songInfoPageLayout);
 
     //将多页容器添加至主界面
@@ -188,6 +188,10 @@ void MainWindow::initSignalsAndSlots()
     //显示&隐藏底部弹幕
     connect(musicPlayBar,SIGNAL(showLyricsBarrage(bool)),
             this,SLOT(onShowLyricsBarrage(bool)));
+
+    //这是主窗口和歌曲展示页间的信号槽，播放MV
+    connect(infoShow,SIGNAL(playMV()),
+            this,SLOT(onPlayMV()));
 
     //这是歌单与音乐播放栏之间的信号槽
     //歌单触发播放音乐事件
@@ -628,4 +632,12 @@ void MainWindow::onShowLyricsBarrage(bool show)
 void MainWindow::onChangePage(int index)
 {
     mainPageContainer->setCurrentIndex(index);
+}
+
+//播放MV
+void MainWindow::onPlayMV()
+{
+    MvPlayer *mvPlayer = new MvPlayer;
+    this->setDisabled(true);
+    mvPlayer->show();
 }

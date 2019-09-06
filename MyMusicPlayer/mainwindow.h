@@ -21,6 +21,7 @@
 #include "animatedwallwg.h" //动画滚轮
 #include "searchdata.h" //搜索框对应的搜索器
 #include "gesturecontrol.h" //手势识别
+#include "mvplayer.h" //MV视频播放
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -73,6 +74,9 @@ private slots:
 
     //这是切换界面的槽函数
     void onChangePage(int index);
+
+    //这是播放MV的槽函数
+    void onPlayMV();
 
 private:
     TitleBar *titleBar; //自定义标题栏

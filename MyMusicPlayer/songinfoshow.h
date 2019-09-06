@@ -19,11 +19,15 @@ public:
     SongInfoShow(QWidget *parent = nullptr);
     void initSignalsAndSlots();
     ~SongInfoShow();
+    QPushButton *getMvButton() const;
+    void setMvButton(QPushButton *value);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 signals:
-   void changePage(int index);
-   void sendAddIntoSongListCommand(QString,QString);
+    void changePage(int index);
+    void sendAddIntoSongListCommand(QString,QString);
+    void playMV(); //通知首页播放MV
 
 public slots:
     void changeSong(SongInfo &m_song_info);
@@ -41,6 +45,8 @@ private:
     QString songName;
 
     QLabel *titleShow;
+    QPushButton *mvButton;
+    QLabel *spacingLabel;
     QLabel *artistShow;
     diskWidget *disk;
     QVBoxLayout *outerLayout;

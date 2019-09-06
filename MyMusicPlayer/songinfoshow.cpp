@@ -21,11 +21,35 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
 
     //初始化音乐标题标签
     //QFont myfont("Microsoft YaHei", 10, 75);
+    QHBoxLayout *titleLayout = new QHBoxLayout;
+    titleLayout->setSpacing(10);
+    titleLayout->setContentsMargins(0,0,0,0);
     titleShow = new QLabel;
     titleShow->setObjectName("titleShow");
     titleShow->setFont(QFont("Microsoft YaHei", 15, 75));
-    titleShow->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
-    outerLayout->addWidget(titleShow);
+    titleShow->setStyleSheet("text-align: left;");
+    titleShow->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Fixed);
+    titleLayout->addWidget(titleShow);
+    //初始化显示MV按钮
+    mvButton = new QPushButton;
+    mvButton->setObjectName("mvButton");
+    mvButton->setFont(QFont("Microsoft YaHei", 10, 45));
+    mvButton->setText("MV");
+    mvButton->setFixedSize(35,20);
+    mvButton->setStyleSheet ("border:none;" \
+                               "padding:2px 4px;" \
+                               "color: rgb(25,25,25);" \
+                               "background-color: rgba(255,255,255,0.3);");
+    mvButton->setAttribute(Qt::WA_Hover,true);
+    mvButton->installEventFilter(this);
+    mvButton->setToolTip("这首歌没有MV信息");
+    mvButton->setEnabled(false);
+    titleLayout->addWidget(mvButton,0,Qt::AlignLeft);
+    spacingLabel = new QLabel;
+    spacingLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    titleLayout->addWidget(spacingLabel);
+
+    outerLayout->addLayout(titleLayout);
 
     //初始化音乐作者标签
     artistShow = new QLabel;
@@ -139,6 +163,9 @@ SongInfoShow::SongInfoShow(QWidget *parent):
 //初始化信号与槽
 void SongInfoShow::initSignalsAndSlots()
 {
+    //有MV时播放MV
+    connect(mvButton,SIGNAL(clicked()),
+            this,SIGNAL(playMV()));
     //点击收藏按钮添加至歌单
     connect(starButton,SIGNAL(clicked()),
             this,SLOT(on_starButton_clicked()));
@@ -239,6 +266,23 @@ bool SongInfoShow::eventFilter(QObject *obj, QEvent *event)
                                        "background-color: rgba(255,255,255,0.5);");
         }
     }
+    else if(obj->objectName() == "mvButton")
+    {
+        if(event->type() == QEvent::HoverEnter)
+        {
+            mvButton->setStyleSheet ("border:none;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(25,25,25);" \
+                                       "background-color: rgba(255,255,255,0.5);");
+        }
+        if(event->type() == QEvent::HoverLeave)
+        {
+            mvButton->setStyleSheet ("border:none;" \
+                                       "padding:2px 4px;" \
+                                       "color: rgb(25,25,25);" \
+                                       "background-color: rgba(255,255,255,0.3);");
+        }
+    }
     else
     {
 
@@ -254,6 +298,16 @@ void SongInfoShow::changeSong(SongInfo &m_song_info)
     disk->changePic(m_song_info.album_cover);
     songId = m_song_info.song_id;
     songName=m_song_info.title;
+    if(m_song_info.mv_id == "")
+    {
+        mvButton->setToolTip("这首歌没有MV信息");
+        mvButton->setEnabled(false);
+    }
+    else
+    {
+        mvButton->setToolTip("点击播放MV");
+        mvButton->setEnabled(true);
+    }
 }
 
 void SongInfoShow::diskRotateStart()
@@ -300,4 +354,14 @@ void SongInfoShow::on_starButton_clicked()
         qDebug()<< listName;
         emit(sendAddIntoSongListCommand(songName, listName));
     }
+}
+
+QPushButton *SongInfoShow::getMvButton() const
+{
+    return mvButton;
+}
+
+void SongInfoShow::setMvButton(QPushButton *value)
+{
+    mvButton = value;
 }
