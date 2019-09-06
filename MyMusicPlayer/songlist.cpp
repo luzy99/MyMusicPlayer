@@ -529,6 +529,53 @@ void SongList::setSongAddInto(QString songName,QString listName)
     }
 }
 
+//在歌曲展示页点击添加至歌单的槽函数
+void SongList::remoteSetSongAddInto(QString songName, QString listName)
+{
+    QSqlQuery query(db);
+    query.exec(QString("select songUrl from %1 where songName = '%2' ;").arg(listName , songName));
+    query.next();
+    if(query.value(0).toString()==QString(""))
+    {
+        QString getInfoCommand = "select * from %1 where songName = '%2';";
+        query.exec(getInfoCommand.arg(playingSongList, songName));
+        query.next();
+        QString songUrl = QString(query.value(1).toString());
+        QString likeOrNot = QString(query.value(2).toString());
+        QString artist = QString(query.value(3).toString());
+        QString album = QString(query.value(4).toString());
+        QString album_cover = QString(query.value(5).toString());
+        QString num = QString::number(maxNumInSongList(playingSongList) + 1);
+
+        if(listName == QString("我喜欢的音乐"))
+        {
+            likeOrNot = "1";
+            QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+            query.exec(insertCommand.arg(listName , songName, songUrl, likeOrNot , artist, album, album_cover, num));
+            QString cmd = "show tables;";
+            QSqlQuery query2(cmd);
+            while (query2.next())
+            {
+                QString tableName = QString(query2.value(0).toString());
+                QString command = "update %1 set likeOrNot = 1 where songName = '%2' ;";
+                query.exec(command.arg(tableName, songName));
+            }
+         }
+        else
+        {
+            QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+            query.exec(insertCommand.arg(listName , songName, songUrl, likeOrNot , artist, album, album_cover, num));
+        }
+        showSongsOfList(playingSongList);
+    }
+    else
+    {
+        ErrorWindow *errordlg = new ErrorWindow("歌曲已存在");
+        errordlg->show();
+        errordlg->showInstantly();
+    }
+}
+
 //弹窗展示歌单信息
 void SongList::setSongInfoShowed(QString name)
 {
