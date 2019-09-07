@@ -5,7 +5,7 @@
 #include <QMouseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QStackedWidget>
+#include "animationstackedwidget.h" //带动画效果的StackedWidget
 #include "titlebar.h" //包含“自定义标题栏”头文件
 #include "suspensionwindow.h" //包含悬浮窗窗体的头文件
 #include "musicplaybar.h" //包含“自定义音乐播放栏”头文件
@@ -22,6 +22,7 @@
 #include "searchdata.h" //搜索框对应的搜索器
 #include "gesturecontrol.h" //手势识别
 #include "mvplayer.h" //MV视频播放
+#include "showlocal.h" //展示本地歌曲
 
 enum clickedEventType {No=0, Move, Resize }; //标明鼠标按下的事件类型
 
@@ -73,14 +74,14 @@ private slots:
     void onShowLyricsBarrage(bool show); //显示&隐藏底部歌词弹幕
 
     //这是切换界面的槽函数
-    void onChangePage(int index);
+    void onChangePage();
 
     //这是播放MV的槽函数
     void onPlayMV();
 
 private:
     TitleBar *titleBar; //自定义标题栏
-    QStackedWidget *mainPageContainer; //主要界面的容器，实现界面切换
+    AnimationStackedWidget *mainPageContainer; //主要界面的容器，实现界面切换
     MusicPlayBar *musicPlayBar; //自定义音乐播放栏
     SuspensionWindow *suspensionWindow; //小窗化窗体
     miniLyrics *lyricsBarrage; //歌词弹幕
@@ -100,6 +101,7 @@ private:
     SongList *songList; //歌单列表
     LittleSongBar *littleSongBar; //底部小的歌曲信息展示
     AnimatedWallWG *adsWall; //动画滚轮
+    ShowLocal *songListsShower; //歌单展示页面
 
     QWidget *songInfoPage; //展示歌曲信息页面
     SongInfoShow *infoShow; //歌曲信息显示

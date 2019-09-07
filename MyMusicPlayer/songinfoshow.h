@@ -25,7 +25,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 signals:
-    void changePage(int index);
+    void changePage();
     void sendAddIntoSongListCommand(QString,QString);
     void playMV(); //通知首页播放MV
 

@@ -37,15 +37,16 @@ SongList::SongList(QWidget *parent)
     //初始化歌单标签区域
     QHBoxLayout *listHLayout = new QHBoxLayout;
     listHLayout->setSpacing(0);
-    listHLayout->setContentsMargins(10,0,0,0);
+    listHLayout->setContentsMargins(0,0,0,0);
     labelLists = new QLabel;
     labelLists->setFixedHeight(30);
-    labelLists->setText(" 我的歌单");
+    labelLists->setText("  我的歌单");
     labelLists->setFont(QFont("Microsoft YaHei", 10, 25));
     listHLayout->addWidget(labelLists);
     //初始化新建歌单的按钮
     createMusicListButton = new QPushButton;
     createMusicListButton->setObjectName("createMusicListButton");
+    createMusicListButton->setStyleSheet("border: none;");
     createMusicListButton->setFlat(true);
     createMusicListButton->setIcon(QIcon(":/icon/res/add.png"));
     createMusicListButton->setIconSize(QSize(20,20));
@@ -71,15 +72,16 @@ SongList::SongList(QWidget *parent)
     //初始化歌曲标签区域
      QHBoxLayout *songHLayout = new QHBoxLayout;
      songHLayout->setSpacing(0);
-     songHLayout->setContentsMargins(10,0,0,0);
+     songHLayout->setContentsMargins(0,0,0,0);
      labelSongs = new QLabel;
      labelSongs->setFixedHeight(30);
-     labelSongs->setText(" 播放列表");
+     labelSongs->setText("  播放列表");
      labelSongs->setFont(QFont("Microsoft YaHei", 10, 25));
      songHLayout->addWidget(labelSongs);
      //初始化添加歌曲的按钮
      addSongBtn = new QPushButton;
      addSongBtn->setObjectName("addSongBtn");
+     addSongBtn->setStyleSheet("border: none;");
      addSongBtn->setFlat(true);
      addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
      addSongBtn->setIconSize(QSize(20,20));

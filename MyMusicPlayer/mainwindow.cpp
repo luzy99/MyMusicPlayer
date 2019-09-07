@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <QDir>
 #include <QVBoxLayout>
+#include <QSplitter>
 #include <QApplication>
 #include <QBitmap>
 #include <QPainter>
@@ -12,6 +13,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPropertyAnimation>
 #include<QDebug>
 using namespace cv;
 
@@ -53,11 +55,13 @@ MainWindow::MainWindow(QWidget *parent)
     outerLayout->addWidget(titleBar,0,Qt::AlignTop);
 
     //初始化主界面装载多页面切换的容器
-    mainPageContainer = new QStackedWidget;
+    mainPageContainer = new AnimationStackedWidget;
+    mainPageContainer->setWindowFlags(Qt::FramelessWindowHint);
     mainPageContainer->setObjectName("mainPageContainer");
 
     //初始化首页
     songListPage = new QWidget;
+    songListPage->setWindowFlags(Qt::FramelessWindowHint);
     songListPage->setStyleSheet("background-color: rgb(255,255,255)");
     mainPageContainer->insertWidget(0,songListPage);
     QHBoxLayout *songListPageLayout = new QHBoxLayout;
@@ -68,24 +72,33 @@ MainWindow::MainWindow(QWidget *parent)
     leftLayout->setContentsMargins(0,0,0,0);
     //初始化歌单界面
     songList = new SongList;
+    songList->setStyleSheet("background: rgb(100,100,100)");
     leftLayout->addWidget(songList);
     //初始化小的歌曲显示栏
     littleSongBar = new LittleSongBar;
+    //littleSongBar->setStyleSheet("border: 1px solid rgb(0,0,0);");
     leftLayout->addWidget(littleSongBar);
     songListPageLayout->addLayout(leftLayout,2);
     songListPage->setLayout(songListPageLayout);
+
+    QVBoxLayout *rightLayout = new QVBoxLayout;
+    rightLayout->setSpacing(10);
+    rightLayout->setContentsMargins(10,10,10,10);
     //初始化动画滚轮
-    QVBoxLayout *adsLayout = new QVBoxLayout;
-    adsLayout->setSpacing(10);
-    adsLayout->setContentsMargins(10,10,10,10);
     adsWall = new AnimatedWallWG;
     adsWall->setWindowFlags(Qt::FramelessWindowHint);
     adsWall->setAttribute(Qt::WA_TranslucentBackground);
-    adsLayout->addWidget(adsWall,Qt::AlignTop);
-    songListPageLayout->addLayout(adsLayout,7);
+    rightLayout->addWidget(adsWall);
+    //初始化本地歌曲展示
+    songListsShower = new ShowLocal;
+    songListsShower->setWindowFlags(Qt::FramelessWindowHint);
+    songListsShower->setAttribute(Qt::WA_TranslucentBackground);
+    rightLayout->addWidget(songListsShower);
+    songListPageLayout->addLayout(rightLayout,7);
 
     //初始化展示歌曲信息的页面
     songInfoPage = new QWidget;
+    songInfoPage->setWindowFlags(Qt::FramelessWindowHint);
     songInfoPage->setAutoFillBackground(true);
     mainPageContainer->insertWidget(1,songInfoPage);
     QHBoxLayout *songInfoPageLayout = new QHBoxLayout;
@@ -269,6 +282,8 @@ void MainWindow::initSignalsAndSlots()
             searcher,SLOT(searchMv(QString)));
     connect(searcher,SIGNAL(searchFinished(QMap<QString,SongInfo>)),
             titleBar->searchResult,SLOT(on_searchReply(QMap<QString,SongInfo>)));
+    connect(searcher,SIGNAL(searchLocalFinished(QMap<QString,QString>)),
+            titleBar->searchLocalResult,SLOT(on_searchReply(QMap<QString,QString>)));
     connect(titleBar->searchResult,SIGNAL(resendSongInfo(SongInfo &)),
             this,SLOT(onResendSongInfo(SongInfo &)));
 
@@ -293,10 +308,10 @@ void MainWindow::initSignalsAndSlots()
             songList,SLOT(remoteSetSongAddInto(QString,QString)));
 
     //这是负责处理主窗口中央StackedWidget的页面切换
-    connect(littleSongBar,SIGNAL(changePage(int)),
-            this,SLOT(onChangePage(int)));
-    connect(infoShow,SIGNAL(changePage(int)),
-            this,SLOT(onChangePage(int)));
+    connect(littleSongBar,SIGNAL(changePage()),
+            this,SLOT(onChangePage()));
+    connect(infoShow,SIGNAL(changePage()),
+            this,SLOT(onChangePage()));
 
     //这是悬浮窗之间的一些信号槽,主要用于窗体的切换
     //和远程超控音乐播放器的状态
@@ -629,9 +644,9 @@ void MainWindow::onShowLyricsBarrage(bool show)
 }
 
 //切换视图中央的界面
-void MainWindow::onChangePage(int index)
+void MainWindow::onChangePage()
 {
-    mainPageContainer->setCurrentIndex(index);
+    mainPageContainer->nextPage();
 }
 
 //播放MV

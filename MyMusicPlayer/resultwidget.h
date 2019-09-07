@@ -1,3 +1,4 @@
+//这是在线搜索的弹出框
 #ifndef RESULTWIDGET_H
 #define RESULTWIDGET_H
 

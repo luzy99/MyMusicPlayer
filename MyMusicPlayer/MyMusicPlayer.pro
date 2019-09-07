@@ -31,6 +31,7 @@ SOURCES += \
     absframelessautosize.cpp \
     addintosonglist.cpp \
     animatedwallwg.cpp \
+    animationstackedwidget.cpp \
     audiotag.cpp \
     createsonglistdialog.cpp \
     diskwidget.cpp \
@@ -52,6 +53,8 @@ SOURCES += \
     renamesonglistdialog.cpp \
     resultwidget.cpp \
     searchdata.cpp \
+    searchlocal.cpp \
+    showlocal.cpp \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
@@ -61,6 +64,7 @@ HEADERS += \
     absframelessautosize.h \
     addintosonglist.h \
     animatedwallwg.h \
+    animationstackedwidget.h \
     audiotag.h \
     createsonglistdialog.h \
     diskwidget.h \
@@ -81,6 +85,8 @@ HEADERS += \
     renamesonglistdialog.h \
     resultwidget.h \
     searchdata.h \
+    searchlocal.h \
+    showlocal.h \
     songinfo.h \
     songinfoshow.h \
     songlist.h \
@@ -101,3 +107,4 @@ LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_ca
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_imgcodecs411.dll
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_video411.dll
 LIBS += D:\OpenCV\OpenCV-MinGW-Build-OpenCV-4.1.1-x64\x64\mingw\bin\libopencv_videoio411.dll
+

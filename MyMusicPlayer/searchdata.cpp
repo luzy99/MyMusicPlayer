@@ -1,13 +1,16 @@
 #include "searchdata.h"
+#include <QSqlQuery>
 
 SearchData::SearchData(QObject *parent) : QObject(parent)
 {
-    searchResults.empty();
-    mvResults.empty();
+    searchResults.clear();
+    mvResults.clear();
+    localResults.clear();
 }
 
 bool SearchData::searchSongsOnline(QString songName)
 {
+    searchResults.clear();
     QString url ="http://music.163.com/api/search/pc/?s="
             +songName
             +"&limit=20&type=1&offset=0";
@@ -68,11 +71,46 @@ bool SearchData::searchSongsOnline(QString songName)
 
 void SearchData::searchLocal(QString songName)
 {
+    localResults.clear();
+    qDebug()<<localResults.keys().length();
+    qDebug()<<"清空后";
 
+    //与数据库建立联系
+    QSqlQuery query;
+    QString cmd = "show tables;";
+    QSqlQuery query1(cmd);
+    while (query1.next())
+    {
+        QString tableName = QString(query1.value(0).toString());
+        if(tableName == QString("播放历史"))
+        {
+            continue;
+        }
+
+        QString sql=QString("select songName,songUrl,artist,cover_image from %1").arg(tableName);
+        query.exec(sql);
+        while(query.next())
+        {
+            QString songname=query.value(0).toString();
+            QString songUrl=query.value(1).toString();
+            QString artist=query.value(2).toString();
+            QString cover_image=query.value(3).toString();
+
+            if(songName==songname||songName==artist)
+            {
+                QString resultinfo= songname+":"+artist+":"+cover_image;
+                localResults.insert(songUrl,resultinfo);
+            }
+        }
+    }
+    qDebug()<<localResults.keys().length();
+    qDebug()<<"shujuku";
+    emit searchLocalFinished(localResults);
 }
 
 bool SearchData::searchMv(QString songName)
 {
+    mvResults.clear();
     QString url ="http://music.163.com/api/search/pc/?s="
             +songName
             +"&limit=20&type=1004&offset=0";

@@ -10,6 +10,7 @@
 #include <QLineEdit>
 #include <QMenu>
 #include "resultwidget.h"
+#include "searchlocal.h"
 
 class TitleBar : public QWidget
 {
@@ -21,7 +22,8 @@ public:
     void initActions(); //初始化菜单
     ~TitleBar();
 
-    ResultWidget *searchResult; //搜索的结果栏
+    ResultWidget *searchResult; //全网搜索的结果栏
+    SearchLocal *searchLocalResult; //在线搜索的结果栏
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);

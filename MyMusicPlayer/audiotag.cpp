@@ -1,6 +1,7 @@
 #include "audiotag.h"
 #include"songinfo.h"
 #include<QDebug>
+#include <QSslConfiguration>
 
 CodeType JudgeCodeType(const string & str, CodeType default_code);
 wstring StrToUnicode(const string & str, CodeType code_type);
@@ -272,11 +273,16 @@ bool AudioTag::mvIdMatch()
     }
     else
     {
-        QString url = "https://music.163.com/m/song?id="
+        QString url = "http://music.163.com/m/song?id="
                 +m_song_info->song_id;
         //构造请求
         QNetworkRequest request;
+
+        request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,true);
         request.setUrl(QUrl(url));
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
         //构造网络管理
         QNetworkAccessManager* manager = new QNetworkAccessManager;
         // 发送请求

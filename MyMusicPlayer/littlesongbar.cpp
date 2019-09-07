@@ -88,7 +88,7 @@ bool LittleSongBar::eventFilter(QObject *obj, QEvent *event)
         if(event->type() == QEvent::MouseButtonPress)
         {
             //qDebug()<<"press";
-            emit changePage(1); //发出换页信号
+            emit changePage(); //发出换页信号
         }
     }
 

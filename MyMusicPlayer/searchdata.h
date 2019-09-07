@@ -22,6 +22,7 @@ public:
 signals:
     void searchFinished(QMap<QString,SongInfo> searchResults);
     void searchMvFinished(QMap<QString,QMap<QString,QString>> mvResults);
+    void searchLocalFinished(QMap<QString,QString> localResults);
 public slots:
     bool searchSongsOnline(QString songName);
     void searchLocal(QString songName);
@@ -30,12 +31,7 @@ public slots:
 private:
     QMap<QString,SongInfo> searchResults;//<id,Songinfo结构体>
     QMap<QString,QMap<QString,QString>> mvResults;
-    /**QMap结构
-     * <id,<"mv_id",...>>
-     *      <"title",...>
-     *      <"pic_url",...>
-     *      <"artist",...>
-     * */
+    QMap<QString,QString> localResults;
 };
 
 #endif // SEARCHDATA_H

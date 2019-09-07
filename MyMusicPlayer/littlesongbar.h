@@ -20,7 +20,7 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
-    void changePage(int index); //发出换页信号
+    void changePage(); //发出换页信号
 
 public slots:
 

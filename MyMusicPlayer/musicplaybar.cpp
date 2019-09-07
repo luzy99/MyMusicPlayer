@@ -12,7 +12,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     //初始化窗体信息
     this->setAutoFillBackground(true);
     QPalette backPalette;
-    backPalette.setColor(QPalette::Window,QColor(255,255,255));
+    backPalette.setColor(QPalette::Window,QColor(25,25,25));
     this->setPalette(backPalette);
     this->setFixedHeight(60);
 
@@ -61,6 +61,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     //初始化音乐播放的当前时间
     currentTimeLabel = new QLabel;
     currentTimeLabel->setText("0:00");
+    currentTimeLabel->setStyleSheet("color: rgb(205,205,205);");
     layout->addWidget(currentTimeLabel);
 
     //进度条的样式表
@@ -102,6 +103,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     //初始化总时间
     totalTimeLabel = new QLabel;
     totalTimeLabel->setText("0:00");
+    totalTimeLabel->setStyleSheet("color: rgb(205,205,205);");
     layout->addWidget(totalTimeLabel);
 
     //初始化静音按钮

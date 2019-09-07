@@ -19,7 +19,7 @@ miniLyrics::miniLyrics(QWidget *parent)
     setMouseTracking(true);
     setWindowFlags(Qt::FramelessWindowHint|Qt::Tool|Qt::X11BypassWindowManagerHint|Qt::WindowStaysOnTopHint);
     //窗体透明，图标可见
-    setAttribute(Qt::WA_TranslucentBackground,true);///半透明
+    setAttribute(Qt::WA_TranslucentBackground,true);//半透明
     initWidgetMISC();//初始化界面
     //初始化型号与槽
     initSignalsAndSlots();

@@ -140,20 +140,7 @@ AddIntoSongList::AddIntoSongList(QWidget *parent)
                                    "border-radius:4px;"
                                "}";
 
-
     listList->setStyleSheet(scrollStyleSheet);
-
-
-    //建立联系，数据库的打开
-    db = QSqlDatabase::addDatabase("QODBC");
-    db.setHostName("127.0.0.1");
-    db.setDatabaseName("Rainbow");
-    db.setUserName("root");
-    db.setPassword("20000908q");
-    if(!db.open())
-    {
-        qDebug()<<"数据库打开失败";
-    }
 
     QSqlQuery query(db);
     QString cmd = "show tables;";

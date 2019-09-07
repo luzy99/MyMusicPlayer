@@ -73,6 +73,8 @@ TitleBar::TitleBar(QWidget *parent)
     //初始化搜索结果的组件
     searchResult = new ResultWidget;
     searchResult->setWindowFlags(Qt::FramelessWindowHint);
+    searchLocalResult = new SearchLocal;
+    searchLocalResult->setWindowFlags(Qt::FramelessWindowHint);
 
     //初始化填充空行的
     spacingLabel = new QLabel;
@@ -394,14 +396,15 @@ void TitleBar::onEditFinished()
 void TitleBar::on_actSearchOnline_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
-    emit beginSearchOnline(searchContents);
     searchMenu->hide();
+    emit beginSearchOnline(searchContents);
 }
 
 //点击在本地搜索时
 void TitleBar::on_actSearchLocal_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
+    searchMenu->hide();
     emit beginSearchLocal(searchContents);
 }
 
@@ -409,6 +412,7 @@ void TitleBar::on_actSearchLocal_triggered()
 void TitleBar::on_actSearchMV_triggered()
 {
     QString searchContents = searchBar->text().trimmed();
+    searchMenu->hide();
     emit beginSearchMv(searchContents);
 }
 

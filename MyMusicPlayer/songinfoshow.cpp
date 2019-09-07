@@ -338,7 +338,7 @@ void SongInfoShow::on_shareButton_clicked()
 //点击进行页面切换
 void SongInfoShow::on_pageBackButton_clicked()
 {
-    emit changePage(0);
+    emit changePage();
 }
 
 //点击添加至歌单
