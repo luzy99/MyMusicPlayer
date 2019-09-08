@@ -39,6 +39,7 @@ SOURCES += \
     errorwindow.cpp \
     gesturecontrol.cpp \
     littlesongbar.cpp \
+    login.cpp \
     lyricdownload.cpp \
     lyricspost.cpp \
     lyricwidget.cpp \
@@ -55,6 +56,7 @@ SOURCES += \
     searchdata.cpp \
     searchlocal.cpp \
     showlocal.cpp \
+    signup.cpp \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
@@ -72,6 +74,7 @@ HEADERS += \
     errorwindow.h \
     gesturecontrol.h \
     littlesongbar.h \
+    login.h \
     lyricdownload.h \
     lyricspost.h \
     lyricwidget.h \
@@ -87,6 +90,7 @@ HEADERS += \
     searchdata.h \
     searchlocal.h \
     showlocal.h \
+    signup.h \
     songinfo.h \
     songinfoshow.h \
     songlist.h \

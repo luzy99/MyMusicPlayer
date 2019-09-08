@@ -142,7 +142,7 @@ AddIntoSongList::AddIntoSongList(QWidget *parent)
 
     listList->setStyleSheet(scrollStyleSheet);
 
-    QSqlQuery query(db);
+    QSqlQuery query;
     QString cmd = "show tables;";
     QSqlQuery query1(cmd);
     while (query1.next())
@@ -230,4 +230,17 @@ void AddIntoSongList::onItemClicked(QListWidgetItem * item)
 QString AddIntoSongList::getAddedSongList() const
 {
     return addedSongList;
+}
+
+QString AddIntoSongList::connectString(QString listName)
+{
+    return User+QString("_")+listName;
+}
+QString AddIntoSongList::processStringId(QString tableName)
+{
+    return tableName.mid(0,11);
+}
+QString AddIntoSongList::processStringName(QString tableName)
+{
+      return tableName.mid(12,tableName.length()-12);
 }

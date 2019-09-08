@@ -17,6 +17,10 @@ public:
 
     QString getAddedSongList() const;
 
+    QString connectString(QString);
+    QString processStringId(QString);
+    QString processStringName(QString);
+
 public slots:
     void closeWindow();
     void onItemClicked(QListWidgetItem *);
@@ -33,6 +37,8 @@ private:
     QLabel *item_songPicture;
     QWidget *listInfoWidget;
     QString addedSongList;
+
+    QString User;
 };
 
 #endif // ADDINTOSONGLIST_H

@@ -80,6 +80,11 @@ void MyListSongWidget::setTempItem(const QListWidgetItem &value)
     tempItem = value;
 }
 
+void MyListSongWidget::setUser(const QString &value)
+{
+       User = value;
+}
+
 void MyListSongWidget::removeAction_slot()
 {
     emit(sendRemoveCommand(tempItem.text()));

@@ -15,6 +15,8 @@ public:
 
     void setTempItem(const QListWidgetItem &value);
 
+    void setUser(const QString &value);
+
 signals:
     void sendLikeCommand(QString);
 
@@ -38,6 +40,7 @@ public slots:
 private:
     QListWidgetItem tempItem;
     bool currentSongLiked;
+    QString User;
 };
 
 #endif // MYLISTSONGWIDGET_H

@@ -29,6 +29,11 @@ public:
 
     int maxNumInSongList(QString);//返回数据表中num最大值
 
+    //用户系统中对字符串做出的处理
+    QString connectString(QString);
+    QString processStringId(QString);
+    QString processStringName(QString);
+
     QPushButton *getCreateMusicListButton() const;
 
 signals:
@@ -36,8 +41,12 @@ signals:
     void clearMusic();
     void changePlaylist(QUrl url,int behaviorIndex);  //改变播放列表的信号，第二个参数代表操作类型，1:增加
     void sendSongInfo(SongInfo *);
+     void userLogin();
+
 
 public slots:
+    void onRecieveUserId(QString);    //登录的时候接受用户id
+    void onUserLogin();
     //void onListSongsDoubleClicked(const QModelIndex &index); //双击歌曲项时的槽函数
     //void onChangeListSongs(QString fileName, int behaviorIndex); //处理changeListSongs信号的槽函数
 
@@ -80,6 +89,7 @@ private:
     QString playingSongList;
     QString actingSongListName;
 
+    QString User;
     SongInfo *tempInfo;
 };
 
