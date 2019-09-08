@@ -96,6 +96,13 @@
         <file>res/currentRow.png</file>
         <file>res/gesture.png</file>
         <file>res/gestureHover.png</file>
+        <file>res/Changed.gif</file>
+        <file>res/eye (1).png</file>
+        <file>res/eye.png</file>
+        <file>res/icon (2).png</file>
+        <file>res/lock.png</file>
+        <file>res/register.png</file>
+        <file>res/user (2).png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>

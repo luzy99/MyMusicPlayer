@@ -686,7 +686,7 @@ void AnimatedWallWG::paintEvent(QPaintEvent *event)
 {
     QPainter paint(this);
     paint.setPen(Qt::NoPen);
-    paint.setBrush(QBrush(QColor(255, 255, 255)));
+    paint.setBrush(QBrush(QColor(250, 250, 250)));
     paint.drawRect(rect());
 
     QWidget::paintEvent(event);

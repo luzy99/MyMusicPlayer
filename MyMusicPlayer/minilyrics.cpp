@@ -1,6 +1,5 @@
 #include<QLinearGradient>
 #include<QPainter>
-#include<QMessageBox>
 #include<QDebug>
 #include<QHBoxLayout>
 #include<QVBoxLayout>

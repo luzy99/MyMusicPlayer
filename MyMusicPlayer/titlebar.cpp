@@ -14,9 +14,12 @@ TitleBar::TitleBar(QWidget *parent)
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAutoFillBackground(true);
     QPalette backPalette;
-    backPalette.setColor(QPalette::Window,QColor(25,25,25));
+    backPalette.setColor(QPalette::Window,QColor(55,55,55));
     this->setPalette(backPalette);
     this->setFixedHeight(60);
+
+    //初始化登录表单
+    loginForm = new UserLogin;
 
     //初始化页面布局
     QHBoxLayout *layout = new QHBoxLayout;
@@ -207,6 +210,10 @@ TitleBar::TitleBar(QWidget *parent)
 //初始化信号与槽
 void TitleBar::initSignalsAndSlots()
 {
+    //点击用户登录按钮开始用户登录
+    connect(userBtn,SIGNAL(clicked()),
+            this,SLOT(on_userBtn_clicked()));
+
     //点击手势识别按钮开启&关闭手势识别
     connect(gestureBtn,SIGNAL(clicked()),
             this,SLOT(on_gestureBtn_clicked()));
@@ -437,5 +444,10 @@ void TitleBar::on_gestureBtn_clicked()
         stopGesture->showInstantly();
         emit closeGesture();
     }
+}
+
+void TitleBar::on_userBtn_clicked()
+{
+    loginForm->show();
 }
 

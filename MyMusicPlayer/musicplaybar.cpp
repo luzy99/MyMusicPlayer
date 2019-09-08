@@ -12,7 +12,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     //初始化窗体信息
     this->setAutoFillBackground(true);
     QPalette backPalette;
-    backPalette.setColor(QPalette::Window,QColor(25,25,25));
+    backPalette.setColor(QPalette::Window,QColor(55,55,55));
     this->setPalette(backPalette);
     this->setFixedHeight(60);
 

@@ -22,10 +22,7 @@ private slots:
 signals:
     void returnValues(QString id,QString pwd);
 
-
 private:
-    QSqlDatabase db;
-
     QLabel *welcome_lb;
     QPushButton *okBtn;
     QPushButton*cancelBtn;
@@ -43,7 +40,6 @@ private:
     QString userImagedir;
     QPalette m_pal;
     QPalette pl;
-
 };
 
 

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "songlist.h"
 #include "renamesonglistdialog.h"
+#include "errorwindow.h"
 #include <opencv2/opencv.hpp>
 #include <QDir>
 #include <QVBoxLayout>
@@ -12,14 +13,14 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QPropertyAnimation>
 #include<QDebug>
 using namespace cv;
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent),
-      clickedType(No)
+      clickedType(No),
+      userId("")
 {
     //初始化主窗体属性
     this->setWindowFlags(Qt::FramelessWindowHint);
@@ -62,25 +63,30 @@ MainWindow::MainWindow(QWidget *parent)
     //初始化首页
     songListPage = new QWidget;
     songListPage->setWindowFlags(Qt::FramelessWindowHint);
-    songListPage->setStyleSheet("background-color: rgb(255,255,255)");
+    songListPage->setStyleSheet("background-color: rgb(250,250,250)");
     mainPageContainer->insertWidget(0,songListPage);
     QHBoxLayout *songListPageLayout = new QHBoxLayout;
     songListPageLayout->setSpacing(0);
     songListPageLayout->setContentsMargins(0,0,0,0);
+
+    QWidget *leftWidget = new QWidget;
     QVBoxLayout *leftLayout = new QVBoxLayout;
+    QSplitter *middleSplitter = new QSplitter(Qt::Vertical);
+    middleSplitter->setStyleSheet("QSplitter::handle { background-color: rgb(200, 200, 200); }");
+    middleSplitter->setHandleWidth(1); //分割线的宽度
     leftLayout->setSpacing(0);
     leftLayout->setContentsMargins(0,0,0,0);
     //初始化歌单界面
     songList = new SongList;
-    songList->setStyleSheet("background: rgb(100,100,100)");
-    leftLayout->addWidget(songList);
+    songList->setStyleSheet("background: rgb(245,245,245)");
+    middleSplitter->addWidget(songList);
     //初始化小的歌曲显示栏
     littleSongBar = new LittleSongBar;
-    //littleSongBar->setStyleSheet("border: 1px solid rgb(0,0,0);");
-    leftLayout->addWidget(littleSongBar);
-    songListPageLayout->addLayout(leftLayout,2);
-    songListPage->setLayout(songListPageLayout);
+    middleSplitter->addWidget(littleSongBar);
+    leftLayout->addWidget(middleSplitter);
+    leftWidget->setLayout(leftLayout);
 
+    QWidget *rightWidget = new QWidget;
     QVBoxLayout *rightLayout = new QVBoxLayout;
     rightLayout->setSpacing(10);
     rightLayout->setContentsMargins(10,10,10,10);
@@ -94,7 +100,17 @@ MainWindow::MainWindow(QWidget *parent)
     songListsShower->setWindowFlags(Qt::FramelessWindowHint);
     songListsShower->setAttribute(Qt::WA_TranslucentBackground);
     rightLayout->addWidget(songListsShower);
-    songListPageLayout->addLayout(rightLayout,7);
+    rightWidget->setLayout(rightLayout);
+
+    //首页的分割线操作
+    QSplitter *mainSplitter = new QSplitter(Qt::Horizontal);
+    mainSplitter->setStyleSheet("QSplitter::handle { background-color: rgb(200, 200, 200); }");
+    mainSplitter->setHandleWidth(1); //分割线的宽度
+    mainSplitter->setChildrenCollapsible(false);
+    mainSplitter->addWidget(leftWidget);
+    mainSplitter->addWidget(rightWidget);
+    songListPageLayout->addWidget(mainSplitter);
+    songListPage->setLayout(songListPageLayout);
 
     //初始化展示歌曲信息的页面
     songInfoPage = new QWidget;
@@ -463,6 +479,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 //覆写dragEnterEvent,允许歌曲被拖入
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
+    //不允许未登录用户拖入
+    if(userId == "")
+    {
+        ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
+        notLoginError->show();
+        notLoginError->showInstantly();
+        return;
+    }
+
     //定义一个QStringList记录可以接受的类型
     QStringList acceptedFileTypes;
     acceptedFileTypes.append("mp3");
@@ -489,7 +514,9 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
         }
         else
         {
-            QMessageBox::warning(this,"警告","拖入的文件存在格式错误.",QMessageBox::Yes);
+            ErrorWindow *typeError = new ErrorWindow("拖入的文件格式错误");
+            typeError->show();
+            typeError->showInstantly();
         }
     }
 }

@@ -18,13 +18,6 @@ signup::signup(QWidget *parent)
     setPalette(pal);
     setWindowIcon(QIcon(":/icon/res/user (2).png"));
 
-
-    db = QSqlDatabase::addDatabase("QODBC");
-    db.setHostName("127.0.0.1");
-    db.setDatabaseName("mytest");
-    db.setUserName("root");
-    db.setPassword("123456");
-    if(db.open()){}
     initWindows();
 
     connect(okBtn,SIGNAL(clicked()),
@@ -68,7 +61,7 @@ void signup::on_return_clicked()
             }
             else
             {
-                QSqlQuery query(db);
+                QSqlQuery query;
                 QString createSongList1 = "create table %1 (songName varchar(255) ,"
                                           "songUrl varchar(255) primary key, likeOrNot int(1), "
                                           "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
@@ -113,7 +106,7 @@ void signup::on_imageBtn_clicked()
 
 void signup::initWindows()
 {
-    QSqlQuery query(db);
+    QSqlQuery query;
     query.exec(QString("select count(*) from userinfo"));
     query.next();
     int num = query.value(0).toInt();

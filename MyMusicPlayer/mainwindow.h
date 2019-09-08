@@ -106,6 +106,8 @@ private:
     QWidget *songInfoPage; //展示歌曲信息页面
     SongInfoShow *infoShow; //歌曲信息显示
      LyricWidget *lyricsShower; //歌词展示
+
+     QString userId; //记录当前用户的Id
 };
 
 #endif // MAINWINDOW_H

@@ -30,7 +30,7 @@ public:
     void initTitleBar();
 
 signals:
-    void readyToLogin();
+    void loginSuccess(QString userId,QString userName);
 
 public slots:
     void onClicked();
@@ -41,12 +41,8 @@ public slots:
     void on_editingFinished();
     void displayReturnValues(QString id,QString pwd);
 
-
-
 private:
-
     bool isShown;
-    QSqlDatabase db;
     QPushButton *loginBtn;
     QPushButton *signUpBtn;
     QLineEdit *m_id;
@@ -59,7 +55,6 @@ private:
     QPushButton *closeBtn;
     QLabel *icon_lb;
     QLabel *title_lb;
-
 
     QHBoxLayout *titleQhb;
 

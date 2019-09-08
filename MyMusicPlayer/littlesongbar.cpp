@@ -11,7 +11,7 @@ LittleSongBar::LittleSongBar(QWidget *parent)
 {
     //初始化窗口信息
     this->setWindowFlags(Qt::FramelessWindowHint);
-    this->setStyleSheet("background-color: rgb(255,255,255)");
+    this->setStyleSheet("background-color: rgb(250,250,250)");
 
     this->setFixedHeight(60);
 

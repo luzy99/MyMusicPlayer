@@ -11,6 +11,7 @@
 #include <QMenu>
 #include "resultwidget.h"
 #include "searchlocal.h"
+#include "login.h"
 
 class TitleBar : public QWidget
 {
@@ -48,7 +49,9 @@ private slots:
     void on_actSearchOnline_triggered();
     void on_actSearchLocal_triggered();
     void on_actSearchMV_triggered();
+
     void on_gestureBtn_clicked();
+    void on_userBtn_clicked();
 
 private:
     QLabel *iconLabel; //标题栏图标
@@ -67,6 +70,8 @@ private:
     QPushButton *closeBtn; //关闭按钮
 
     bool gestureControl; //是否手势控制
+
+    UserLogin *loginForm;
 };
 
 #endif // TITLEBAR_H

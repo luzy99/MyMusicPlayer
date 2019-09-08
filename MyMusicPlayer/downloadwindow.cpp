@@ -1,8 +1,8 @@
 #include "downloadwindow.h"
+#include "errorwindow.h"
 #include <QHBoxLayout>
 #include <QBitmap>
 #include <QPainter>
-#include <QMessageBox>
 #include <QDebug>
 #include <QEventLoop>
 #include <QPalette>
@@ -161,7 +161,9 @@ void DownloadWindow::on_downloadBtn_clicked()
     savePath = choosePathEdit->text();
     if(!QFile::exists(savePath))
     {
-        QMessageBox::warning(this,"警告","输入的文件夹不存在.",QMessageBox::Yes);
+        ErrorWindow *noDirError = new ErrorWindow("输入的文件夹不存在");
+        noDirError->show();
+        noDirError->showInstantly();
         return;
     }
 
@@ -173,7 +175,9 @@ void DownloadWindow::on_downloadBtn_clicked()
     if(!songUrl.isValid())
     {
         //如果这个Url无效
-        QMessageBox::information(this,"错误","该歌曲Url失效，下载失败.",QMessageBox::Yes);
+        ErrorWindow *noUrlError = new ErrorWindow("该下载Url失效");
+        noUrlError->show();
+        noUrlError->showInstantly();
         return;
      }
 
@@ -211,7 +215,9 @@ void DownloadWindow::on_downloadBtn_clicked()
     }
     else
     {
-        QMessageBox::information(this,"错误","该歌曲下载权限受限.",QMessageBox::Yes);
+        ErrorWindow *downloadError = new ErrorWindow("该歌曲下载权限受限");
+        downloadError->show();
+        downloadError->showInstantly();
     }
     downloadProgress->close();
 }

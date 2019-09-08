@@ -6,14 +6,6 @@
 UserLogin::UserLogin(QWidget *parent)
     :QDialog (parent)
 {
-    db = QSqlDatabase::addDatabase("QODBC");
-    db.setHostName("127.0.0.1");
-    db.setDatabaseName("mytest");
-    db.setUserName("root");
-    db.setPassword("123456");
-    if(db.open()){}
-
-
     setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
     setWindowOpacity(0.8);
     setFixedSize(500,600);
@@ -61,10 +53,11 @@ void UserLogin::on_login_clicked()
     {
         if(m_pwd->text() != QString(""))
         {
-            QSqlQuery query(db);
+            QSqlQuery query;
             query.exec(QString("select password from userinfo where userId = '%1' ;").arg(m_id->text()));
             query.next();
             if(query.value(0).toString() == m_pwd->text())
+
                 this->done(1);
         }
         else
@@ -72,13 +65,12 @@ void UserLogin::on_login_clicked()
             errorPwd->setPalette(pl);
             errorPwd->setText("密码错误");
         }
-
     }
 }
 
 void UserLogin::on_editingFinished()
 {
-    QSqlQuery query(db);
+    QSqlQuery query;
     query.exec(QString("select userImagePath from userinfo where userId = '%1' ;").arg(m_id->text()));
     query.next();
     QString imageDir = query.value(0).toString();
@@ -166,8 +158,10 @@ void UserLogin::initTitleBar()
     titleQhb->addWidget(closeBtn);
 
     //连接信号和槽
-    connect(minimizeBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
-    connect(closeBtn, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
+    connect(minimizeBtn, SIGNAL(clicked(bool)),
+            this, SLOT(onClicked()));
+    connect(closeBtn, SIGNAL(clicked(bool)),
+            this, SLOT(onClicked()));
 }
 
 void UserLogin::initWindow()
@@ -213,9 +207,6 @@ void UserLogin::initWindow()
     //提示用户名与密码不符
     errorPwd=new QLabel;
     errorPwd->setFixedWidth(width()/4);
-
-
-
 
     //注册按钮
     signUpBtn=new QPushButton;
