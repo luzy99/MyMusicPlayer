@@ -412,6 +412,8 @@ QPixmap TitleBar::PixmapToRound(const QPixmap &src, int radius)
 //这是登录成功之后的槽函数
 void TitleBar::onLoginSuccess(QString userId)
 {
+    this->userId = userId;
+
     //修改用户头像
     QString headImagePath = QDir::currentPath()+"/userHeads/"+userId;
     QPixmap srcImage(headImagePath);

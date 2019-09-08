@@ -13,7 +13,8 @@
 
 
 SongList::SongList(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+      User("")
 {
     //建立联系，数据库的打开
     db = QSqlDatabase::addDatabase("QODBC");
@@ -798,6 +799,15 @@ void SongList::on_ListSongs_doubleClicked(const QModelIndex &index)
 
 void SongList::on_addSongBtn_clicked()
 {
+    //不允许未登录用户添加歌曲
+    if(User == "")
+    {
+        ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
+        notLoginError->show();
+        notLoginError->showInstantly();
+        return;
+    }
+
     SongInfo *info = new SongInfo();
     info->title = "暂无歌曲在播放";
     info->artist = "暂无相关信息";

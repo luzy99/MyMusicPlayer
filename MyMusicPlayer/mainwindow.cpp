@@ -628,6 +628,15 @@ void MainWindow::onHideSuspensionWindow()
 //弹出歌单的对话框
 void MainWindow::showCreateSongListDialog()
 {
+    //不允许未登录用户创建歌单
+    if(userId == "")
+    {
+        ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
+        notLoginError->show();
+        notLoginError->showInstantly();
+        return;
+    }
+
     CreateSongListDialog dlg;
     int status = dlg.exec();
     if(status == 0)
