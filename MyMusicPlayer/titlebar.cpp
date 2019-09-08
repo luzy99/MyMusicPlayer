@@ -390,6 +390,7 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     emit maximizeWindow();
 }
 
+//这是把图片变圆的函数
 QPixmap TitleBar::PixmapToRound(const QPixmap &src, int radius)
 {
     if (src.isNull()) {
@@ -429,19 +430,19 @@ void TitleBar::onLoginSuccess(QString userId)
 //输入结束时
 void TitleBar::onEditFinished()
 {
-    //只有登陆了才允许使用搜索框
-    if(userId == "")
-    {
-        ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
-        notLoginError->show();
-        notLoginError->showInstantly();
-        return;
-    }
-
     //获得去除两边空格的字符串
     QString searchContents = searchBar->text().trimmed();
     if(searchContents != "")
     {
+        //只有登陆了才允许使用搜索框
+        if(userId == "")
+        {
+            ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
+            notLoginError->show();
+            notLoginError->showInstantly();
+            return;
+        }
+
         QPoint showPoint = QWidget::mapToGlobal(searchBar->pos()) + QPoint(0,40);
         searchMenu->exec(showPoint);
     }

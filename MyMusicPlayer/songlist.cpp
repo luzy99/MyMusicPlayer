@@ -12,262 +12,173 @@
 #include <QFileDialog>
 
 
-SongList::SongList(QWidget *parent) : QWidget(parent)
+SongList::SongList(QWidget *parent)
+    : QWidget(parent)
 {
     //建立联系，数据库的打开
     db = QSqlDatabase::addDatabase("QODBC");
     db.setHostName("127.0.0.1");
-    db.setDatabaseName("mytest");
+    db.setDatabaseName("Rainbow");
     db.setUserName("root");
-    db.setPassword("123456");
-    if(db.open()){}
+    db.setPassword("20000908q");
+    if(!db.open())
+    {
+        qDebug()<<"数据库打开失败";
+    }
 
-    //数据成员初始化，各个窗口父子关系确认
-    g_container = new QGroupBox (this);
-    scrollSongs = new QScrollArea (g_container);
-    scrollLists = new QScrollArea (g_container);
-    scrollListsWidget = new QWidget(scrollLists);
-    scrollSongsWidget = new QWidget (scrollSongs);
-    listList = new MyListListWidget(scrollListsWidget);
-    listSongs = new MyListSongWidget(scrollSongsWidget);
-    labelLists = new QLabel(scrollListsWidget);
-    labelSongs = new QLabel(scrollSongsWidget);
+    //初始化窗体信息
+    this->setWindowFlags(Qt::FramelessWindowHint);
 
-    addSongBtn = new QPushButton(scrollSongsWidget);
-    createMusicListButton = new QPushButton(scrollListsWidget);
+    //整体采用垂直布局
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setSpacing(0);
+    layout->setContentsMargins(0,0,0,0);
 
-
-    //各个窗口位置确认
-    g_container->setGeometry(0, 0, 240 , 870);
-    scrollLists->setGeometry(0, 0, 240, 290);
-    scrollSongs->setGeometry(0, 290, 240, 580);
-
-    scrollListsWidget->setGeometry(0, 0, 230, 290);
-    scrollListsWidget->setMinimumSize(230, 290);
-
-    scrollSongsWidget->setGeometry(0, 0, 230 , 580);
-    scrollSongsWidget->setMinimumSize(230, 580);
-
-    labelLists->setGeometry(0, 0 , 230 ,30);
-    labelSongs->setGeometry(0, 0, 230, 30);
-
-    listList->setGeometry(0, 30, 230, 260);
-    listSongs->setGeometry(0, 30, 230, 550);
-
-    createMusicListButton->setGeometry(200, 0, 30, 30);
-    addSongBtn->setGeometry(200, 0, 30, 30);
-    //设置两个滚轮区无边框
-    scrollLists->setFrameShape(QFrame::NoFrame);
-    scrollSongs->setFrameShape(QFrame::NoFrame);
-
-    //消除滚轮区内部的窗口边框
-    listList->setFrameShape(QFrame::NoFrame);
-    listSongs->setFrameShape(QFrame::NoFrame);
-
-    //标签文字
-    labelLists->setText(" 我的歌单");
-    labelSongs->setText(" 播放列表");
-    labelLists->setStyleSheet("color:rgb(139, 139, 139);");
-    labelSongs->setStyleSheet("color:rgb(139, 139, 139);");
-
-
-    //新建歌单按钮样式
+    //初始化歌单标签区域
+    QHBoxLayout *listHLayout = new QHBoxLayout;
+    listHLayout->setSpacing(0);
+    listHLayout->setContentsMargins(0,0,0,0);
+    labelLists = new QLabel;
+    labelLists->setFixedHeight(30);
+    labelLists->setText("  我的歌单");
+    labelLists->setFont(QFont("Microsoft YaHei", 10, 25));
+    listHLayout->addWidget(labelLists);
+    //初始化新建歌单的按钮
+    createMusicListButton = new QPushButton;
+    createMusicListButton->setObjectName("createMusicListButton");
+    createMusicListButton->setStyleSheet("border: none;");
     createMusicListButton->setFlat(true);
     createMusicListButton->setIcon(QIcon(":/icon/res/add.png"));
-//    createMusicListButton->setStyleSheet("QPushButton {"
-//                                             "border: 0px solid #8f8f91;"
-//                                             "border-radius:15px;"
-//                                             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-//                                             "stop: 0 #f6f7fa, stop: 1 #dadbde);"
-//                                             "min-width: 10px;"
-//                                         "}");
-    //添加歌曲按钮
-    addSongBtn->setFlat(true);
-    addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
+    createMusicListButton->setIconSize(QSize(20,20));
+    createMusicListButton->setFixedSize(30,30);
+    listHLayout->addWidget(createMusicListButton);
+    layout->addLayout(listHLayout);
 
-    //滚轮属性
-    scrollLists->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    scrollSongs->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-
-    //设置滚轮样式
+    //初始化歌单显示区域
+    scrollLists = new QScrollArea;
+    scrollLists->setFrameShape(QFrame::NoFrame);
+    QHBoxLayout *scrollListsLayout = new QHBoxLayout;
+    scrollListsLayout->setSpacing(0);
+    scrollListsLayout->setContentsMargins(0,0,0,0);
+    listList = new MyListListWidget;
+    listList->setFrameShape(QFrame::NoFrame);
+    listList->setMouseTracking(true); //此处极为关键，若不设置的话，itemEnter()函数将异常
+    scrollListsLayout->addWidget(listList);
+    scrollLists->setLayout(scrollListsLayout);
+    scrollListsWidget = new QWidget;
     scrollLists->setWidget(scrollListsWidget);
-    scrollSongs->setWidget(scrollSongsWidget);
+    layout->addWidget(scrollLists);
 
-    QString scrollStyleSheet = "QScrollBar:vertical"
-                               "{   width:8px;  "
-                               "   background:rgba(0,0,0,0%);"
-                               "    margin:0px,0px,0px,0px;"
-                                "   padding-top:9px;"
-                                "   padding-bottom:9px;"
-                              " }"
-                               "QScrollBar::handle:vertical"
-                               "{"
-                                   "width:8px;"
-                                  " background:rgba(0,0,0,25%);"
-                                  " border-radius:4px;"
-                                   "min-height:20;"
-                               "}"
-                               "QScrollBar::handle:vertical:hover"
-                               "{"
-                                  " width:8px;"
-                                  " background:rgba(0,0,0,50%);"
-                                  " border-radius:4px;"
-                                  " min-height:20;"
-                               "}"
-                               "QScrollBar::add-line:vertical"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/3.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:vertical"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/1.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-line:vertical:hover"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/4.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:vertical:hover"
-                               "{"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/2.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical"
-                               "{"
-                                   "background:rgba(0,0,0,10%);"
-                                   "border-radius:4px;"
-                               "}"
+    //初始化歌曲标签区域
+     QHBoxLayout *songHLayout = new QHBoxLayout;
+     songHLayout->setSpacing(0);
+     songHLayout->setContentsMargins(0,0,0,0);
+     labelSongs = new QLabel;
+     labelSongs->setFixedHeight(30);
+     labelSongs->setText("  播放列表");
+     labelSongs->setFont(QFont("Microsoft YaHei", 10, 25));
+     songHLayout->addWidget(labelSongs);
+     //初始化添加歌曲的按钮
+     addSongBtn = new QPushButton;
+     addSongBtn->setObjectName("addSongBtn");
+     addSongBtn->setStyleSheet("border: none;");
+     addSongBtn->setFlat(true);
+     addSongBtn->setIcon(QIcon(":/icon/res/add.png"));
+     addSongBtn->setIconSize(QSize(20,20));
+     addSongBtn->setFixedSize(30,30);
+     songHLayout->addWidget(addSongBtn);
+     layout->addLayout(songHLayout);
 
-                               "QScrollBar:horizontal"
-                               "{"
-                                   "width:8px;"
-                                   "background:rgba(0,0,0,0%);"
-                                   "margin:0px,0px,0px,0px;"
-                                   "padding-top:9px;"
-                                   "padding-bottom:9px;"
-                               "}"
-                               "QScrollBar::handle:horizontal"
-                               "{"
-                                  " width:8px;"
-                                  " background:rgba(0,0,0,25%);"
-                                  " border-radius:4px;"
-                                   "min-height:20;"
-                               "}"
-                               "QScrollBar::handle:horizontal:hover"
-                               "{"
-                                   "width:8px;"
-                                  " background:rgba(0,0,0,50%);"
-                                   "border-radius:4px;"
-                                  " min-height:20;"
-                               "}"
-                               "QScrollBar::add-line:horizontal"
-                               "{"
-                                  " height:9px;width:8px;"
-                                  " border-image:url(:/images/a/3.png);"
-                                  " subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:horizontal"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/1.png);"
-                                   "subcontrol-position:top;"
-                               "}"
-                               "QScrollBar::add-line:horizontal:hover"
-                              " {"
-                                   "height:9px;width:8px;"
-                                   "border-image:url(:/images/a/4.png);"
-                                   "subcontrol-position:bottom;"
-                               "}"
-                               "QScrollBar::sub-line:horizontal:hover"
-                               "{"
-                                  " height:9px;width:8px;"
-                                   "border-image:url(:/images/a/2.png);"
-                                   "subcontrol-position:left;"
-                              " }"
-                               "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal "
-                               "{"
-                                   "background:rgba(0,0,0,10%);"
-                                   "border-radius:4px;"
-                               "}";
-
-    scrollLists->setStyleSheet(scrollStyleSheet);
-
-    scrollSongs->setStyleSheet(scrollStyleSheet);
-
-
+     //初始化歌曲显示区域
+     scrollSongs = new QScrollArea;
+     scrollSongs->setFrameShape(QFrame::NoFrame);
+     QHBoxLayout *scrollSongsLayout = new QHBoxLayout;
+     scrollSongsLayout->setSpacing(0);
+     scrollSongsLayout->setContentsMargins(0,0,0,0);
+     listSongs = new MyListSongWidget;
+     listSongs->setFrameShape(QFrame::NoFrame);
+     listSongs->setMouseTracking(true);
+     scrollSongsLayout->addWidget(listSongs);
+     scrollSongs->setLayout(scrollSongsLayout);
+     layout->addWidget(scrollSongs);
 
     //初始化歌单
-//    initSonglist();
-//    showSongsOfList("我喜欢的音乐");
-
-    //listSongs->setSelectionMode(QAbstractItemView::ContiguousSelection);  item多选
-
-
-    listList->setMouseTracking(true); //此处极为关键，若不设置的话，itemEnter()函数将异常
-
-    listSongs->setMouseTracking(true);
+    //initSonglist();
+    //showSongsOfList("我喜欢的音乐");
 
     tempInfo = new SongInfo;
     tempInfo->title = "暂无歌曲在播放";
     tempInfo->artist = "暂无相关信息";
 
-    //让部件显示
-    g_container->show();
-    scrollLists->show();
-    scrollSongs->show();
-    scrollListsWidget->show();
-    scrollSongsWidget->show();
-    listList->show();
-    listSongs->show();
+    this->setLayout(layout);
 
     initSignalsAndSlots();
 }
 
 void SongList::initSignalsAndSlots()
 {
-    //用户登录时发出信号
-    connect(this, SIGNAL(userLogin()),SLOT(onUserLogin()));
-
     //双击时发出播放信号
     connect(listSongs,SIGNAL(doubleClicked(QModelIndex)),
             this,SLOT(on_ListSongs_doubleClicked(QModelIndex)));
     //双击添加歌曲时添加文件
     connect(addSongBtn,SIGNAL(clicked()),
             this,SLOT(on_addSongBtn_clicked()));
+    //用户登录时切换数据库表格信息
+    connect(this, SIGNAL(userLogin()),
+            this,SLOT(onUserLogin()));
+
 
     //播放列表项鼠标事件
-    connect(listSongs, SIGNAL(itemEntered(QListWidgetItem *)),this , SLOT(onListSongItemEntered(QListWidgetItem *)));
-    connect(listSongs, SIGNAL(sendLikeCommand(QString)), this, SLOT(setSongLiked(QString)));
-    connect(listSongs, SIGNAL(sendDislikeCommand(QString)), this ,SLOT(setSongDisliked(QString)));
-    connect(listSongs, SIGNAL(sendRemoveCommand(QString)), this,SLOT(setSongRemove(QString)));
-    connect(listSongs, SIGNAL(sendAddIntoSongListCommand(QString, QString)),this, SLOT(setSongAddInto(QString, QString)));
-    connect(listSongs, SIGNAL(sendShowSongListInfoCommand(QString)), this ,SLOT(setSongInfoShowed(QString)));
+    connect(listSongs, SIGNAL(itemEntered(QListWidgetItem *)),
+            this , SLOT(onListSongItemEntered(QListWidgetItem *)));
+    connect(listSongs, SIGNAL(sendLikeCommand(QString)),
+            this, SLOT(setSongLiked(QString)));
+    connect(listSongs, SIGNAL(sendDislikeCommand(QString)),
+            this ,SLOT(setSongDisliked(QString)));
+    connect(listSongs, SIGNAL(sendRemoveCommand(QString)),
+            this,SLOT(setSongRemove(QString)));
+    connect(listSongs, SIGNAL(sendAddIntoSongListCommand(QString,QString)),
+            this, SLOT(setSongAddInto(QString,QString)));
+    connect(listSongs, SIGNAL(sendShowSongListInfoCommand(QString)),
+            this ,SLOT(setSongInfoShowed(QString)));
 
     //歌单项鼠标事件
-    connect(listList, SIGNAL(itemClicked(QListWidgetItem *)), this , SLOT(onListListItemClicked(QListWidgetItem *)));
-    connect(listList, SIGNAL(itemEntered(QListWidgetItem *)), this , SLOT(onListListItemEntered(QListWidgetItem *)));
-    connect(listList, SIGNAL(sendClearListCommand(QString)), this, SLOT(clearSongListInDatabase(QString)));
-    connect(listList, SIGNAL(sendDeleteListCommand(QString)), this , SLOT(deleteSongListInDatabase(QString)));
-    connect(listList, SIGNAL(sendRenameListCommand(QString)), this, SLOT(renameSongListInDatabase(QString)));
-
-
+    connect(listList, SIGNAL(itemClicked(QListWidgetItem *)),
+            this , SLOT(onListListItemClicked(QListWidgetItem *)));
+    connect(listList, SIGNAL(itemEntered(QListWidgetItem *)),
+            this , SLOT(onListListItemEntered(QListWidgetItem *)));
+    connect(listList, SIGNAL(sendClearListCommand(QString)),
+            this, SLOT(clearSongListInDatabase(QString)));
+    connect(listList, SIGNAL(sendDeleteListCommand(QString)),
+            this , SLOT(deleteSongListInDatabase(QString)));
+    connect(listList, SIGNAL(sendRenameListCommand(QString)),
+            this, SLOT(renameSongListInDatabase(QString)));
 }
 
 int SongList::maxNumInSongList(QString tablename)
 {
     QSqlQuery query(db);
-    query.exec(QString("select num from %1 as t order by t.num desc limit 0,1;").arg(connectString(tablename)));
+    query.exec(QString("select num from %1 as t order by t.num desc limit 0,1;")
+               .arg(connectString(tablename)));
     query.next();
     return query.value(0).toInt();
 }
 
+//根据当前用户名拼接出实际数据库中的表
+QString SongList::connectString(QString listName)
+{
+        return User+QString("_")+listName;
+}
+//将数据库中的表转换为用户Id
+QString SongList::processStringId(QString tableName)
+{
+    return tableName.mid(0,11);
+}
+//将数据库中的表转换为歌单名
+QString SongList::processStringName(QString tableName)
+{
+    return tableName.mid(12,tableName.length()-12);
+}
 
 //展示歌单的歌
 void SongList::showSongsOfList(QString listName)
@@ -285,8 +196,13 @@ void SongList::showSongsOfList(QString listName)
         QString songName= QString(query.value(0).toString());
         QListWidgetItem *item;
         if(query.value(1) == 0)
+        {
             item = new QListWidgetItem(QIcon(":/icon/res/favourite_d.ico"),songName);
-        else item = new QListWidgetItem(QIcon(":/icon/res/heart.ico"),songName);
+         }
+        else
+        {
+            item = new QListWidgetItem(QIcon(":/icon/res/heart.ico"),songName);
+         }
         item->setFont(font);
         item->setSizeHint(QSize(230,30));
         listSongs->addItem(item);
@@ -331,66 +247,27 @@ void SongList::initSonglist()
     }
 }
 
-
 void SongList::refuseChangeList(int status)
 {
     QFont font = QFont("微软雅黑",10,QFont::Normal);
     QString information;
     if(status == 1)
+    {
         information= "此歌单不能删除" ;
-    else information = "此歌单不支持重命名";
+     }
+    else if(status == 2)
+     {
+        information = "此歌单不支持重命名";
+     }
+    else
+    {
 
+    }
 
-//    QMessageBox message(QMessageBox::Warning, "警告", information);
-//    message.setWindowIcon(QIcon(":/icon/res/icon.png"));
-//    message.setFont(font);
-//    message.exec();
     ErrorWindow *errordlg = new ErrorWindow(information);
     errordlg->show();
     errordlg->showInstantly();
 }
-
-
-//当窗口发生改变的时候，歌单部分按照比例缩放
-void SongList::resetGeometry()
-{
-    QWidget *pWindow = this->window();
-    QSize pWindowSize = pWindow->size();
-    int sizeY = pWindowSize.height();
-    int sizeX = pWindowSize.width();
-    this->resize(sizeX , sizeY);
-    g_container->setGeometry(0, 0, 240 , sizeY-30);
-
-    scrollLists->setGeometry(0, 0, 240,  ((sizeY-30 ))/3);
-    scrollSongs->setGeometry(0, ((sizeY-30 ))/3, 240, (2*(sizeY-30))/3);
-
-//    scrollListsWidget->setGeometry(0, 0, 230, ((sizeY-30 ))/3);
-//    scrollListsWidget->setMinimumSize(230, ((sizeY-30))/3);
-
-//    scrollSongsWidget->setGeometry(0, 0, 230 , (2*(sizeY-30))/3);
-//    scrollSongsWidget->setMinimumSize(230, (2*(sizeY-30))/3);
-
-
-//    listList->setGeometry(0, 30, 230, ((sizeY-30 ))/3 - 30);
-//    listList->setMinimumSize(230 , 260);
-//    listSongs->setGeometry(0, 30, 230, (2*(sizeY-30))/3 - 30);
-    //    listSongs->setMinimumSize(230 , 550);
-}
-
-void SongList::onRecieveUserId(QString id)
-{
-    User = id;
-    listList->clear();
-    listSongs->clear();
-    emit userLogin();
-}
-
-void SongList::onUserLogin()//
-{
-    initSonglist();
-    showSongsOfList("我喜欢的音乐");
-}
-
 
 //当歌单里的项被点击时
 void SongList::onListListItemClicked(QListWidgetItem *item)
@@ -442,17 +319,17 @@ void SongList::createSongListInDatabase(QString name)
     }
 }
 
-//清空选中歌单的歌曲(存在漏洞：清空我喜欢的音乐的时候，注意取消这些歌的我喜欢)
+//清空选中歌单的歌曲
 void SongList::clearSongListInDatabase(QString name)
 {
     qDebug()<<"数据库清空操作";
     qDebug()<<name;
     QSqlQuery query(db);
 
-
     if(name == QString("我喜欢的音乐"))
     {
-        query.exec(QString("select songUrl from %1;").arg(connectString("我喜欢的音乐")));
+        query.exec(QString("select songUrl from %1;")
+                   .arg(connectString("我喜欢的音乐")));
         while(query.next())
         {
             QSqlQuery query1(db);
@@ -476,7 +353,6 @@ void SongList::clearSongListInDatabase(QString name)
     initSonglist();
     showSongsOfList(name);
 }
-
 
 //删除选中歌单
 void SongList::deleteSongListInDatabase(QString name)
@@ -514,8 +390,12 @@ void SongList::renameSongListInDatabase(QString name)
         RenameSongListDialog dlg;
         int status = dlg.exec();
         if(status == 0)
-            newName = connectString( dlg.getLineEdit()->text());
-        else {}
+        {
+            newName = connectString(dlg.getLineEdit()->text());
+         }
+        else
+        {
+        }
         bool repeat = false;
         QString cmd = "show tables;";
         QSqlQuery query2(cmd);
@@ -545,7 +425,6 @@ void SongList::renameSongListInDatabase(QString name)
             initSonglist();
             showSongsOfList(processStringName(newName));
         }
-
     }
 }
 
@@ -555,11 +434,16 @@ void SongList::onListSongItemEntered(QListWidgetItem *item)
     QString songName = item->text();
     QString command = "select likeOrNot from %1 where songName = '%2' ;";
     QSqlQuery query(db);
-    query.exec(command.arg(connectString(actingSongListName) ,songName));
+    query.exec(command.arg(connectString(actingSongListName), songName));
     query.next();
     if(query.value(0).toInt() == 0)
+    {
         listSongs->setCurrentSongLikedOrNot(false);
-    else listSongs->setCurrentSongLikedOrNot(true);
+    }
+    else
+    {
+        listSongs->setCurrentSongLikedOrNot(true);
+    }
     listSongs->setUser(User);
     listSongs->setTempItem(*item);
 }
@@ -593,9 +477,11 @@ void SongList::setSongLiked(QString name)
     QString num = QString::number(maxNumInSongList(addedSonglist) + 1);
     QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
 
-    query1.exec(insertCommand.arg(connectString(addedSonglist) , name, songUrl, likeOrNot , artist, album, album_cover, num));
+    query1.exec(insertCommand.arg(connectString(addedSonglist) , name,
+                                  songUrl, likeOrNot , artist, album, album_cover, num));
     showSongsOfList(actingSongListName);
 }
+
 //设置歌曲为我不怎么喜欢
 void SongList::setSongDisliked(QString name)
 {
@@ -604,18 +490,16 @@ void SongList::setSongDisliked(QString name)
     QSqlQuery query2(cmd);
     while (query2.next())
     {
-        if(processStringId(query2.value(0).toString()) == User)
-        {
-            QString tableName = QString(query2.value(0).toString());
-            QString command = "update %1 set likeOrNot = 0 where songName = '%2' ;";
-            query1.exec(command.arg(tableName, name));
-        }
+        QString tableName = QString(query2.value(0).toString());
+        QString command = "update %1 set likeOrNot = 0 where songName = '%2' ;";
+        query1.exec(command.arg(tableName, name));
     }
 
     QString command = "delete from %1 where songName = '%2' ;";
     query1.exec(command.arg(connectString(QString("我喜欢的音乐")),name));
     showSongsOfList(actingSongListName);
 }
+
 //移除歌曲
 void SongList::setSongRemove(QString name)
 {
@@ -634,20 +518,21 @@ void SongList::setSongRemove(QString name)
                 query1.exec(command.arg(tableName, name));
             }
         }
-
     }
 
     QString command = "delete from %1 where songName = '%2' ;";
     query.exec(command.arg(connectString(actingSongListName), name));
     showSongsOfList(actingSongListName);
 }
+
 //添加到歌单
-void SongList::setSongAddInto(QString songName ,QString listName)
+void SongList::setSongAddInto(QString songName,QString listName)
 {
     QSqlQuery query(db);
-    query.exec(QString("select songUrl from %1 where songName = '%2' ;").arg(connectString(listName) , songName));
+    query.exec(QString("select songUrl from %1 where songName = '%2' ;")
+               .arg(connectString(listName) , songName));
     query.next();
-    if(query.value(0).toString()==QString(""))
+    if(query.value(0).toString() == QString(""))
     {
         QString getInfoCommand = "select * from %1 where songName = '%2';";
         query.exec(getInfoCommand.arg(connectString(actingSongListName), songName));
@@ -690,7 +575,58 @@ void SongList::setSongAddInto(QString songName ,QString listName)
         errordlg->showInstantly();
     }
 }
-//弹窗展示歌曲信息
+
+//在歌曲展示页点击添加至歌单的槽函数
+void SongList::remoteSetSongAddInto(QString songName, QString listName)
+{
+    QSqlQuery query(db);
+    query.exec(QString("select songUrl from %1 where songName = '%2' ;").arg(connectString(listName) , songName));
+    query.next();
+    if(query.value(0).toString()==QString(""))
+    {
+        QString getInfoCommand = "select * from %1 where songName = '%2';";
+        query.exec(getInfoCommand.arg(connectString(playingSongList), songName));
+        query.next();
+        QString songUrl = QString(query.value(1).toString());
+        QString likeOrNot = QString(query.value(2).toString());
+        QString artist = QString(query.value(3).toString());
+        QString album = QString(query.value(4).toString());
+        QString album_cover = QString(query.value(5).toString());
+        QString num = QString::number(maxNumInSongList(playingSongList) + 1);
+
+        if(listName == QString("我喜欢的音乐"))
+        {
+            likeOrNot = "1";
+            QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+            query.exec(insertCommand.arg(connectString(listName) , songName, songUrl, likeOrNot , artist, album, album_cover, num));
+            QString cmd = "show tables;";
+            QSqlQuery query2(cmd);
+            while (query2.next())
+            {
+                if(processStringId(query2.value(0).toString()) == User)
+                {
+                    QString tableName = QString(query2.value(0).toString());
+                    QString command = "update %1 set likeOrNot = 1 where songName = '%2' ;";
+                    query.exec(command.arg(tableName, songName));
+                }
+            }
+         }
+        else
+        {
+            QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+            query.exec(insertCommand.arg(connectString(listName) , songName, songUrl, likeOrNot , artist, album, album_cover, num));
+        }
+        showSongsOfList(playingSongList);
+    }
+    else
+    {
+        ErrorWindow *errordlg = new ErrorWindow("歌曲已存在");
+        errordlg->show();
+        errordlg->showInstantly();
+    }
+}
+
+//弹窗展示歌单信息
 void SongList::setSongInfoShowed(QString name)
 {
     QFont font = QFont("微软雅黑",9,QFont::Normal);
@@ -708,6 +644,7 @@ void SongList::setSongInfoShowed(QString name)
     message.setFont(font);
     message.exec();
 }
+
 //拖拽或者添加音乐文件
 void SongList::addNewSong(QString Path)
 {
@@ -741,22 +678,34 @@ void SongList::addNewSong(QString Path)
             }
         }
     }
-    else likeOrNot = "0";
-    query.exec(QString("select likeOrNot from '%1' where songUrl = '%2' ;").arg(connectString(QString("我喜欢的音乐")),Path));
+    else
+    {
+        likeOrNot = "0";
+    }
+    query.exec(QString("select likeOrNot from %1 where songUrl = '%2' ;")
+               .arg(connectString(QString("我喜欢的音乐")),Path));
     query.next();
     if(query.value(0).toInt() == 1)
+    {
         likeOrNot = "1";
+     }
 
     QString artist = tempInfo->artist;
     QString album = tempInfo->album;
     QString pic_url = "";
     if(tempInfo->has_cover)
+    {
         pic_url = tempInfo->album_cover;
-    else  pic_url = "";
+     }
+    else
+    {
+        pic_url = "";
+     }
     QString addedSonglist(actingSongListName);
     QString num = QString::number(maxNumInSongList(addedSonglist) + 1);
     QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
-    query.exec(insertCommand.arg(connectString(addedSonglist) , name, songUrl, likeOrNot , artist, album, pic_url, num));
+    query.exec(insertCommand.arg(connectString(addedSonglist) , name, songUrl,
+                                 likeOrNot , artist, album, pic_url, num));
     showSongsOfList(actingSongListName);
 
     //从数据库读取数据
@@ -777,7 +726,8 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
     if(filePath != "")
     {
         qDebug()<<filePath;
-        QSqlQuery query(db);
+        //filePath = "F:/音乐/手机导入/Jim Brickman - Canon in D Major (Pachelbel’s Canon) [mqms2](1).mp3";
+        QSqlQuery query;
         QString command("select songName,artist,cover_image from %1 where songUrl = '%2';");
         query.exec(command.arg(connectString(playingSongList), filePath));
         query.next();
@@ -785,6 +735,9 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
         songInfo->title = query.value(0).toString();
         songInfo->artist = query.value(1).toString();
         qDebug()<<songInfo->title << songInfo->artist;
+        AudioTag tag(filePath, songInfo);
+        tag.idMatch();
+        tag.mvIdMatch();
         if(query.value(2).toString() != "")
         {
             songInfo->has_cover = 1;
@@ -793,26 +746,33 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
         else
         {
             songInfo->has_cover = 0;
-            AudioTag tag(filePath, songInfo);
-            tag.idMatch();
             tag.downloadPic();
-            query.exec(QString("update %1 set cover_image = '%2' where songUrl = '%3' ;").arg(connectString(playingSongList), songInfo->album_cover,filePath));
+            query.exec(QString("update %1 set cover_image = '%2' where songUrl = '%3' ")
+                       .arg(connectString(playingSongList), songInfo->album_cover,filePath));
         }
+
+        //qDebug()<<songInfo->song_id;
+        //qDebug()<<songInfo->mv_id;
         emit sendSongInfo(songInfo);
-
-
-        query.exec(QString("delete from '%1' where songName = '%2' ;").arg(connectString(QString("播放历史")),songInfo->title));
+        query.exec(QString("delete from %1 where songName = '%2' ;")
+                   .arg(connectString(QString("播放历史")),songInfo->title));
         QString num = QString::number(maxNumInSongList("播放历史") + 1);
-        query.exec(QString("select likeOrNot from '%1' where songUrl = '%2' ;").arg(connectString(QString("我喜欢的音乐")),filePath));
+        query.exec(QString("select likeOrNot from %1 where songUrl = '%2' ;")
+                   .arg(connectString(QString("我喜欢的音乐")),filePath));
         query.next();
         QString likeOrNot;
         if(query.value(0).toInt()==1)
-            likeOrNot = "1";
-        else likeOrNot = "0";
-        QString insertCommand = "insert into '%1' values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
-        query.exec(insertCommand.arg(connectString(QString("播放历史")), songInfo->title , filePath, likeOrNot, songInfo->artist
-                                     , songInfo->album, songInfo->album_cover, num));
-        showSongsOfList(actingSongListName);
+        {
+                likeOrNot = "1";
+        }
+        else
+        {
+            likeOrNot = "0";
+        }
+       QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+       query.exec(insertCommand.arg(connectString(QString("播放历史")), songInfo->title , filePath, likeOrNot, songInfo->artist
+                                         , songInfo->album, songInfo->album_cover, num));
+       showSongsOfList(actingSongListName);
 
         delete songInfo;
     }
@@ -828,7 +788,7 @@ void SongList::on_ListSongs_doubleClicked(const QModelIndex &index)
     //从数据库读取数据
     QString readcommand = QString("select songUrl from %1 as t order by t.num desc;");
     query.exec(readcommand.arg(connectString(actingSongListName)));
-    while(query.next())//每次执行完exec(),指针会调回第一条数据之前
+    while(query.next()) //每次执行完exec(),指针会调回第一条数据之前
     {
         qDebug()<<query.value(0).toUrl();
         emit changePlaylist(query.value(0).toUrl(), 1);
@@ -851,14 +811,15 @@ void SongList::on_addSongBtn_clicked()
     QString filter = "音频文件(*.mp3 *.wav *.wma);;mp3文件(*.mp3);;wav文件(*.wav);;wma文件(*.wma);;所有文件(*.*)";
     QStringList fileList = QFileDialog::getOpenFileNames(this,dlgTitle,curPath,filter);
 
-    if (fileList.count()<1)
+    if (fileList.count() < 1)
+    {
         return;
-    for(int i=0;i<fileList.count();i++)
+     }
+    for(int i=0 ; i < fileList.count() ; i++)
     {
         QString file = fileList.at(i);
         QFileInfo fileInfo(file);
         QString direction = fileInfo.filePath();
-
 
         AudioTag tag(direction,tempInfo);
         tag.getAllinfo();
@@ -882,23 +843,34 @@ void SongList::on_addSongBtn_clicked()
                 }
             }
         }
-        else likeOrNot = "0";
-        query.exec(QString("select likeOrNot from '%1' where songUrl = '%2' ;").arg(connectString("我喜欢的音乐"),direction));
+        else
+         {
+            likeOrNot = "0";
+          }
+        query.exec(QString("select likeOrNot from %1 where songUrl = '%2' ;")
+                   .arg(connectString("我喜欢的音乐"),direction));
         query.next();
         if(query.value(0).toInt() == 1)
+         {
             likeOrNot = "1";
-
+         }
 
         QString artist = tempInfo->artist;
         QString album = tempInfo->album;
         QString pic_url = "";
         if(tempInfo->has_cover) //问题：如果此歌曲曾经在别的歌单播放过，重新下载是否会报错？如果歌曲重名了，那么图片的下载和导出可能出错
+        {
             pic_url = tempInfo->album_cover;
-        else  pic_url = "";
+        }
+        else
+        {
+            pic_url = "";
+        }
         QString addedSonglist(actingSongListName);
         QString num = QString::number(maxNumInSongList(addedSonglist) + 1);
         QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
-        query.exec(insertCommand.arg(connectString(addedSonglist) , name, songUrl, likeOrNot , artist, album, pic_url, num));
+        query.exec(insertCommand.arg(connectString(addedSonglist) , name,
+                                     songUrl, likeOrNot , artist, album, pic_url, num));
     }
 
     showSongsOfList(actingSongListName);
@@ -920,18 +892,17 @@ QPushButton *SongList::getCreateMusicListButton() const
     return createMusicListButton;
 }
 
-QString SongList::connectString(QString listName)
+void SongList::onRecieveUserId(QString id)
 {
-    return User+QString("_")+listName;
+    User = id;
+    listList->clear();
+    listSongs->clear();
+    emit userLogin();
 }
 
-QString SongList::processStringId(QString tableName)
+void SongList::onUserLogin()
 {
-    return tableName.mid(0,11);
-}
-
-QString SongList::processStringName(QString tableName)
-{
-    return tableName.mid(12,tableName.length()-12);
+    initSonglist();
+    showSongsOfList("我喜欢的音乐");
 }
 

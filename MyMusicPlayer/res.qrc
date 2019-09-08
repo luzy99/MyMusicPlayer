@@ -103,6 +103,7 @@
         <file>res/lock.png</file>
         <file>res/register.png</file>
         <file>res/user (2).png</file>
+        <file>res/dropArrow.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>

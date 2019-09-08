@@ -1,19 +1,23 @@
 #include <QObject>
-#include<QWidget>
-#include<QPushButton>
-#include<QLineEdit>
-#include<QLabel>
-#include<QDialog>
-#include<QSqlDatabase>
-#include<QPalette>
+#include <QWidget>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
+#include <QDialog>
+#include <QSqlDatabase>
+#include <QMouseEvent>
+#include <QPalette>
 
 class signup:public QDialog
 {
     Q_OBJECT
 public:
     signup(QWidget *parent=nullptr);
-    QPixmap PixmapToRound(const QPixmap &src, int radius);
     ~signup();
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
     void on_return_clicked();
@@ -26,19 +30,25 @@ signals:
 
 private:
     QLabel *welcome_lb;
+    QLabel *info_lb;
     QPushButton *okBtn;
     QPushButton*cancelBtn;
     QPushButton*imageBtn;
     QLineEdit *nameLineEdit;
     QLineEdit *pwd1LineEdit;
     QLineEdit *pwd2LineEdit;
+    QWidget *welWidget;
+    QWidget *tipWidget;
+    QWidget *infoWidget;
     QString strId;
     QString m_id;
     QString m_name;
     QString m_pwd;
     QString userImagedir;
-    QPalette m_pal;
     QPalette pl;
+
+    QPoint mouseStartPoint;
+    QPoint windowsStartPoint;
 };
 
 

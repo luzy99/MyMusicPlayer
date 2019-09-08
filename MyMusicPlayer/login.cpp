@@ -1,29 +1,225 @@
 #include "login.h"
-#include<QPicture>
 #include"signup.h"
-#include<QDebug>
-#include<errorwindow.h>
+#include "errorwindow.h"
+#include <QPicture>
+#include <QDebug>
+#include <QPainter>
+#include <QBitmap>
+#include <QDir>
+
 UserLogin::UserLogin(QWidget *parent)
     :QDialog (parent)
 {
-    setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
-    setWindowOpacity(0.8);
-    setFixedSize(500,600);
-    setWindowTitle("登陆窗口");
-    QPalette pal(this->palette());
-    pal.setColor(QPalette::Background,QColor(25,25,25));
-    setAutoFillBackground(false);
-    setPalette(pal);
-    setWindowIcon(QIcon(":/icon/res/user (2).png"));
-    initWindow();
+    this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
+    this->setWindowOpacity(0.9);
+    this->setFixedSize(500,600);
+    this->setWindowTitle("登陆窗口");
+    this->setStyleSheet("border: 1px solid rgb(25,25,25);");
+    this->setWindowIcon(QIcon(":/icon/res/user (2).png"));
     //initMytitle();
+
+    //绘制圆角窗口
+    QBitmap bmp(this->size());
+    bmp.fill();
+    QPainter p(&bmp);
+    p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+    p.setPen(Qt::NoPen);
+    p.setBrush(Qt::black);
+    p.drawRoundedRect(bmp.rect(),2,2);
+    setMask(bmp);
+
+    //初始化计时器
+    m_timer=new QTimer;
+
+    //初始化标题按钮
+    m_ptitleBar=new QWidget(this);
+    m_ptitleBar->setGeometry(0,0,500,50);
+    m_ptitleBar->setStyleSheet("border:none;");
+    //初始化label和btn
+    icon_lb=new QLabel;
+    title_lb=new QLabel;
+    minimizeBtn=new QPushButton;
+    closeBtn=new QPushButton;
+    //初始化图标和文字
+    icon_lb->setFixedSize(25,25);
+    icon_lb->setScaledContents(true);
+    icon_lb->setPixmap(QPixmap(":/icon/res/icon (2).png"));
+
+    title_lb->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    title_lb->setText("     欢迎登陆");
+    title_lb->setStyleSheet("color: rgb(95,131,210);"
+                            "border: none;");
+    title_lb->setFont(QFont("微软雅黑", 12));
+    title_lb->setAlignment(Qt::AlignCenter);
+    title_lb->setFixedWidth(160);
+    //设置按钮的固定大小、图片、取消边框
+    minimizeBtn->setIconSize(QSize(20,20));
+    minimizeBtn->setIcon(QIcon(":/icon/res/minscreen.png"));
+    minimizeBtn->setToolTip("最小化");
+    minimizeBtn->setFlat(true);
+    minimizeBtn->setStyleSheet("border:none;");
+    closeBtn->setIconSize(QSize(20,20));
+    closeBtn->setIcon(QIcon(":/icon/res/close.png"));
+    closeBtn->setFlat(true);
+    closeBtn->setToolTip("关闭窗口");
+    closeBtn->setStyleSheet("border:none;");
+    QHBoxLayout *titleQhb=new QHBoxLayout;
+    titleQhb=new QHBoxLayout;
+    titleQhb->addWidget(icon_lb);
+    titleQhb->addSpacing(100);
+    titleQhb->addWidget(title_lb);
+    titleQhb->addSpacing(100);
+    titleQhb->addWidget(minimizeBtn);
+    titleQhb->addWidget(closeBtn);
+    m_ptitleBar->setLayout(titleQhb);
+
+    //初始化背景动图
+    m_backgif=new QLabel(this);
+    m_backgif->setFixedSize(500,300);
+    m_backgif->setGeometry(0,0,500,300);
+    QMovie *background=new QMovie;;//登陆背景动画
+    //背景动态图
+    background->setFileName(":/icon/res/Changed.gif");
+    m_backgif->setMovie(background);
+    background->start();
+    m_backgif->move(0,0);
+    m_ptitleBar->raise();
+
+    m_infoWidget=new QWidget(this);
+    m_infoWidget->setGeometry(0,300,500,300);
+    m_infoWidget->setStyleSheet("background-color:rgb(25,25,25);");
+    //账号输入
+    accounts=new QComboBox(this);
+    accounts->setFixedSize(QSize(260,40));
+    accounts->setEditable(true);
+    accounts->setStyleSheet( "QComboBox{color:white;border:0px;border-radius:2px;width:200px;height:40px;"
+                             "background-color:rgba(100,100,100,75);border-bottom-color:white;border-bottom-width:10px;}"
+                             "QComboBox::Hover{color:white;border:0px;border-radius:2px;width:200px;height:40px;"
+                             "background-color:rgba(165,150,150,75);border-bottom-color:white;border-bottom-width:10px;}"
+                             "QComboBox::drop-down{border:none;}"
+                             "QComboBox::down-arrow{image: url(:/icon/res/dropArrow.png);height:35px;width:20px;}");
+    m_id=accounts->lineEdit();
+    m_id->setPlaceholderText(QStringLiteral("请输入账号"));
+    //注册按钮
+    signUpBtn=new QPushButton;
+    signUpBtn->setToolTip("注册账户");
+    signUpBtn->setStyleSheet("border:none");
+    signUpBtn->setIcon(QIcon(":/icon/res/register.png"));
+    signUpBtn->setFixedSize(QSize(20,20));
+    signUpBtn->setCursor(QCursor(Qt::PointingHandCursor));
+    //账号框布局
+    QLabel *user_icon =new QLabel;
+    user_icon->setPixmap(QIcon(":/icon/res/user (2).png").pixmap(20,20));
+    user_icon->setFixedSize(20,20);
+    user_icon->setToolTip("账号");
+    QHBoxLayout *h1=new QHBoxLayout;
+    h1->addSpacing(80);
+    h1->addWidget(user_icon);
+    h1->addWidget(accounts);
+    h1->addWidget(signUpBtn);
+    h1->addSpacing(80);
+    //m_infoWidget->setLayout(h1);
+
+    m_pwdIcon=new QLabel;
+    m_pwdIcon->setPixmap(QIcon(":/icon/res/lock.png").pixmap(20,20));
+    m_pwdIcon->setFixedSize(20,20);
+    m_pwdIcon->setToolTip("密码");
+    m_pwd=new QLineEdit;
+    m_pwd->setPlaceholderText(QStringLiteral("请输入密码"));
+    m_pwd->setEchoMode(QLineEdit::Password);
+    m_pwd->setStyleSheet( "QLineEdit{color:white;border:0px;border-radius:2px;width:200px;height:40px;"
+                          "background-color:rgba(100,100,100,75);border-bottom-color:white;border-bottom-width:10px;}"
+                          "QLineEdit::Hover{color:white;border:0px;border-radius:2px;width:200px;height:40px;"
+                          "background-color:rgba(165,150,150,75);border-bottom-color:white;border-bottom-width:10px;}");
+    //显示密码的按钮
+    show_pwd=new QPushButton;
+    //show_pwd=new QPushButton;
+    show_pwd->setObjectName("显示密码");
+    show_pwd->setFixedSize(QSize(20,20));
+    show_pwd->setFlat(true);
+    show_pwd->setCursor(QCursor(Qt::PointingHandCursor));
+    show_pwd->setIcon(QIcon(":/icon/res/eye.png"));
+    show_pwd->setDefault(false);
+    QLabel * pwd_icon=new QLabel;
+    pwd_icon->setPixmap(QIcon(":/icon/res/lock.png").pixmap(20,20));
+    pwd_icon->setFixedSize(20,20);
+    pwd_icon->setToolTip("密码");
+    QHBoxLayout *h2=new QHBoxLayout;
+    h2->addSpacing(80);
+    h2->addWidget(m_pwdIcon);
+    h2->addWidget(m_pwd);
+    h2->addWidget(show_pwd);
+    h2->addSpacing(80);
+    //m_infoWidget->setLayout(h2);
+
+    loginBtn=new QPushButton(this);
+    loginBtn->setText("登 陆");
+    QString BtnStyle;
+    BtnStyle="QPushButton{background-color:rgba(95,131,210,75%);"
+             "color: white; border-radius: 2px;}"
+             "QPushButton:hover{background-color:rgba(82,113,180,75%);"
+             "color: white; border-radius: 2px;}";
+    loginBtn->setFont(QFont("微软雅黑", 12,25));
+    loginBtn->setStyleSheet(BtnStyle);
+    loginBtn->setFixedSize(264,50);
+    QHBoxLayout *h3=new QHBoxLayout;
+    h3->addSpacing(107);
+    h3->addWidget(loginBtn);
+    h3->addSpacing(125);
+    //m_infoWidget->setLayout(h3);
+
+    QVBoxLayout *v1=new QVBoxLayout;
+    v1->addSpacing(50);
+    v1->addLayout(h1);
+    v1->addLayout(h2);
+    v1->addLayout(h3);
+    m_infoWidget->setLayout(v1);
+
+    QSize size(100, 100);
+    QBitmap mask(size);
+    QPainter painter(&mask);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+    painter.setBrush(QColor(0, 0, 0));
+    painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+    QPixmap image = QIcon(":/icon/res/icon (2).png").pixmap(75,75);
+    image.setMask(mask);
+
+    pic = new QLabel(this);
+    pic->setGeometry(200,248,100,100);
+    pic->setAlignment(Qt::AlignCenter);
+    pic->setPixmap(image);
+    pic->setStyleSheet("max-width:100;min-width:100;max-height:100;"
+                       "min-height:100;border:4px solid rgb(200,200,200);"
+                       "border-radius:52px;background-color:white;");
+    pic->installEventFilter(this);
+
+    m_addPic = new QLabel(this);
+    m_addPic->setGeometry(225,273,50,50);
+    m_addPic->setAlignment(Qt::AlignCenter);
+    m_addPic->setPixmap(QIcon(":/icon/res/add.png").pixmap(30,30));
+    m_addPic->setStyleSheet("max-width:50;min-width:50;max-height:50;"
+                            "min-height:50;border:4px solid rgb(240,240,240);"
+                            "border-radius:27px;background-color:white;");
+    m_addPic->installEventFilter(this);
+    pic->raise();
+
+    //连接信号和槽
+    connect(minimizeBtn, SIGNAL(clicked(bool)),
+            this, SLOT(onClicked()));
+    connect(closeBtn, SIGNAL(clicked(bool)),
+            this, SLOT(onClicked()));
+    connect(m_timer,SIGNAL(timeout()),
+            this,SLOT(on_timeout()));
     connect(signUpBtn,SIGNAL(clicked()),
             this,SLOT(on_signup_clicked()));
-    connect(loginBtn, SIGNAL(clicked()), this, SLOT(on_login_clicked()));
-
+    connect(loginBtn, SIGNAL(clicked()),
+            this, SLOT(on_login_clicked()));
     connect(show_pwd,SIGNAL(clicked()),
-                this,SLOT(on_eye_clicked()));
-    connect(m_id, SIGNAL(editingFinished()),this,SLOT(on_editingFinished()));
+            this,SLOT(on_eye_clicked()));
+    connect(m_id, SIGNAL(editingFinished()),
+            this,SLOT(on_editingFinished()));
 }
 
 UserLogin::~UserLogin()
@@ -81,12 +277,76 @@ void UserLogin::on_login_clicked()
 
 void UserLogin::on_editingFinished()
 {
+    //首先判断用户是否存在
+    QSqlQuery query;
+    QString judgeExist = "select password from userinfo where userId= '%1' ; ";
+    query.exec(judgeExist.arg(m_id->text()));
+    query.next();
+    if(query.value(0).toString() == "")
+    {
+        //如果用户不存在,则不做操作
+        return;
+    }
+
+    QString headImagePath = QDir::currentPath()+"/userHeads/"+m_id->text();
+    QSize size(100, 100);
+    QBitmap mask(size);
+    QPainter painter(&mask);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+    painter.setBrush(QColor(0, 0, 0));
+    painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+    QPixmap image = QIcon(headImagePath).pixmap(100,100);
+    image.setMask(mask);
+    pic->setGeometry(200,248,100,100);
+    pic->setAlignment(Qt::AlignCenter);
+    pic->setPixmap(image);
+    pic->setStyleSheet("max-width:100;min-width:100;max-height:100;min-height:100;"
+                       "border:4px solid rgb(200,200,200);"
+                       "border-radius:52px;background-color:white;");
 }
 
 void UserLogin::displayReturnValues(QString id, QString pwd)
 {
     m_id->setText(id);
     m_pwd->setText(pwd);
+}
+
+void UserLogin::on_timeout()
+{
+    m_addPic->move(-323,273);
+}
+
+bool UserLogin::eventFilter(QObject *obj, QEvent *event)
+{
+    if(event->type()==QEvent::Enter)
+    {
+        if(obj==pic)
+        {
+            m_addPic->move(323,273);
+        }
+    }
+    if(event->type()==QEvent::Leave)
+    {
+        if(obj==pic)
+        {
+            m_timer->start(3000);
+        }
+    }
+}
+
+void UserLogin::mousePressEvent(QMouseEvent *event)
+{
+    mouseStartPoint = event->globalPos();
+    windowsStartPoint = this->pos();
+}
+
+void UserLogin::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint offset = event->globalPos() - mouseStartPoint ;
+    QPoint p = windowsStartPoint + offset;
+    this->move(p);
 }
 
 void UserLogin::on_eye_clicked()
@@ -121,170 +381,6 @@ void UserLogin::onClicked()
     {
         pWindow->close(); //窗口关闭
     }
-}
-
-void UserLogin::initTitleBar()
-{
-    //初始化label和btn
-    icon_lb=new QLabel;
-    title_lb=new QLabel;
-    minimizeBtn=new QPushButton;
-    closeBtn=new QPushButton;
-    //初始化图标和文字
-    icon_lb->setFixedSize(20,20);
-    icon_lb->setScaledContents(true);
-    icon_lb->setPixmap(QPixmap(":/icon/res/icon (2).png"));
-
-    title_lb->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    title_lb->setText("          欢迎登陆");
-    QPalette pl;
-    pl.setColor(QPalette::WindowText,QColor(95,131,210));
-    title_lb->setPalette(pl);
-    title_lb->setFont(QFont("微软雅黑", 12));
-    title_lb->setAlignment(Qt::AlignCenter);
-    title_lb->setFixedWidth(160);
-    //设置按钮的固定大小、图片、取消边框
-    minimizeBtn->setIconSize(QSize(20,20));
-    minimizeBtn->setIcon(QIcon(":/icon/res/minscreen.png"));
-    minimizeBtn->setToolTip("最小化");
-    minimizeBtn->setFlat(true);
-    minimizeBtn->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    closeBtn->setIconSize(QSize(20,20));
-    closeBtn->setIcon(QIcon(":/icon/res/close.png"));
-    closeBtn->setFlat(true);
-    closeBtn->setToolTip("关闭窗口");
-    closeBtn->setStyleSheet("QPushButton:hover{background-color:rgb(244,239,239);}");
-    titleQhb=new QHBoxLayout;
-    titleQhb->addWidget(icon_lb);
-    titleQhb->addSpacing(100);
-    titleQhb->addWidget(title_lb);
-    titleQhb->addSpacing(100);
-    titleQhb->addWidget(minimizeBtn);
-    titleQhb->addWidget(closeBtn);
-
-    //连接信号和槽
-    connect(minimizeBtn, SIGNAL(clicked(bool)),
-            this, SLOT(onClicked()));
-    connect(closeBtn, SIGNAL(clicked(bool)),
-            this, SLOT(onClicked()));
-}
-
-void UserLogin::initWindow()
-{
-    initTitleBar();
-    isShown=false;
-    QMovie *background;//登陆背景动画
-    QLabel *pBack;
-    //背景动态图
-    pBack=new QLabel;
-    background=new QMovie;
-    background->setFileName(":/icon/res/Changed.gif");
-    pBack->setMovie(background);
-    background->start();
-    pBack->move(0,0);
-    //账号输入
-    accounts=new QComboBox;
-    accounts->setEditable(true);
-    accounts->setStyleSheet("border:2px groove gray;border-radius:10px;padding:2px 4px");
-    m_id=accounts->lineEdit();
-    m_id->setPlaceholderText(QStringLiteral("请输入账号"));
-    m_pwd=new QLineEdit;
-    m_pwd->setPlaceholderText(QStringLiteral("请输入密码"));
-    m_pwd->setEchoMode(QLineEdit::Password);
-    m_pwd->setStyleSheet( "border:2px groove gray;border-radius:10px;padding:2px 4px");
-    QHBoxLayout *h1=new QHBoxLayout;
-
-    QHBoxLayout *h2=new QHBoxLayout;
-
-    //显示密码的按钮
-    show_pwd=new QPushButton;
-    errorPwd=new QLabel;
-    //show_pwd=new QPushButton;
-    show_pwd->setObjectName("显示密码");
-    show_pwd->setFixedSize(QSize(16,16));
-    show_pwd->setFlat(true);
-    show_pwd->setCursor(QCursor(Qt::PointingHandCursor));
-    show_pwd->setIcon(QIcon(":/icon/res/eye.png"));
-
-    //用于提示id不存在
-    errorId=new QLabel;
-    errorId->setFixedWidth(width()/4);
-    //提示用户名与密码不符
-    errorPwd=new QLabel;
-    errorPwd->setFixedWidth(width()/4);
-
-    //注册按钮
-    signUpBtn=new QPushButton;
-    signUpBtn->setToolTip("注册账户");
-    signUpBtn->setStyleSheet("border:none");
-    signUpBtn->setIcon(QIcon(":/icon/res/register.png"));
-    signUpBtn->setFixedSize(QSize(m_id->height()+10,m_id->height()+10));
-    signUpBtn->setCursor(QCursor(Qt::PointingHandCursor));
-
-    //账号框布局
-    QLabel *user_icon =new QLabel;
-    user_icon->setPixmap(QIcon(":/icon/res/user (2).png").pixmap(m_id->height(),m_id->height()));
-    user_icon->setFixedSize(m_id->height(),m_id->height());
-    user_icon->setToolTip("账号");
-    h1->addWidget(user_icon);
-    h1->addWidget(accounts);
-    h1->addWidget(signUpBtn);
-    h1->addWidget(errorId);
-
-    //密码框布局
-    QLabel * pwd_icon=new QLabel;
-    pwd_icon->setPixmap(QIcon(":/icon/res/lock.png").pixmap(m_id->height(),m_id->height()));
-    pwd_icon->setFixedSize(m_id->height(),m_id->height());
-    pwd_icon->setToolTip("密码");
-    h2->addWidget(pwd_icon);
-    h2->addWidget(m_pwd);
-    h2->addWidget(show_pwd);
-    h2->addWidget(errorPwd);
-
-
-    pic=new QLabel;
-    pic->setPixmap(QIcon(":/icon/res/icon (2).png").pixmap(this->width()/4,this->height()/4));
-    pic->setFixedSize(QSize(width()/4,height()/4));
-    QVBoxLayout *QVB=new QVBoxLayout;
-    QVB->setContentsMargins(0,0,0,0);
-    QVB->addLayout(h1);
-    QVB->addLayout(h2);
-    QHBoxLayout *QHB=new QHBoxLayout;
-    QHB->addWidget(pic);
-    QHB->addLayout(QVB);
-
-    loginBtn=new QPushButton;
-    loginBtn->setText("登陆");
-    QString BtnStyle;
-    BtnStyle="QPushButton{background-color:rgba(95,131,210,75%);"
-            "color: white;   border-radius: 10px;  border: 2px groove gray; border-style: outset;}" // 按键本色
-            "QPushButton:hover{background-color:rgb(85, 170, 255); color: black;}"  // 鼠标停放时的色彩
-            "QPushButton:pressed{background-color:white; border-style: inset; }"; // 鼠标按下的色彩
-    loginBtn->setStyleSheet(BtnStyle);
-    loginBtn->setFixedSize(80,30);
-
-    QHBoxLayout *QHBB=new QHBoxLayout;
-    QHBB->setContentsMargins(0,0,0,0);
-    QHBB->addSpacing(180);
-    QHBB->addWidget(loginBtn);
-    QHBB->addSpacing(180);
-
-    QVBoxLayout *QVBB=new QVBoxLayout;
-    //添加自定义标题栏
-    QVBB->addLayout(titleQhb);
-    //添加背景动图
-    QVBB->addWidget(pBack);
-
-    //添加账号密码布局
-    QVBB->addLayout(QHB);
-
-    QVBB->addSpacing(15);
-    //登陆按钮
-    QVBB->addLayout(QHBB);
-
-    QVBB->addSpacing(15);
-    setLayout(QVBB);
-
 }
 
 QLineEdit *UserLogin::id() const
