@@ -13,7 +13,7 @@ class AddIntoSongList : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AddIntoSongList(QWidget *parent = nullptr);
+    explicit AddIntoSongList(QString UserId,QWidget *parent = nullptr);
 
     QString getAddedSongList() const;
 

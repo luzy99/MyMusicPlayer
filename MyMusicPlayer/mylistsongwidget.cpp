@@ -103,7 +103,7 @@ void MyListSongWidget::dislikeAction_slot()
 void MyListSongWidget::addIntoSongListAction_slot()
 {
     QString listName;
-    AddIntoSongList window;
+    AddIntoSongList window(User);
     int status = window.exec();
     qDebug()<<status;
     if(status)

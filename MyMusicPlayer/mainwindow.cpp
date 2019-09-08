@@ -588,6 +588,7 @@ void MainWindow::onCloseWindow()
 void MainWindow::onLoginSuccess(QString userId)
 {
     this->userId = userId;
+    infoShow->setUser(userId);
 }
 
 //网络歌曲的播发

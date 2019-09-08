@@ -2,8 +2,9 @@
 #include<QDebug>
 #include <QGridLayout>
 #include<QSqlQuery>
-AddIntoSongList::AddIntoSongList(QWidget *parent)
-    : QDialog(parent)
+AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
+    : QDialog(parent),
+      User(UserId)
 {
 
     listList = new QListWidget(this);
@@ -147,68 +148,57 @@ AddIntoSongList::AddIntoSongList(QWidget *parent)
     QSqlQuery query1(cmd);
     while (query1.next())
     {
-        QString tableName = QString(query1.value(0).toString());
-        if(tableName == QString("播放历史"))
+        if(processStringId(query1.value(0).toString()) == User)
         {
-            continue;
-         }
-        listInfoWidget = new QWidget();
-        item_titleLabel=new QLabel();
-        item_numLabel=new QLabel();
-        item_songPicture=new QLabel();
-        //设置m_songInfoWidget布局
+            QString tableName = QString(query1.value(0).toString());
+            if(tableName == QString("播放历史"))
+            {
+                continue;
+            }
+            listInfoWidget = new QWidget();
+            item_titleLabel=new QLabel();
+            item_numLabel=new QLabel();
+            item_songPicture=new QLabel();
+            //设置m_songInfoWidget布局
 
-        query.exec(QString("select count(*) from %1").arg(tableName));
-        query.next();
-        int totalSong = query.value(0).toInt();
+            query.exec(QString("select count(*) from %1").arg(tableName));
+            query.next();
+            int totalSong = query.value(0).toInt();
 
-        QGridLayout *gl1=new QGridLayout();
-        QListWidgetItem *pItem = new QListWidgetItem();
+            QGridLayout *gl1=new QGridLayout();
+            QListWidgetItem *pItem = new QListWidgetItem();
 
-        item_numLabel->setText(QString("%1首音乐").arg(totalSong));
-        item_numLabel->setFont(QFont("微软雅黑", 9));
-        item_numLabel->setStyleSheet("color:gray;");
+            item_numLabel->setText(QString("%1首音乐").arg(totalSong));
+            item_numLabel->setFont(QFont("微软雅黑", 9));
+            item_numLabel->setStyleSheet("color:gray;");
 
-        query.exec(QString("select cover_image from %1 as t order by t.num desc").arg(tableName));
-        query.next();
-        QPixmap pic(query.value(0).toString());
-        item_songPicture->setPixmap(pic);
-        item_songPicture->setScaledContents(true);
-        item_songPicture->setFixedSize(60,60);
-        gl1->setGeometry(QRect(0,0,500,60));
-        gl1->addWidget(item_songPicture,0,0,2,1,Qt::AlignLeft);
-        gl1->addWidget(item_titleLabel,0,1,1,5,Qt::AlignLeft);
-        gl1->addWidget(item_numLabel,1,1,1,5,Qt::AlignLeft);
+            query.exec(QString("select cover_image from %1 as t order by t.num desc")
+                       .arg(tableName));
+            query.next();
+            QPixmap pic(query.value(0).toString());
+            item_songPicture->setPixmap(pic);
+            item_songPicture->setScaledContents(true);
+            item_songPicture->setFixedSize(60,60);
+            gl1->setGeometry(QRect(0,0,500,60));
+            gl1->addWidget(item_songPicture,0,0,2,1,Qt::AlignLeft);
+            gl1->addWidget(item_titleLabel,0,1,1,5,Qt::AlignLeft);
+            gl1->addWidget(item_numLabel,1,1,1,5,Qt::AlignLeft);
 
-        listInfoWidget->setLayout(gl1);
-        if(tableName == QString("我喜欢的音乐"))
-        {
-           listList->insertItem(0, pItem);
+            listInfoWidget->setLayout(gl1);
+            if(tableName == QString("我喜欢的音乐"))
+            {
+                listList->insertItem(0, pItem);
+            }
+            else
+            {
+                listList->addItem(pItem);
+            }
+            listList->setItemWidget(pItem,listInfoWidget);
+            pItem->setSizeHint(QSize(500,70));
+            pItem->setText(QString("                  %1\n").arg(processStringName(tableName)));
+            pItem->setFont(QFont("微软雅黑", 11));
         }
-        else
-        {
-            listList->addItem(pItem);
-        }
-        listList->setItemWidget(pItem,listInfoWidget);
-        pItem->setSizeHint(QSize(500,70));
-        pItem->setText(QString("                  %1\n").arg(tableName));
-        pItem->setFont(QFont("微软雅黑", 11));
     }
-
-
-
-//    QIcon icon1("D:/QT/MyMusicPlayer_Mission/build-MyMusicPlayer-Desktop_Qt_5_13_0_MinGW_64_bit-Debug/CoverImages/我喜欢.jpg");
-//    for(int i =0; i<7;i++)
-//    {
-//        QListWidgetItem *pitem = new QListWidgetItem();
-//        pitem->setSizeHint(QSize(500,70));
-//        pitem->setIcon(icon1);
-//        pitem->setText("我喜欢\n210首音乐");
-//        listList->setIconSize(QSize(60,60));
-//        listList->setFont(QFont("微软雅黑", 11));
-//        listList->addItem(pitem);
-//    }
-
 
     connect(closeButton, SIGNAL(clicked()),
             this, SLOT(closeWindow()));

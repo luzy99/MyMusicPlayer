@@ -345,7 +345,7 @@ void SongInfoShow::on_pageBackButton_clicked()
 void SongInfoShow::on_starButton_clicked()
 {
     QString listName;
-    AddIntoSongList window;
+    AddIntoSongList window(User);
     int status = window.exec();
     qDebug()<<status;
     if(status)
@@ -354,6 +354,11 @@ void SongInfoShow::on_starButton_clicked()
         qDebug()<< listName;
         emit(sendAddIntoSongListCommand(songName, listName));
     }
+}
+
+void SongInfoShow::setUser(const QString &value)
+{
+    User = value;
 }
 
 QPushButton *SongInfoShow::getMvButton() const

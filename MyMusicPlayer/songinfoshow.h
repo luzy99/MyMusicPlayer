@@ -22,6 +22,8 @@ public:
     QPushButton *getMvButton() const;
     void setMvButton(QPushButton *value);
 
+    void setUser(const QString &value);
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
 signals:
@@ -43,6 +45,7 @@ private slots:
 private:
     QString songId;
     QString songName;
+    QString User;
 
     QLabel *titleShow;
     QPushButton *mvButton;
