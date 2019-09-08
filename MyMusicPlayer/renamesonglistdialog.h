@@ -6,6 +6,7 @@
 #include<QFrame>
 #include<QLineEdit>
 #include<QPushButton>
+#include <QMouseEvent>
 
 class RenameSongListDialog : public QDialog
 {
@@ -15,6 +16,10 @@ public:
     explicit RenameSongListDialog(QWidget *parent = nullptr);
 
     QLineEdit *getLineEdit() const;
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
     void on_renameButtonClicked();
@@ -26,6 +31,9 @@ private:
     QLineEdit *lineEdit;
     QPushButton *renameButton;
     QPushButton *cancelButton;
+
+    QPoint mouseStartPoint;
+    QPoint windowsStartPoint;
 };
 
 #endif // RENAMESONGLISTDIALOG_H

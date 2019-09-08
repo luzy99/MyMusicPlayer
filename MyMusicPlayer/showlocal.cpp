@@ -29,7 +29,6 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pListShowList->setMovement(QListView::Static);
     m_pListShowList->setResizeMode(QListView::Adjust);
 
-
     //与数据库建立联系
     QSqlQuery query;
     QString sql=QString("select songName,songUrl,likeOrNot,artist,cover_image from 播放历史");

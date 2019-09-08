@@ -158,7 +158,8 @@ void SongList::initSignalsAndSlots()
 int SongList::maxNumInSongList(QString tablename)
 {
     QSqlQuery query(db);
-    query.exec(QString("select num from %1 as t order by t.num desc limit 0,1;").arg(connectString(tablename)));
+    query.exec(QString("select num from %1 as t order by t.num desc limit 0,1;")
+               .arg(connectString(tablename)));
     query.next();
     return query.value(0).toInt();
 }
@@ -311,7 +312,7 @@ void SongList::createSongListInDatabase(QString name)
         QString command = "create table %1 (songName varchar(255) ,"
                           "songUrl varchar(255) primary key, likeOrNot int(1), "
                           "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
-        query.exec(command.arg(name));
+        query.exec(command.arg(connectString(name)));
         listList->clear();
         initSonglist();
         showSongsOfList(name);
@@ -327,7 +328,8 @@ void SongList::clearSongListInDatabase(QString name)
 
     if(name == QString("我喜欢的音乐"))
     {
-        query.exec(QString("select songUrl from %1;").arg(connectString("我喜欢的音乐")));
+        query.exec(QString("select songUrl from %1;")
+                   .arg(connectString("我喜欢的音乐")));
         while(query.next())
         {
             QSqlQuery query1(db);
@@ -346,7 +348,7 @@ void SongList::clearSongListInDatabase(QString name)
         }
     }
     QString command = "truncate table %1 ;";
-    query.exec(command.arg(name));
+    query.exec(command.arg(connectString(name)));
     listList->clear();
     initSonglist();
     showSongsOfList(name);
@@ -389,7 +391,7 @@ void SongList::renameSongListInDatabase(QString name)
         int status = dlg.exec();
         if(status == 0)
         {
-            newName = connectString( dlg.getLineEdit()->text());
+            newName = connectString(dlg.getLineEdit()->text());
          }
         else
         {
@@ -432,7 +434,7 @@ void SongList::onListSongItemEntered(QListWidgetItem *item)
     QString songName = item->text();
     QString command = "select likeOrNot from %1 where songName = '%2' ;";
     QSqlQuery query(db);
-    query.exec(command.arg(connectString(actingSongListName) ,songName));
+    query.exec(command.arg(connectString(actingSongListName), songName));
     query.next();
     if(query.value(0).toInt() == 0)
     {
@@ -527,9 +529,10 @@ void SongList::setSongRemove(QString name)
 void SongList::setSongAddInto(QString songName,QString listName)
 {
     QSqlQuery query(db);
-    query.exec(QString("select songUrl from %1 where songName = '%2' ;").arg(connectString(listName) , songName));
+    query.exec(QString("select songUrl from %1 where songName = '%2' ;")
+               .arg(connectString(listName) , songName));
     query.next();
-    if(query.value(0).toString()==QString(""))
+    if(query.value(0).toString() == QString(""))
     {
         QString getInfoCommand = "select * from %1 where songName = '%2';";
         query.exec(getInfoCommand.arg(connectString(actingSongListName), songName));
@@ -641,8 +644,8 @@ void SongList::setSongInfoShowed(QString name)
     message.setFont(font);
     message.exec();
 }
-//拖拽或者添加音乐文件
 
+//拖拽或者添加音乐文件
 void SongList::addNewSong(QString Path)
 {
     playingSongList = actingSongListName;

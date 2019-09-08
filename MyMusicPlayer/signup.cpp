@@ -83,10 +83,9 @@ void signup::on_return_clicked()
      //注册信息添加入userinfo表
      query.exec(QString("insert into userinfo values('%1', '%2' , '%3');").arg(strId, pwd1, name));
      //用户图像存入指定目录
-     QFile headImage(userImagedir);
-     headImage.open(QIODevice::ReadOnly);
-     headImage.copy(QDir::currentPath()+"/userHeads/"+strId);
-     headImage.close();
+     QPixmap headImage;
+     headImage.load(userImagedir);
+     headImage.save(QDir::currentPath()+"/userHeads/"+strId+".png");
      query.exec(createSongList1.arg(strId+"_我喜欢的音乐"));
      query.exec(createSongList2.arg(strId+"_播放历史"));
      emit returnValues(strId,pwd1);
