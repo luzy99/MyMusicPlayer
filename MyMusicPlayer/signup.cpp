@@ -1,4 +1,5 @@
 #include "signup.h"
+#include "errorwindow.h"
 #include<QHBoxLayout>
 #include<QVBoxLayout>
 #include<QDebug>
@@ -6,6 +7,9 @@
 #include<QMovie>
 #include <QDir>
 #include <QFileDialog>
+#include <QBitmap>
+#include <QPainter>
+
 signup::signup(QWidget *parent)
     :QDialog (parent)
 {
@@ -33,55 +37,85 @@ signup::~signup()
 
 }
 
+//注册成功的槽函数
 void signup::on_return_clicked()
 {
-    QPalette pl;
-    pl.setColor(QPalette::WindowText,Qt::red);
+    //获取用户的输入信息
     QString pwd1 = pwd1LineEdit->text();
     QString pwd2 = pwd2LineEdit->text();
     QString name=nameLineEdit->text();
+
+    //判断可能的注册错误并做出提示
     if(name == QString(""))
     {
-        emptyName_lb->setText("昵称不能为空");
+        ErrorWindow *emptyError = new ErrorWindow("昵称不能为空");
+        emptyError->show();
+        emptyError->showInstantly();
+        return;
     }
+    else if(pwd1.length() < 6)
+    {
+
+            ErrorWindow *pswError = new ErrorWindow("密码少于6位");
+            pswError->show();
+            pswError->showInstantly();
+            return;
+     }
+    else if(pwd1 != pwd2)
+     {
+            ErrorWindow *pswError = new ErrorWindow("密码不一致");
+            pswError->show();
+            pswError->showInstantly();
+            return;
+      }
     else
     {
-        emptyName_lb->setText("");
-        if(pwd1.length()<6)
-        {
-            less_pwd->setText("密码少于6位");
-        }
-        else
-        {
-            less_pwd->setText("");
-            if(pwd1!=pwd2)
-            {
-                errorPwd_lb->setPalette(pl);
-                errorPwd_lb->setText("密码不一致");
-            }
-            else
-            {
-                QSqlQuery query;
-                QString createSongList1 = "create table %1 (songName varchar(255) ,"
-                                          "songUrl varchar(255) primary key, likeOrNot int(1), "
-                                          "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
-                QString createSongList2 = "create table %1 (songName varchar(255) ,"
-                                          "songUrl varchar(255) primary key, likeOrNot int(1), "
-                                          "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
-                query.exec(QString("insert into userinfo values('%1', '%2' , '%3', '%4');").arg(strId, pwd1, name, userImagedir));
-                query.exec(createSongList1.arg(strId+"_我喜欢的音乐"));
-                query.exec(createSongList2.arg(strId+"_播放历史"));
-                emit returnValues(strId,pwd1);
-                this->done(1);
-            }
-        }
     }
 
+    //注册成功,在数据库里为新用户创建歌单
+    QSqlQuery query;
+    QString createSongList1 = "create table %1 (songName varchar(255) ,"
+                                          "songUrl varchar(255) primary key, likeOrNot int(1), "
+                                          "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
+    QString createSongList2 = "create table %1 (songName varchar(255) ,"
+                                          "songUrl varchar(255) primary key, likeOrNot int(1), "
+                                          "artist varchar(255), album varchar(255), cover_image varchar(255),num int(9));";
+     //注册信息添加入userinfo表
+     query.exec(QString("insert into userinfo values('%1', '%2' , '%3');").arg(strId, pwd1, name));
+     //用户图像存入指定目录
+     QFile headImage(userImagedir);
+     headImage.open(QIODevice::ReadOnly);
+     headImage.copy(QDir::currentPath()+"/userHeads/"+strId);
+     headImage.close();
+     query.exec(createSongList1.arg(strId+"_我喜欢的音乐"));
+     query.exec(createSongList2.arg(strId+"_播放历史"));
+     emit returnValues(strId,pwd1);
+     this->done(1);
 }
 
+//点击取消的槽函数
 void signup::on_cancel_clicked()
 {
     this->done(0);
+}
+
+QPixmap signup::PixmapToRound(const QPixmap &src, int radius)
+{
+    if (src.isNull()) {
+        return QPixmap();
+    }
+    QSize size(2*radius, 2*radius);
+    QBitmap mask(size);
+    QPainter painter(&mask);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+    painter.setBrush(QColor(0, 0, 0));
+    painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+    QPixmap image = src.scaled(size);
+    image.setMask(mask);
+    return image;
 }
 
 void signup::on_imageBtn_clicked()
@@ -90,18 +124,23 @@ void signup::on_imageBtn_clicked()
     //限制打开文件的类型
     QString dlgTitle = "选择图片文件";
     QString filter = "图片文件(*.jpg *.png *.bmp);;jpg文件(*.jpg);;png文件(*.png);;bmp文件(*.bmp);;所有文件(*.*)";
-    QStringList fileList = QFileDialog::getOpenFileNames(this,dlgTitle,curPath,filter);
+    QString file = QFileDialog::getOpenFileName(this,dlgTitle,curPath,filter);
 
-    if (fileList.count()<1)
-        return;
-    for(int i=0;i<1;i++)
+    QFileInfo fileInfo(file);
+    if(!fileInfo.isReadable())
     {
-        QString file = fileList.at(i);
-        QFileInfo fileInfo(file);
-        userImagedir = fileInfo.filePath();
+        ErrorWindow *imageWindow = new ErrorWindow("头像图片打开失败");
+        imageWindow->show();
+        imageWindow->showInstantly();
+        return;
     }
-    QIcon userImage(userImagedir);
-    imageBtn->setIcon(userImage);
+
+    QPixmap srcImage(file);
+    QSize size = imageBtn->size();
+    QPixmap headImage = srcImage.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    headImage = PixmapToRound(headImage,size.height()/2);
+    imageBtn->setIcon(QIcon(headImage));
+    userImagedir = file;
 }
 
 void signup::initWindows()
@@ -137,23 +176,7 @@ void signup::initWindows()
     welcome_lb->setFont(QFont("微软雅黑", 11));
     welcome_lb->setAlignment(Qt::AlignCenter);
     welcome_lb->setPalette(pl);
-    //显示用户注册账号的label
-//    id_lb=new QLabel;
 
-//    id_lb->setText(QString("\n%1").arg(strId));
-//    id_lb->setFont(QFont("微软雅黑", 11));
-
-    //提示label
-    emptyName_lb=new QLabel;
-    emptyName_lb->setPalette(m_pal);
-    emptyName_lb->setFixedWidth(width()/5);
-    errorPwd_lb=new QLabel;
-    errorPwd_lb->setPalette(m_pal);
-    errorPwd_lb->setFixedWidth(width()/5);
-    less_pwd=new QLabel;
-    less_pwd->setPalette(m_pal);
-    less_pwd->setFixedWidth(width()/5);
-    //
     QLabel *name_lb=new QLabel;
     name_lb->setText("请输入昵称");
     name_lb->setPalette(pl);
@@ -202,7 +225,7 @@ void signup::initWindows()
     imageBtn->setFlat(true);
     QIcon userImage(userImagedir);
     imageBtn->setIcon(userImage);
-    imageBtn->setIconSize(QSize(100, 100));
+    imageBtn->setIconSize(QSize(80, 80));
 
     //
     QHBoxLayout *qhb1=new QHBoxLayout;
@@ -219,19 +242,16 @@ void signup::initWindows()
     qhb2->addSpacing(space);
     qhb2->addWidget(name_lb);
     qhb2->addWidget(nameLineEdit);
-    qhb2->addWidget(emptyName_lb);
 
     //
     qhb3->addSpacing(space);
     qhb3->addWidget(pwd_lb);
     qhb3->addWidget(pwd1LineEdit);
-    qhb3->addWidget(less_pwd);
 
     //
     qhb4->addSpacing(space);
     qhb4->addWidget(pwd_lb2);
     qhb4->addWidget(pwd2LineEdit);
-    qhb4->addWidget(errorPwd_lb);
 
     //
     qhb5->addSpacing(space);

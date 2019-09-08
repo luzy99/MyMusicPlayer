@@ -56,6 +56,8 @@ private slots:
     void onMinimizeWindow();
     void onMaximizeWindow();
     void onCloseWindow();
+    //用户登录
+    void onLoginSuccess(QString userId);
 
     void onResendSongInfo(SongInfo &chosenSong);
     //开启&关闭手势识别

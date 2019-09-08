@@ -22,9 +22,12 @@ public:
     void initSignalsAndSlots(); //初始化信号与槽
     void initActions(); //初始化菜单
     ~TitleBar();
+    QPixmap PixmapToRound(const QPixmap &src, int radius);
 
     ResultWidget *searchResult; //全网搜索的结果栏
     SearchLocal *searchLocalResult; //在线搜索的结果栏
+    UserLogin *loginForm; //用户登录界面
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
@@ -43,6 +46,7 @@ signals:
     void closeGesture(); //关闭手势识别
 
 public slots:
+    void onLoginSuccess(QString userId);
 
 private slots:
     void onEditFinished();
@@ -70,8 +74,7 @@ private:
     QPushButton *closeBtn; //关闭按钮
 
     bool gestureControl; //是否手势控制
-
-    UserLogin *loginForm;
+    QString userId; //用户Id
 };
 
 #endif // TITLEBAR_H

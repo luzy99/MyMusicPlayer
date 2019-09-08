@@ -39,43 +39,48 @@ void UserLogin::on_signup_clicked()
     sig.exec();
 }
 
+//登录按钮点击后
 void UserLogin::on_login_clicked()
 {
-    QPalette pl;
-    pl.setColor(QPalette::WindowText,QColor(95,131,210));
-
-    if(m_id->text()==QString(""))
+    if(m_id->text() == "")
     {
-        errorId->setPalette(pl);
-        errorId->setText("该账号不存在");
+        ErrorWindow *emptyError = new ErrorWindow("请输入用户名");
+        emptyError->show();
+        emptyError->showInstantly();
+        return;
+    }
+    else if(m_pwd->text()== "")
+    {
+        ErrorWindow *emptyError = new ErrorWindow("请输入密码");
+        emptyError->show();
+        emptyError->showInstantly();
+        return;
     }
     else
     {
-        if(m_pwd->text() != QString(""))
-        {
-            QSqlQuery query;
-            query.exec(QString("select password from userinfo where userId = '%1' ;").arg(m_id->text()));
-            query.next();
-            if(query.value(0).toString() == m_pwd->text())
-
-                this->done(1);
-        }
-        else
-        {
-            errorPwd->setPalette(pl);
-            errorPwd->setText("密码错误");
-        }
     }
+
+    QSqlQuery query;
+    query.exec(QString("select password from userinfo where userId = '%1' ;").arg(m_id->text()));
+    query.next();
+
+    if(query.value(0).toString() == m_pwd->text())
+    {
+        //用户信息正确,登录成功,向外抛出用户的id
+        this->done(1);
+        emit loginSuccess(m_id->text());
+    }
+    else
+    {
+        ErrorWindow *pswError = new ErrorWindow("用户名或密码错误");
+        pswError->show();
+        pswError->showInstantly();
+        return;
+     }
 }
 
 void UserLogin::on_editingFinished()
 {
-    QSqlQuery query;
-    query.exec(QString("select userImagePath from userinfo where userId = '%1' ;").arg(m_id->text()));
-    query.next();
-    QString imageDir = query.value(0).toString();
-    pic->setPixmap(QIcon(imageDir).pixmap(this->width()/4,this->height()/4));
-    pic->setFixedSize(this->width()/4,this->height()/4);
 }
 
 void UserLogin::displayReturnValues(QString id, QString pwd)

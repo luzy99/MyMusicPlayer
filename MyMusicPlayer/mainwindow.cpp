@@ -202,6 +202,16 @@ void MainWindow::initDirectory()
         searchFile.mkdir(QDir::currentPath()+"/searchPictures");
     }
 
+    QDir userHeadsFile(QDir::currentPath()+"/userHeads");
+    if(userHeadsFile.exists())
+    {
+        //如果已经存在则什么也不做
+    }
+    else
+    {
+        //如果不存在，则重新创建文件
+        userHeadsFile.mkdir(QDir::currentPath()+"/userHeads");
+    }
 }
 
 //初始化信号与槽
@@ -287,6 +297,12 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onBeginGesture()));
     connect(titleBar,SIGNAL(closeGesture()),
             this,SLOT(onCloseGesture()));
+
+    //用户登录成功,向主页面和歌单分别抛出id
+    connect(titleBar->loginForm,SIGNAL(loginSuccess(QString)),
+            this,SLOT(onLoginSuccess(QString)));
+    connect(titleBar->loginForm,SIGNAL(loginSuccess(QString)),
+            songList,SLOT(onRecieveUserId(QString)));
 
     //这是标题栏(搜索框)和搜索器之间的信号槽
     //完成一个搜索的逻辑
@@ -566,6 +582,12 @@ void MainWindow::onMaximizeWindow()
 void MainWindow::onCloseWindow()
 {
     this->close();
+}
+
+//用户登录成功
+void MainWindow::onLoginSuccess(QString userId)
+{
+    this->userId = userId;
 }
 
 //网络歌曲的播发

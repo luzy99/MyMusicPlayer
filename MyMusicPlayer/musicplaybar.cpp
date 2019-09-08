@@ -186,7 +186,8 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
 
     dragLabel = new QLabel;
     dragLabel->setObjectName("dragLabel");
-    QPixmap dragIcon = QPixmap(":/icon/res/dragRegion.png").scaled(20,60);
+    QPixmap dragIcon = QPixmap(":/icon/res/dragRegion.png")
+            .scaled(20,60,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     dragLabel->setPixmap(dragIcon);
     dragLabel->setAttribute(Qt::WA_TranslucentBackground);
     dragLabel->setAttribute(Qt::WA_Hover,true);

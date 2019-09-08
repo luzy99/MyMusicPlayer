@@ -1,15 +1,19 @@
 #include "titleBar.h"
 #include "errorwindow.h"
+#include <QDir>
 #include <QLabel>
 #include <QPushButton>
 #include <QEvent>
 #include <QMouseEvent>
 #include <QApplication>
 #include <QPalette>
+#include <QSqlDatabase>
+#include <QBitmap>
 #include <QDebug>
 
 TitleBar::TitleBar(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+      userId("")
 {
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setAutoFillBackground(true);
@@ -213,6 +217,9 @@ void TitleBar::initSignalsAndSlots()
     //点击用户登录按钮开始用户登录
     connect(userBtn,SIGNAL(clicked()),
             this,SLOT(on_userBtn_clicked()));
+    //用户表单登陆成功后对用户信息进行处理
+    connect(loginForm,SIGNAL(loginSuccess(QString)),
+            this,SLOT(onLoginSuccess(QString)));
 
     //点击手势识别按钮开启&关闭手势识别
     connect(gestureBtn,SIGNAL(clicked()),
@@ -383,9 +390,54 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
     emit maximizeWindow();
 }
 
+QPixmap TitleBar::PixmapToRound(const QPixmap &src, int radius)
+{
+    if (src.isNull()) {
+        return QPixmap();
+    }
+    QSize size(2*radius, 2*radius);
+    QBitmap mask(size);
+    QPainter painter(&mask);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+    painter.setBrush(QColor(0, 0, 0));
+    painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+    QPixmap image = src.scaled(size);
+    image.setMask(mask);
+    return image;
+}
+//这是登录成功之后的槽函数
+void TitleBar::onLoginSuccess(QString userId)
+{
+    //修改用户头像
+    QString headImagePath = QDir::currentPath()+"/userHeads/"+userId;
+    QPixmap srcImage(headImagePath);
+    //绘制圆形
+    QPixmap headImage = srcImage.scaled(30,30,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    headImage = PixmapToRound(headImage,15);
+    userBtn->setIcon(QIcon(headImage));
+
+    QSqlQuery query;
+    query.exec(QString("select userName from userinfo where userId = '%1' ;").arg(userId));
+    query.next();
+    QString userName = query.value(0).toString();
+    userBtn->setText(userName);
+}
+
 //输入结束时
 void TitleBar::onEditFinished()
 {
+    //只有登陆了才允许使用搜索框
+    if(userId == "")
+    {
+        ErrorWindow *notLoginError = new ErrorWindow("请先注册或登录");
+        notLoginError->show();
+        notLoginError->showInstantly();
+        return;
+    }
+
     //获得去除两边空格的字符串
     QString searchContents = searchBar->text().trimmed();
     if(searchContents != "")
@@ -448,6 +500,9 @@ void TitleBar::on_gestureBtn_clicked()
 
 void TitleBar::on_userBtn_clicked()
 {
-    loginForm->show();
+    if(userId == "")
+    {
+        loginForm->show();
+    }
 }
 

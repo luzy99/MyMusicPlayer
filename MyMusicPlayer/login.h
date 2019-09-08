@@ -30,7 +30,7 @@ public:
     void initTitleBar();
 
 signals:
-    void loginSuccess(QString userId,QString userName);
+    void loginSuccess(QString userId);
 
 public slots:
     void onClicked();

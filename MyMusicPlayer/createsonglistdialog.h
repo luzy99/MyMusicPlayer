@@ -6,6 +6,7 @@
 #include <QFrame>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QMouseEvent>
 
 class CreateSongListDialog : public QDialog
 {
@@ -15,6 +16,10 @@ public:
     explicit CreateSongListDialog(QWidget *parent = nullptr);
 
     QLineEdit *getLineEdit() const;
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 signals:
     void sendListName(QString);
@@ -29,6 +34,9 @@ private:
     QLineEdit *lineEdit;
     QPushButton *createButton;
     QPushButton *cancelButton;
+
+    QPoint mouseStartPoint; //鼠标的初始位置
+    QPoint windowsStartPoint; //窗口的初始位
 };
 
 #endif // CREATESONGLISTDIALOG_H

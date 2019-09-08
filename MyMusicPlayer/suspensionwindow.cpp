@@ -180,7 +180,6 @@ void SuspensionWindow::mousePressEvent(QMouseEvent *event)
     mouseStartPoint = event->globalPos(); //记录鼠标的初始位置
     windowsStartPoint = this->pos(); //记录窗口的初始位置
 }
-
 //重写鼠标拖动事件
 void SuspensionWindow::mouseMoveEvent(QMouseEvent *event)
 {

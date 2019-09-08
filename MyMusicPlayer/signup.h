@@ -12,7 +12,9 @@ class signup:public QDialog
     Q_OBJECT
 public:
     signup(QWidget *parent=nullptr);
+    QPixmap PixmapToRound(const QPixmap &src, int radius);
     ~signup();
+
 private slots:
     void on_return_clicked();
     void on_cancel_clicked();
@@ -27,9 +29,6 @@ private:
     QPushButton *okBtn;
     QPushButton*cancelBtn;
     QPushButton*imageBtn;
-    QLabel *less_pwd;//密码没有6位
-    QLabel *errorPwd_lb;
-    QLabel *emptyName_lb;//用户昵称不能为空
     QLineEdit *nameLineEdit;
     QLineEdit *pwd1LineEdit;
     QLineEdit *pwd2LineEdit;
