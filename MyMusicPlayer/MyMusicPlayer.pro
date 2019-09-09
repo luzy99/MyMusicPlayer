@@ -57,6 +57,7 @@ SOURCES += \
     searchlocal.cpp \
     showlocal.cpp \
     signup.cpp \
+    skinchange.cpp \
     songinfoshow.cpp \
     songlist.cpp \
     suspensionwindow.cpp \
@@ -91,6 +92,7 @@ HEADERS += \
     searchlocal.h \
     showlocal.h \
     signup.h \
+    skinchange.h \
     songinfo.h \
     songinfoshow.h \
     songlist.h \

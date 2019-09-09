@@ -122,4 +122,12 @@
         <file>res/14.JPG</file>
         <file>res/15.JPG</file>
     </qresource>
+    <qresource prefix="/skin">
+        <file>res/skin1.png</file>
+        <file>res/skin2.png</file>
+        <file>res/skin3.png</file>
+        <file>res/skin4.png</file>
+        <file>res/skin5.png</file>
+        <file>res/skin6.png</file>
+    </qresource>
 </RCC>
