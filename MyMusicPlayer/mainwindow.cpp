@@ -319,6 +319,12 @@ void MainWindow::initSignalsAndSlots()
     connect(titleBar->searchResult,SIGNAL(resendSongInfo(SongInfo &)),
             this,SLOT(onResendSongInfo(SongInfo &)));
 
+    //这里是改变主题色的槽函数
+    connect(titleBar->skinWidget,SIGNAL(colorChanged(QColor)),
+            musicPlayBar,SLOT(changeThemeColor(QColor)));
+    connect(titleBar->skinWidget,SIGNAL(colorChanged(QColor)),
+            titleBar,SLOT(changeThemeColor(QColor)));
+
     //这是歌曲播放栏和歌词弹幕之间的信号槽
     //点击时模拟歌曲播放栏的按钮被按下的效果
     connect(lyricsBarrage->m_previousBtn,SIGNAL(clicked()),
@@ -581,6 +587,7 @@ void MainWindow::onMaximizeWindow()
 //关闭窗口
 void MainWindow::onCloseWindow()
 {
+    titleBar->skinWidget->close();
     this->close();
 }
 

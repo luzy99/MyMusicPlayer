@@ -32,7 +32,8 @@ signals:
     void showLyricsBarrage(bool show); //表示显示&隐藏底部歌词弹幕
 
 public slots:
-    void changeThemeColor(QColor);
+    void changeThemeColor(QColor color);
+
     void onStateChanged(QMediaPlayer::State state);
     void onDurationChanged(qint64 duration);
     void onPositionChanged(qint64 position);

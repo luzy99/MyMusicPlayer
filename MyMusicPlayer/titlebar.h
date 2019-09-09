@@ -12,6 +12,7 @@
 #include "resultwidget.h"
 #include "searchlocal.h"
 #include "login.h"
+#include "skinchange.h"
 
 class TitleBar : public QWidget
 {
@@ -26,6 +27,7 @@ public:
 
     ResultWidget *searchResult; //全网搜索的结果栏
     UserLogin *loginForm; //用户登录界面
+    SkinChange *skinWidget; //换肤界面
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -46,6 +48,7 @@ signals:
 
 public slots:
     void onLoginSuccess(QString userId);
+    void changeThemeColor(QColor color);
 
 private slots:
     void onEditFinished();
@@ -53,6 +56,7 @@ private slots:
     void on_actSearchLocal_triggered();
     void on_actSearchMV_triggered();
 
+    void on_skinBtn_clicked(bool);
     void on_gestureBtn_clicked();
     void on_userBtn_clicked();
 

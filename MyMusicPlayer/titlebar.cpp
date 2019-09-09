@@ -25,6 +25,9 @@ TitleBar::TitleBar(QWidget *parent)
     //初始化登录表单
     loginForm = new UserLogin;
 
+    //初始化皮肤弹出框
+    skinWidget = new SkinChange;
+
     //初始化页面布局
     QHBoxLayout *layout = new QHBoxLayout;
 
@@ -111,6 +114,8 @@ TitleBar::TitleBar(QWidget *parent)
     skinBtn->setFlat(true);
     skinBtn->setStyleSheet("border: none;");
     skinBtn->setToolTip("点击更换皮肤");
+    skinBtn->setCheckable(true);
+    skinBtn->setChecked(false);
     skinBtn->setAttribute(Qt::WA_Hover,true);
     skinBtn->installEventFilter(this);
     layout->addWidget(skinBtn);
@@ -218,6 +223,9 @@ void TitleBar::initSignalsAndSlots()
     connect(loginForm,SIGNAL(loginSuccess(QString)),
             this,SLOT(onLoginSuccess(QString)));
 
+    //点击换肤
+    connect(skinBtn,SIGNAL(clicked(bool)),
+            this,SLOT(on_skinBtn_clicked(bool)));
     //点击手势识别按钮开启&关闭手势识别
     connect(gestureBtn,SIGNAL(clicked()),
             this,SLOT(on_gestureBtn_clicked()));
@@ -426,6 +434,14 @@ void TitleBar::onLoginSuccess(QString userId)
     userBtn->setText(userName);
 }
 
+//改变主题颜色
+void TitleBar::changeThemeColor(QColor color)
+{
+    QPalette backPalette;
+    backPalette.setColor(QPalette::Window,color);
+    this->setPalette(backPalette);
+}
+
 //输入结束时
 void TitleBar::onEditFinished()
 {
@@ -473,6 +489,20 @@ void TitleBar::on_actSearchMV_triggered()
     QString searchContents = searchBar->text().trimmed();
     searchMenu->hide();
     emit beginSearchMv(searchContents);
+}
+
+void TitleBar::on_skinBtn_clicked(bool checked)
+{
+    QPoint moveTo = QWidget::mapToGlobal(skinBtn->pos());
+    skinWidget->move(moveTo+QPoint(-70,47));
+    if(checked)
+    {
+        skinWidget->show();
+    }
+    else
+    {
+        skinWidget->hide();
+    }
 }
 
 //点击开启&关闭手势识别

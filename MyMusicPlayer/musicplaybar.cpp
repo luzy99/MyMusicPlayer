@@ -833,9 +833,12 @@ void MusicPlayBar::onRemotePlay()
     }
 }
 
-void MusicPlayBar::changeThemeColor(QColor)
+void MusicPlayBar::changeThemeColor(QColor color)
 {
-    //改更各个组件的颜色
+    //改更组件主题颜色
+    QPalette backPalette;
+    backPalette.setColor(QPalette::Window,color);
+    this->setPalette(backPalette);
 }
 
 

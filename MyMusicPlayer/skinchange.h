@@ -17,9 +17,10 @@ public:
 signals:
     void colorChanged(QColor);
 public slots:
-    void on_iTemClicked(int);
+    void on_iTemClicked();
 private:
-    QMap<QString,QColor> m_SkinMap;
+    QMap<int,QColor> m_Color;
+    QMap<int,QString> m_ColorName;
     QListWidget *m_pSkinList;
     QWidget *m_pSkinWid;
     QLabel *m_pTipLab;
