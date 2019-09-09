@@ -16,7 +16,7 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     this->setAttribute(Qt::WA_Hover,true);
     this->installEventFilter(this);
     this->setWindowOpacity(0.9);
-    this->setStyleSheet("background-color: rgb(255,255,255)");
+    this->setStyleSheet("background-color: rgb(255,255,255);");
     this->setFixedSize(350,60); //悬浮窗大小不可改变
 
     //绘制圆角窗口

@@ -7,7 +7,7 @@ MyListSongWidget::MyListSongWidget(QWidget *parent) : QListWidget(parent)
 {
     this->setStyleSheet("QListWidget{color:rgb(92,92,92); background:rgb(245,245,247);border:0px solid gray;}" \
                         "QListWidget::Item{height:30px;border:0px solid gray;padding-left:15;}" \
-                        "QListWidget::Item:hover{color:rgb(55,57,61);background:rgb(255,192,203);border:0px solid gray;}" \
+                        "QListWidget::Item:hover{color:rgb(55,57,61);background:rgb(255,232,233);border:0px solid gray;}" \
                         "QListWidget::Item:selected{color:rgb(0,0,0);background:rgb(230,231,234);border:none;}" \
                         "QListWidget:focus{outline:none;}");
 }

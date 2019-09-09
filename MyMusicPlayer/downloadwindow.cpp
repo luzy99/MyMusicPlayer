@@ -14,10 +14,11 @@ DownloadWindow::DownloadWindow(QString id,QString name,QWidget *parent)
 {
     //修改下载框的样式
     this->setWindowFlags(Qt::FramelessWindowHint);
-    //this->setAttribute(Qt::WA_TranslucentBackground);
     this->setFixedSize(750,60); //悬浮窗大小不可改变
-    this->setWindowOpacity(0.75);
-    this->setStyleSheet("background-color: rgb(255,255,255);");
+    this->setWindowOpacity(0.9);
+    this->setStyleSheet("background: rgb(245,245,247);"
+                        "border:1px solid rgb(25,25,25);"
+                        "border-radius:2px;");
 
     //绘制圆角窗口
     QBitmap bmp(this->size());
@@ -31,19 +32,23 @@ DownloadWindow::DownloadWindow(QString id,QString name,QWidget *parent)
 
     //初始化布局
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setContentsMargins(10,0,10,0);
 
     //初始化提示标签
     choosePathLabel = new QLabel;
-    choosePathLabel->setAttribute(Qt::WA_TranslucentBackground);//设置窗口透明
     choosePathLabel->setObjectName("choosePathLabel");
     choosePathLabel->setText("歌曲保存路径:");
+    choosePathLabel->setStyleSheet("border: none;");
     layout->addWidget(choosePathLabel);
 
     //初始化显示路径的输入框
     choosePathEdit = new QLineEdit;
     choosePathEdit->setObjectName("choosePathEdit");
     choosePathEdit->setText(QDir::currentPath()+"/Songs");
-    choosePathEdit->setStyleSheet("background-color:rgba(255,229,238,1);");
+    choosePathEdit->setStyleSheet( "QLineEdit{border:0px;border-radius:2px;"
+                                   "color:white;background:rgb(25,25,25);}"
+                                   "QLineEdit::Hover{border:0px;border-radius:2px;"
+                                   "color:white;background-color:rgb(92,92,92);}");
     layout->addWidget(choosePathEdit);
 
     //初始化选择路径的按钮
@@ -74,6 +79,18 @@ DownloadWindow::DownloadWindow(QString id,QString name,QWidget *parent)
     downloadBtn->installEventFilter(this);
     layout->addWidget(downloadBtn);
 
+    //关闭按钮
+    closeBtn = new QPushButton;
+    closeBtn->setObjectName("closeBtn");
+    closeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    closeBtn->setIcon(QIcon(":/icon/res/close.png"));
+    closeBtn->setIconSize(QSize(27,27));
+    closeBtn->setFixedSize(QSize(30,30));
+    closeBtn->setFlat(true);
+    closeBtn->setToolTip("点击关闭");
+    closeBtn->setStyleSheet("border: none;");
+    layout->addWidget(closeBtn);
+
     //初始化进度条
     downloadProgress = new MyProgressBar;
     downloadProgress->setObjectName("downloadProgress");
@@ -93,6 +110,9 @@ void DownloadWindow::initSignalsAndSlots()
     //点击下载按钮开始下载
     connect(downloadBtn,SIGNAL(clicked()),
             this,SLOT(on_downloadBtn_clicked()));
+    //点击关闭按钮关闭窗口
+    connect(closeBtn,SIGNAL(clicked()),
+            this,SLOT(close()));
 }
 
 //实现鼠标拖动窗口

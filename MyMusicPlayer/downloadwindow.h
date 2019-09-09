@@ -46,6 +46,7 @@ private:
     QLineEdit *choosePathEdit; //选择路径的输入框
     QPushButton *choosePathBtn; //选择路径的按钮
     QPushButton *downloadBtn; //下载的按钮
+    QPushButton *closeBtn; //关闭的按钮
 
     QFile *file; //下载的临时文件
     QFileInfo fileInfo; //下载文件的信息
