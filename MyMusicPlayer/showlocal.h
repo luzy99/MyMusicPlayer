@@ -1,4 +1,4 @@
-//我最近在听展示
+//这是首页下面的歌曲展示
 #ifndef SHOWLOCAL_H
 #define SHOWLOCAL_H
 
@@ -24,6 +24,7 @@ signals:
 public slots:
     void on_ItemClick1(int);
     void on_ItemClick2(int);
+    void onUserLogin(QString userId);
 
 private:
     QSqlDatabase db;
@@ -41,6 +42,7 @@ private:
     QLabel *m_pLikeLabel;
     QStringList m_SongUrls;
     int index;
+    QString m_userid;
 
 };
 

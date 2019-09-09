@@ -10,7 +10,7 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pLocalShowTab = new QTabWidget(this);
     //m_SongUrls.append(" ");
 
-    m_pIconShowList->setStyleSheet("background-color:rgba(255,255,255,100)");
+    m_pIconShowList->setStyleSheet("background:rgb(245,245,247);");
     m_pIconShowList->setResizeMode(QListView::Adjust);
     m_pIconShowList->setFlow(QListView::LeftToRight);
     m_pIconShowList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -18,9 +18,10 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pIconShowList->setViewMode(QListView::IconMode);
     m_pIconShowList->setFrameShape(QFrame::NoFrame);
     m_pIconShowList->setMovement(QListView::Static);
-    m_pIconShowList->setSpacing(20);
+    m_pIconShowList->setSpacing(40);
+    m_pIconShowList->setContentsMargins(0,5,0,5);
 
-    m_pListShowList->setStyleSheet("background-color:rgba(255,255,255,100)");
+    m_pListShowList->setStyleSheet("background:rgb(245,245,247);");
     m_pListShowList->setViewMode(QListView::ListMode);
     m_pListShowList->setFrameShape(QFrame::NoFrame);
     m_pListShowList->setFlow(QListView::TopToBottom);
@@ -29,9 +30,54 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pListShowList->setMovement(QListView::Static);
     m_pListShowList->setResizeMode(QListView::Adjust);
 
-    //与数据库建立联系
+    m_pLocalShowTab->addTab(m_pIconShowList,"Mode 1");
+    m_pLocalShowTab->addTab(m_pListShowList,"Mode 2");
+
+    //m_pTabWidegt->setStyleSheet("background-color:rgba(0,0,0,0);");
+    m_pLocalShowTab->setDocumentMode(true);
+    QString tab_stylesheet=tr("QTabBar::tab{width: 100px;height:20px;"
+                              "font:15px '微软雅黑';color:white;background-color:rbga(0,0,0,5);}");
+    tab_stylesheet.append("QTabBar::tab:selected{color: rgba(0,0,0,50);"
+                          "background-color:rbga(0,0,0,10);}");
+    //tab_stylesheet.append("QTabWidget::pane{border:0px;top:-1px;}");
+    m_pLocalShowTab->setStyleSheet(tab_stylesheet);
+
+    QVBoxLayout *hb1= new QVBoxLayout;
+    hb1->addWidget(m_pLocalShowTab);
+    hb1->setSpacing(0);
+    hb1->setContentsMargins(0,0,0,0);
+    this->setLayout(hb1);
+
+    connect(m_pIconShowList,SIGNAL(currentRowChanged(int)),
+            this,SLOT(on_ItemClick1(int)));
+    connect(m_pListShowList,SIGNAL(currentRowChanged(int)),
+            this,SLOT(on_ItemClick2(int)));
+}
+
+void ShowLocal::on_ItemClick1(int currow)
+{
+    qDebug()<<currow;
+    qDebug()<<m_SongUrls[currow];
+    emit songUrl(m_SongUrls[currow]);
+}
+
+void ShowLocal::on_ItemClick2(int currow)
+{
+    qDebug()<<currow;
+    qDebug()<<m_SongUrls[currow];
+    emit songUrl(m_SongUrls[currow]);
+}
+
+//用户登陆时刷新页面内容
+void ShowLocal::onUserLogin(QString userID)
+{
+    m_userid=userID;
+
+    m_pIconShowList->clear();
+    m_pListShowList->clear();
+
     QSqlQuery query;
-    QString sql=QString("select songName,songUrl,likeOrNot,artist,cover_image from 播放历史");
+    QString sql=QString("select songName,songUrl,likeOrNot,artist,cover_image from %1_播放历史").arg(m_userid);
     query.exec(sql);
     index=0;
     while(query.next())
@@ -96,13 +142,13 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
         gl1->addWidget(m_pArtistLabel,17,0,1,18,Qt::AlignCenter);
         m_pIconinfoWidget->setLayout(gl1);
         m_pIconinfoWidget->setContentsMargins(0,0,0,0);
-        m_pIconinfoWidget->setFixedSize(QSize(240,240));
+        m_pIconinfoWidget->setFixedSize(QSize(260,260));
         m_pIconinfoWidget->setStyleSheet("background-color:rgba(0,0,0,10);");
         //m_pIconinfoWidget->show();
         pItem->setSizeHint(QSize(240,240));
         m_pIconShowList->insertItem(index,pItem);
         m_pIconShowList->setItemWidget(pItem,m_pIconinfoWidget);
-        //m_pIconShowList->setStyleSheet("top-border:0px;");
+        m_pIconShowList->setStyleSheet("top-border:0px;");
 
         QGridLayout *gl2=new QGridLayout();
         QListWidgetItem *qItem= new QListWidgetItem();
@@ -123,38 +169,8 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
         qItem->setSizeHint(QSize(width(),40));
         m_pListShowList->insertItem(index,qItem);
         m_pListShowList->setItemWidget(qItem,m_pListinfoWidget);
-        //m_pListShowList->setStyleSheet("top-border:0px;");
+        m_pListShowList->setStyleSheet("top-border:0px;");
 
         index++;
     }
-
-    m_pLocalShowTab->addTab(m_pIconShowList,"Mode 1");
-    m_pLocalShowTab->addTab(m_pListShowList,"Mode 2");
-    //m_pTabWidegt->setStyleSheet("background-color:rgba(0,0,0,0);");
-    m_pLocalShowTab->setDocumentMode(true);
-    QString tab_stylesheet=tr("QTabBar::tab{width: 100px;height:20px;font:15px '微软雅黑';color:white;background-color:rbga(0,0,0,5);}");
-    tab_stylesheet.append("QTabBar::tab:selected{color: rgba(0,0,0,50);background-color:rbga(0,0,0,10);}");
-    //tab_stylesheet.append("QTabWidget::pane{border:0px;top:-1px;}");
-    m_pLocalShowTab->setStyleSheet(tab_stylesheet);
-
-    QVBoxLayout *hb1= new QVBoxLayout;
-    hb1->addWidget(m_pLocalShowTab,Qt::AlignCenter);
-    this->setLayout(hb1);
-
-    connect(m_pIconShowList,SIGNAL(currentRowChanged(int)),this,SLOT(on_ItemClick1(int)));
-    connect(m_pListShowList,SIGNAL(currentRowChanged(int)),this,SLOT(on_ItemClick2(int)));
-}
-
-void ShowLocal::on_ItemClick1(int currow)
-{
-    qDebug()<<currow;
-    qDebug()<<m_SongUrls[currow];
-    emit songUrl(m_SongUrls[currow]);
-}
-
-void ShowLocal::on_ItemClick2(int currow)
-{
-    qDebug()<<currow;
-    qDebug()<<m_SongUrls[currow];
-    emit songUrl(m_SongUrls[currow]);
 }

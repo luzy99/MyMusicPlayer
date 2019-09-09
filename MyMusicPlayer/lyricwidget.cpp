@@ -7,7 +7,7 @@
 
 #define SCROLL_TIME 300
 #define SCROLL_TIMER_TIME 30
-#define ROW_HEIGHT 60
+#define ROW_HEIGHT 50
 
 LyricWidget::LyricWidget(QWidget *parent)
     :QWidget(parent)
@@ -50,8 +50,8 @@ LyricWidget::LyricWidget(QWidget *parent)
     m_nMaskLen=0;
 
     //设置颜色
-    m_HLColor.setRgb(255,120,30);
-    m_NlColor.setRgb(255,255,255);
+    m_HLColor.setRgb(255,255,255);
+    m_NlColor.setRgb(245,245,245);
 
     //链接型号与槽
     initSignalsAndSlots();
@@ -506,7 +506,7 @@ void LyricWidget::DrawItem(QPainter &Painter, ItemInfo &Info)
     //高亮颜色再高亮一遍
     if(Info.hightLight)
     {
-        Painter.setPen(QColor(255,40,80));
+        Painter.setPen(QColor(255,192,203));
         Painter.drawText(X,Info.Y,m_nMaskLen,metric.height(),
                               Qt::AlignLeft,Info.strText);
     }

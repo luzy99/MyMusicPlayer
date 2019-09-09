@@ -595,6 +595,7 @@ void MainWindow::onCloseWindow()
 void MainWindow::onLoginSuccess(QString userId)
 {
     this->userId = userId;
+    songListsShower->onUserLogin(userId);
     infoShow->setUser(userId);
 }
 
