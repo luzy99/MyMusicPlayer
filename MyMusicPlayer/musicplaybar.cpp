@@ -554,6 +554,7 @@ void MusicPlayBar::on_previousBtn_clicked()
          playlist->setCurrentIndex(currentIndex);
     }
 
+    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
     player->play();
 }
 
@@ -604,6 +605,7 @@ void MusicPlayBar::on_nextBtn_clicked()
          playlist->setCurrentIndex(currentIndex);
     }
 
+    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
     player->play();
 }
 

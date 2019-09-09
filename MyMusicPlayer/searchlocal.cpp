@@ -1,12 +1,30 @@
 #include "searchlocal.h"
+#include <QBitmap>
+#include <QPainter>
 #include <QLayout>
 #include <QDebug>
 
-SearchLocal::SearchLocal(QWidget *parent) : QWidget(parent)
+SearchLocal::SearchLocal(QMap<QString,QString> searchResults,QWidget *parent)
+    : QWidget(parent)
 {
     //设置窗口大小，固定大小
     this->setFixedSize(600,600);
     this->setStyleSheet("background-color:white;");
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowOpacity(0.9);
+    this->setStyleSheet("border: 1px solid rgb(25,25,25);");
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
+
+    //绘制圆角窗口
+     QBitmap bmp(this->size());
+     bmp.fill();
+     QPainter p(&bmp);
+     p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+     p.setPen(Qt::NoPen);
+     p.setBrush(Qt::black);
+     p.drawRoundedRect(bmp.rect(),2,2);
+     setMask(bmp);
+
     m_localResults.empty();
     //初始化窗口组件
     m_resultWidget = new QListWidget(this);
@@ -15,16 +33,21 @@ SearchLocal::SearchLocal(QWidget *parent) : QWidget(parent)
 
     m_tipLabel->setObjectName("tiplabel");
     m_resultWidget->setObjectName("resultwidget");
+    m_btnClose->setFlat(true);
+    m_btnClose->setStyleSheet("border: none;background: rgb(25,25,25);");
     m_btnClose->setObjectName("btnclose");
-    m_btnClose->setIcon(QIcon(":/icon/res/close.png"));
+    m_btnClose->setIcon(QIcon(":/icon/res/titleClose.png"));
 
     //设置主窗口部件布局
-    m_tipLabel->setGeometry(0,0,570,30);
-    m_btnClose->setGeometry(570,0,30,30);
-    m_resultWidget->setGeometry(0,30,600,570);
+    m_tipLabel->setGeometry(0,0,570,40);
+    m_btnClose->setGeometry(570,0,30,40);
+    m_resultWidget->setGeometry(0,40,600,560);
 
     //设置m_tipLabel样式
     m_tipLabel->setFrameStyle(QFrame::NoFrame);
+    m_tipLabel->setStyleSheet("border:none;"
+                              "color: rgb(245,245,247);"
+                              "background: rgb(25,25,25);");
     m_tipLabel->setText(tr("本地搜索结果 >>>>"));
     m_tipLabel->setFont(QFont("幼圆",12));
 
@@ -37,16 +60,17 @@ SearchLocal::SearchLocal(QWidget *parent) : QWidget(parent)
     m_resultWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_resultWidget->setMovement(QListView::Static);
     m_resultWidget->setResizeMode(QListView::Adjust);
-    m_resultWidget->setStyleSheet(tr("QListWidget::Item{width: 600px;" \
-                                     "height:40px;" \
-                                     "color:black;" \
-                                     "font:'幼圆' 20px;" \
-                                     "background-color:rgba(255,255,255,90);}"));
-    connect(m_resultWidget,SIGNAL(currentRowChanged(int)),
-            this,SLOT(on_itemclicked(int)));
+    m_resultWidget->setStyleSheet("QListWidget{background:rgb(245,245,247);}"
+                                  "QListWidget::Item{width: 600px;height:40px;"
+                                  "color:rgb(25,25,25);font:'幼圆' 20px;}");
+
+    //初始化列表中的项
+    on_searchReply(searchResults);
+
+    connect(m_resultWidget,SIGNAL(itemSelectionChanged()),
+            this,SLOT(on_itemclicked()));
     connect(m_btnClose,SIGNAL(clicked()),
             this,SLOT(close()));
-
 }
 
 void SearchLocal::addsonginfoItems(int cur)
@@ -86,6 +110,18 @@ void SearchLocal::addsonginfoItems(int cur)
 
 }
 
+void SearchLocal::mousePressEvent(QMouseEvent *event)
+{
+    mouseStartPoint = event->globalPos();
+    windowsStartPoint = this->pos();
+}
+void SearchLocal::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint offset = event->globalPos() - mouseStartPoint ;
+    QPoint p = windowsStartPoint + offset;
+    this->move(p);
+}
+
 void SearchLocal::on_searchReply(QMap<QString, QString> localResults)
 {
     m_localResults=localResults;
@@ -93,12 +129,11 @@ void SearchLocal::on_searchReply(QMap<QString, QString> localResults)
     {
         addsonginfoItems(i);
     }
-    this->show();
-
 }
 
-void SearchLocal::on_itemclicked(int cur)
+void SearchLocal::on_itemclicked()
 {
+    int cur = m_resultWidget->currentRow();
     qDebug()<<"clicked";
     emit resendSongUrl(m_localResults.keys()[cur]);
 }

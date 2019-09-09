@@ -25,7 +25,6 @@ public:
     QPixmap PixmapToRound(const QPixmap &src, int radius);
 
     ResultWidget *searchResult; //全网搜索的结果栏
-    SearchLocal *searchLocalResult; //在线搜索的结果栏
     UserLogin *loginForm; //用户登录界面
 
 protected:

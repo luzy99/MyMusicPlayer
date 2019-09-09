@@ -80,9 +80,6 @@ TitleBar::TitleBar(QWidget *parent)
     //初始化搜索结果的组件
     searchResult = new ResultWidget;
     searchResult->setWindowFlags(Qt::FramelessWindowHint);
-    searchLocalResult = new SearchLocal;
-    searchLocalResult->setWindowFlags(Qt::FramelessWindowHint);
-
     //初始化填充空行的
     spacingLabel = new QLabel;
     spacingLabel->setAttribute(Qt::WA_TranslucentBackground);

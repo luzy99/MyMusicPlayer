@@ -72,8 +72,6 @@ bool SearchData::searchSongsOnline(QString songName)
 void SearchData::searchLocal(QString songName)
 {
     localResults.clear();
-    qDebug()<<localResults.keys().length();
-    qDebug()<<"清空后";
 
     //与数据库建立联系
     QSqlQuery query;
@@ -99,12 +97,24 @@ void SearchData::searchLocal(QString songName)
             if(songName==songname||songName==artist)
             {
                 QString resultinfo= songname+":"+artist+":"+cover_image;
-                localResults.insert(songUrl,resultinfo);
+                QString songUrl2;
+                //查重,防止显示重复的搜索结果
+                if(songUrl.at(0).isLower())
+                {
+                    songUrl2 = songUrl.at(0).toUpper() + songUrl.mid(1);
+                }
+                else
+                {
+                    songUrl2 = songUrl.at(0).toLower() + songUrl.mid(1);
+                }
+
+                if(!localResults.contains(songUrl) && !localResults.contains(songUrl2))
+                {
+                    localResults.insert(songUrl,resultinfo);
+                }
             }
         }
     }
-    qDebug()<<localResults.keys().length();
-    qDebug()<<"shujuku";
     emit searchLocalFinished(localResults);
 }
 

@@ -313,9 +313,9 @@ void MainWindow::initSignalsAndSlots()
     connect(titleBar,SIGNAL(beginSearchMv(QString)),
             searcher,SLOT(searchMv(QString)));
     connect(searcher,SIGNAL(searchFinished(QMap<QString,SongInfo>)),
-            titleBar->searchResult,SLOT(on_searchReply(QMap<QString,SongInfo>)));
+            this,SLOT(onSearch(QMap<QString,SongInfo>)));
     connect(searcher,SIGNAL(searchLocalFinished(QMap<QString,QString>)),
-            titleBar->searchLocalResult,SLOT(on_searchReply(QMap<QString,QString>)));
+            this,SLOT(onSearchlocal(QMap<QString,QString>)));
     connect(titleBar->searchResult,SIGNAL(resendSongInfo(SongInfo &)),
             this,SLOT(onResendSongInfo(SongInfo &)));
 
@@ -591,14 +591,35 @@ void MainWindow::onLoginSuccess(QString userId)
     infoShow->setUser(userId);
 }
 
-//网络歌曲的播发
+void MainWindow::onSearch(QMap<QString, SongInfo> results)
+{
+    titleBar->searchResult=new ResultWidget;
+    titleBar->searchResult->setWindowFlags(Qt::FramelessWindowHint);
+    titleBar->searchResult->on_searchReply(results);
+}
+void MainWindow::onSearchlocal(QMap<QString, QString> localresults)
+{
+    SearchLocal *searchLocalResult=new SearchLocal(localresults);
+    connect(searchLocalResult,SIGNAL(resendSongUrl(QString)),
+            this,SLOT(onResendSongUrl(QString)));
+    searchLocalResult->show();
+}
+
+//网络歌曲的播放
 void MainWindow::onResendSongInfo(SongInfo &chosenSong)
 {
     qDebug()<<"reach process function";
-
     QString chosenSongUrl = QString("http://music.163.com/song/media/outer/url?id=%1.mp3").arg(chosenSong.song_id);
     emit clearMusic();
     emit addIntoPlayList(chosenSongUrl);
+    emit playMusic(0);
+}
+//本地歌曲搜索的播放
+void MainWindow::onResendSongUrl(QString songUrl)
+{
+    qDebug()<<"reach here";
+    emit clearMusic();
+    emit addIntoPlayList(songUrl);
     emit playMusic(0);
 }
 

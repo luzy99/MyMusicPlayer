@@ -59,7 +59,11 @@ private slots:
     //用户登录
     void onLoginSuccess(QString userId);
 
+    //搜索框
+    void onSearchlocal(QMap<QString,QString>);
+    void onSearch(QMap<QString,SongInfo>);
     void onResendSongInfo(SongInfo &chosenSong);
+    void onResendSongUrl(QString songUrl);
     //开启&关闭手势识别
     void onBeginGesture();
     void onCloseGesture();
