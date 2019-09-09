@@ -48,7 +48,7 @@ SearchLocal::SearchLocal(QMap<QString,QString> searchResults,QWidget *parent)
     m_tipLabel->setStyleSheet("border:none;"
                               "color: rgb(245,245,247);"
                               "background: rgb(25,25,25);");
-    m_tipLabel->setText(tr("本地搜索结果 >>>>"));
+    m_tipLabel->setText(tr("  本地搜索结果 >>>>"));
     m_tipLabel->setFont(QFont("幼圆",12));
 
     //设置m_resultWidget样式
@@ -60,9 +60,11 @@ SearchLocal::SearchLocal(QMap<QString,QString> searchResults,QWidget *parent)
     m_resultWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_resultWidget->setMovement(QListView::Static);
     m_resultWidget->setResizeMode(QListView::Adjust);
-    m_resultWidget->setStyleSheet("QListWidget{background:rgb(245,245,247);}"
-                                  "QListWidget::Item{width: 600px;height:40px;"
-                                  "color:rgb(25,25,25);font:'幼圆' 20px;}");
+    m_resultWidget->setStyleSheet("QListWidget{background:rgb(245,245,247);border:0px solid gray;}" \
+                                  "QListWidget::Item{height:30px;border:0px solid gray;padding-left:15;}" \
+                                  "QListWidget::Item:hover{background:rgb(255,232,233);border:0px solid gray;}" \
+                                  "QListWidget::Item:selected{background:rgb(230,231,234);border:none;}" \
+                                  "QListWidget:focus{outline:none;}");
 
     //初始化列表中的项
     on_searchReply(searchResults);
@@ -86,9 +88,11 @@ void SearchLocal::addsonginfoItems(int cur)
 
     m_pictureLabel->setScaledContents(true);
     m_pictureLabel->setFixedSize(100,100);
+    m_pictureLabel->setStyleSheet("border: none;");
     m_titleLabel->setFont(QFont("幼圆",12));
     m_artistLabel->setFont(QFont("幼圆",10));
-    m_artistLabel->setStyleSheet("color:rgba(0,0,0,75);");
+    m_artistLabel->setStyleSheet("border: none;");
+    m_artistLabel->setStyleSheet("color: rgba(0,0,0,75);border: none;");
 
     //设置m_songInfoWidget布局
     QGridLayout *gl1=new QGridLayout;
@@ -98,6 +102,7 @@ void SearchLocal::addsonginfoItems(int cur)
     gl1->addWidget(m_artistLabel,1,1,1,5,Qt::AlignLeft);
     m_songInfoWidget->resize(600,120);
     m_songInfoWidget->setLayout(gl1);
+    m_songInfoWidget->setStyleSheet("border: none;");
 
     m_titleLabel->setText(songName);
     m_artistLabel->setText(artist);

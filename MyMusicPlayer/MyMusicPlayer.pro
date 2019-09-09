@@ -55,6 +55,7 @@ SOURCES += \
     resultwidget.cpp \
     searchdata.cpp \
     searchlocal.cpp \
+    setting.cpp \
     showlocal.cpp \
     signup.cpp \
     skinchange.cpp \
@@ -90,6 +91,7 @@ HEADERS += \
     resultwidget.h \
     searchdata.h \
     searchlocal.h \
+    setting.h \
     showlocal.h \
     signup.h \
     skinchange.h \

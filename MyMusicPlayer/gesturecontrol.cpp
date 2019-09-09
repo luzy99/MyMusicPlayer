@@ -45,7 +45,7 @@ void GestureControl::mainProcess()
         //进行腐蚀操作
         erode(fgMaskMOG2, fgMaskMOG2, element);
 
-        cv::imshow("FG Mask MOG 2", fgMaskMOG2);
+        //cv::imshow("FG Mask MOG 2", fgMaskMOG2);
 
         Mat labels = Mat::zeros(fgMaskMOG2.size(), CV_8UC3);
         Mat stats = Mat::zeros(fgMaskMOG2.size(), CV_8UC3);
@@ -85,7 +85,7 @@ void GestureControl::mainProcess()
         //进行腐蚀/膨胀操作
         erode(img_color, img_color, element);
          dilate(img_color,img_color, element1);
-        cv::imshow("remove", img_color);
+        //cv::imshow("remove", img_color);
         cvtColor(img_color, img_color, COLOR_BGR2GRAY);
         threshold(img_color, img_color, 1, 255, cv::THRESH_BINARY);//二值化
         drawRect(img_color, frame);
@@ -96,9 +96,9 @@ void GestureControl::mainProcess()
         waitKey(30);
     }
     capture.release();
-    cv::destroyWindow("FG Mask MOG 2");
-    cv::destroyWindow("remove");
-    cv::destroyWindow("trackObject");
+//    cv::destroyWindow("FG Mask MOG 2");
+//    cv::destroyWindow("remove");
+//    cv::destroyWindow("trackObject");
 }
 
 void GestureControl::setKeyboard(char value)
@@ -133,7 +133,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
     vector<cv::Point> maxContour;
     if (contours.size() == 0)//无轮廓返回
     {
-        cv::imshow("trackObject", frame);
+        //cv::imshow("trackObject", frame);
         return;
     }
     double area = 0;//轮廓面积
@@ -149,7 +149,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
     //cout << area << endl;
     if (area <= 1)//轮廓大小<=1返回
     {
-        cv::imshow("trackObject", frame);
+        //cv::imshow("trackObject", frame);
         return;
     }
     RotatedRect rectPoint = minAreaRect(maxContour);
@@ -173,7 +173,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
         m_time.restart();
         if (center.x >= 250 && center.x <= 390)//起始坐标不能在屏幕中央
         {
-            cv::imshow("trackObject", frame);
+            //cv::imshow("trackObject", frame);
             return;
         }
         else if (center.x > 390)
@@ -189,7 +189,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
         recordIndex++;
         //cout << recordIndex;
         //cout << center << endl;
-        cv::imshow("trackObject", frame);
+        //cv::imshow("trackObject", frame);
         return;
     }
 
@@ -200,7 +200,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
             if (recordIndex < 4)
             {
                 recordIndex = 0;
-                cv::imshow("trackObject", frame);
+                //cv::imshow("trackObject", frame);
                 return;
             }
             vector<Point> in_point;
@@ -226,7 +226,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
             if (recordIndex < 5||recordIndex>90)//记录点少于5或多余90返回
             {
                 recordIndex = 0;
-                cv::imshow("trackObject", frame);
+                //cv::imshow("trackObject", frame);
                 return;
             }
             vector<Point> in_point;
@@ -245,7 +245,7 @@ void GestureControl::drawRect(Mat MOG2, Mat frame)
         //cout << center;
 
     }
-    cv::imshow("trackObject", frame);
+    //cv::imshow("trackObject", frame);
 }
 
 Mat GestureControl::polyfit(vector<Point> &in_point, int n)
@@ -306,6 +306,6 @@ void GestureControl::fittedCurve(vector<Point> &in_point, int n)
         circle(out, ipt, 3, Scalar(0, 0, 255), -1, LINE_AA);
     }
     string str = std::to_string(n) + "times";
-    cv::imshow(str, out);
+    //cv::imshow(str, out);
     //waitKey(0);
 }

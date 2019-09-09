@@ -10,7 +10,7 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pLocalShowTab = new QTabWidget(this);
     //m_SongUrls.append(" ");
 
-    m_pIconShowList->setStyleSheet("background:rgb(245,245,247);");
+    m_pIconShowList->setStyleSheet("background:rgb(250,250,250);");
     m_pIconShowList->setResizeMode(QListView::Adjust);
     m_pIconShowList->setFlow(QListView::LeftToRight);
     m_pIconShowList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -21,7 +21,7 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pIconShowList->setSpacing(40);
     m_pIconShowList->setContentsMargins(0,5,0,5);
 
-    m_pListShowList->setStyleSheet("background:rgb(245,245,247);");
+    m_pListShowList->setStyleSheet("background:rgb(250,250,250);");
     m_pListShowList->setViewMode(QListView::ListMode);
     m_pListShowList->setFrameShape(QFrame::NoFrame);
     m_pListShowList->setFlow(QListView::TopToBottom);
@@ -148,7 +148,7 @@ void ShowLocal::onUserLogin(QString userID)
         pItem->setSizeHint(QSize(240,240));
         m_pIconShowList->insertItem(index,pItem);
         m_pIconShowList->setItemWidget(pItem,m_pIconinfoWidget);
-        m_pIconShowList->setStyleSheet("top-border:0px;");
+        //m_pIconShowList->setStyleSheet("top-border:0px;");
 
         QGridLayout *gl2=new QGridLayout();
         QListWidgetItem *qItem= new QListWidgetItem();
@@ -169,7 +169,7 @@ void ShowLocal::onUserLogin(QString userID)
         qItem->setSizeHint(QSize(width(),40));
         m_pListShowList->insertItem(index,qItem);
         m_pListShowList->setItemWidget(qItem,m_pListinfoWidget);
-        m_pListShowList->setStyleSheet("top-border:0px;");
+        //m_pListShowList->setStyleSheet("top-border:0px;");
 
         index++;
     }

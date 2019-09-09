@@ -1,5 +1,6 @@
 #include "titleBar.h"
 #include "errorwindow.h"
+#include "setting.h"
 #include <QDir>
 #include <QLabel>
 #include <QPushButton>
@@ -80,9 +81,6 @@ TitleBar::TitleBar(QWidget *parent)
     searchBar->setLayout(searchLayout);
     layout->addWidget(searchBar);
 
-    //初始化搜索结果的组件
-    searchResult = new ResultWidget;
-    searchResult->setWindowFlags(Qt::FramelessWindowHint);
     //初始化填充空行的
     spacingLabel = new QLabel;
     spacingLabel->setAttribute(Qt::WA_TranslucentBackground);
@@ -223,12 +221,16 @@ void TitleBar::initSignalsAndSlots()
     connect(loginForm,SIGNAL(loginSuccess(QString)),
             this,SLOT(onLoginSuccess(QString)));
 
+
     //点击换肤
     connect(skinBtn,SIGNAL(clicked(bool)),
             this,SLOT(on_skinBtn_clicked(bool)));
     //点击手势识别按钮开启&关闭手势识别
     connect(gestureBtn,SIGNAL(clicked()),
             this,SLOT(on_gestureBtn_clicked()));
+    //点击设置弹出定时器
+    connect(settingsBtn,SIGNAL(clicked()),
+            this,SLOT(on_settingsBtn_clicked()));
 
     //点击小窗化按钮通知主界面隐藏主窗体显示悬浮窗
     connect(resizeBtn,SIGNAL(clicked()),
@@ -398,7 +400,8 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *event)
 //这是把图片变圆的函数
 QPixmap TitleBar::PixmapToRound(const QPixmap &src, int radius)
 {
-    if (src.isNull()) {
+    if (src.isNull())
+    {
         return QPixmap();
     }
     QSize size(2*radius, 2*radius);
@@ -534,5 +537,11 @@ void TitleBar::on_userBtn_clicked()
     {
         loginForm->show();
     }
+}
+
+void TitleBar::on_settingsBtn_clicked()
+{
+    timerStop *settingsWidget = new timerStop;
+    settingsWidget->show();
 }
 

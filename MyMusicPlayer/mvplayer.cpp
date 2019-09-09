@@ -1,12 +1,27 @@
 #include "mvplayer.h"
 #include <QApplication>
+#include <QBitmap>
+#include <QPainter>
 
 MvPlayer::MvPlayer(QWidget *parent)
-    : QWidget(parent)
-    , mediaPlayer(0, QMediaPlayer::VideoSurface)
+    : QDialog(parent),
+      mediaPlayer(0, QMediaPlayer::VideoSurface)
 {
     this->resize(960, 540);
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
     this->setStyleSheet("background-color:rgb(0,0,0);");
+
+    //绘制圆角窗口
+     QBitmap bmp(this->size());
+     bmp.fill();
+     QPainter p(&bmp);
+     p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+     p.setPen(Qt::NoPen);
+     p.setBrush(Qt::black);
+     p.drawRoundedRect(bmp.rect(),2,2);
+     setMask(bmp);
+
     //视频窗口
     QVBoxLayout *layout=new QVBoxLayout();
     videoWidget = new QVideoWidget(this);
@@ -15,11 +30,12 @@ MvPlayer::MvPlayer(QWidget *parent)
     this->setLayout(layout);
     videoWidget->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
 
+
     //控制条初始化
     controlBar =new QWidget(this);
     controlBar->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
     controlBar->setGeometry(0,this->height()-30,this->width(),30);
-    controlBar->setStyleSheet("background-color:rgb(55,50,50);");
+    controlBar->setStyleSheet("background-color:rgb(55,55,55);");
 
     //播放按钮
     playButton = new QPushButton;
@@ -99,7 +115,7 @@ MvPlayer::MvPlayer(QWidget *parent)
             border:0px;\
 }";
 
-            qualityCom->setStyleSheet(comboStyle);
+   qualityCom->setStyleSheet(comboStyle);
     qualityCom->setToolTip("切换画质");
 
     //全屏按钮
@@ -113,15 +129,28 @@ MvPlayer::MvPlayer(QWidget *parent)
     fullScreenBtn->setFocusPolicy(Qt::NoFocus);
     fullScreenBtn->setAttribute(Qt::WA_Hover,true);
 
+    existBtn = new QPushButton;
+    existBtn->setText("退出");
+    existBtn->setFixedSize(35,18);
+    existBtn->setStyleSheet("QPushButton{border: 1px solid rgb(205,205,205);"
+                            "border-radius: 2px;"
+                            "color: rgb(205,205,205);}"
+                            "QPushButton:hover{border: 1px solid rgb(205,205,205);"
+                            "border-radius: 2px;"
+                            "color: rgb(205,205,205);"
+                            "background: rgb(79,79,79);}");
+
     //水平布局
     QHBoxLayout *controlLayout = new QHBoxLayout();
     controlLayout->setMargin(0);
+    controlLayout->setContentsMargins(10,0,10,0);
     controlLayout->addWidget(playButton);
     controlLayout->addWidget(currentTimeLabel);
     controlLayout->addWidget(totalTimeLabel);
     controlLayout->addWidget(positionSlider);
     controlLayout->addWidget(qualityCom);
     controlLayout->addWidget(fullScreenBtn);
+    controlLayout->addWidget(existBtn);
     controlBar->setLayout(controlLayout);
     controlBar->show();
 
@@ -447,6 +476,10 @@ void MvPlayer::initSignalsAndSlots()
             this, SLOT(play()));//播放按钮
     connect(positionSlider, SIGNAL(sliderMoved(int)),
             this, SLOT(setPosition(int)));//滑动条
+    connect(existBtn,SIGNAL(clicked()),
+            this,SIGNAL(MvWidgetClose()));
+    connect(existBtn,SIGNAL(clicked()),
+            this,SLOT(close()));
     connect(&mediaPlayer, SIGNAL(stateChanged(QMediaPlayer::State)),
             this, SLOT(mediaStateChanged(QMediaPlayer::State)));    //播放状态
     connect(&mediaPlayer, SIGNAL(positionChanged(qint64)),

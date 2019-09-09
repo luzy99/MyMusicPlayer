@@ -62,9 +62,9 @@ private:
     QLabel *lyricsLabel; //展示歌词的标签
     QStackedLayout *stackedLayout;
     QWidget *buttonWidget; //按钮组
-    QPushButton *likeBtn; //我喜欢按钮
-    QPushButton *showListsBtn; //显示播放列表
+    QPushButton *miniBtn; //最小化
     QPushButton *resizeBtn; //恢复大窗口
+    QPushButton *closeBtn; //关闭
     QMenu *rightClickedMenu; //点击右键出现的窗口
     QMenu *showListsMenu; //点击显示播放列表出现的窗口
 

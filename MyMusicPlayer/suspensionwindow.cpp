@@ -37,7 +37,7 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     //水平布局
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setSpacing(5);
-    layout->setContentsMargins(0,0,5,0);
+    layout->setContentsMargins(0,0,10,0);
 
     //初始化小窗标签按钮
     suspensionBtn = new QPushButton;
@@ -73,21 +73,21 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     buttonLayout->setContentsMargins(2,2,2,2);
     previousBtn = new QPushButton;
     previousBtn->setFlat(true);
-    previousBtn->setIcon(QIcon(":/icon/res/previous.png"));
+    previousBtn->setIcon(QIcon(":/icon/res/previousHover.png"));
     previousBtn->setIconSize(QSize(30,30));
     previousBtn->setFixedSize(30,30);
     previousBtn->setStyleSheet("border: none;");
     buttonLayout->addWidget(previousBtn);
     playBtn = new QPushButton;
     playBtn->setFlat(true);
-    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
-    playBtn->setIconSize(QSize(35,35));
-    playBtn->setFixedSize(35,35);
+    playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
+    playBtn->setIconSize(QSize(45,45));
+    playBtn->setFixedSize(50,50);
     playBtn->setStyleSheet("border: none;");
     buttonLayout->addWidget(playBtn);
     nextBtn = new QPushButton;
     nextBtn->setFlat(true);
-    nextBtn->setIcon(QIcon(":/icon/res/next.png"));
+    nextBtn->setIcon(QIcon(":/icon/res/nextHover.png"));
     nextBtn->setIconSize(QSize(30,30));
     nextBtn->setFixedSize(30,30);
     nextBtn->setStyleSheet("border: none;");
@@ -107,28 +107,12 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     layout->addLayout(stackedLayout);
 
     //初始化我喜欢按钮
-    likeBtn = new QPushButton;
-    likeBtn->setFlat(true);
-    likeBtn->setIcon(QIcon(":/icon/res/favourite_d.ico"));
-    likeBtn->setIconSize(QSize(25,25));
-    likeBtn->setFixedSize(27,27);
-    layout->addWidget(likeBtn);
-
-    //初始化显示播放列表的按钮
-    showListsBtn = new QPushButton;
-    showListsBtn->setFlat(true);
-    showListsBtn->setStyleSheet("border: none;");
-    showListsBtn->setObjectName("showListsBtn");
-    showListsBtn->setAttribute(Qt::WA_TranslucentBackground);
-    showListsBtn->setToolTip("点击显示歌单");
-    showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
-    showListsBtn->setIconSize(QSize(27,27));
-    showListsBtn->setFixedSize(29,29);
-    //开启鼠标悬停事件
-    showListsBtn->setAttribute(Qt::WA_Hover,true);
-    //安装事件过滤器
-    showListsBtn->installEventFilter(this);
-    layout->addWidget(showListsBtn);
+    miniBtn = new QPushButton;
+    miniBtn->setFlat(true);
+    miniBtn->setIcon(QIcon(":/icon/res/minscreen.png"));
+    miniBtn->setIconSize(QSize(23,23));
+    miniBtn->setFixedSize(30,27);
+    layout->addWidget(miniBtn);
 
     //初始化恢复大窗口按钮
     resizeBtn = new QPushButton;
@@ -137,11 +121,23 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     resizeBtn->setObjectName("resizeBtn");
     resizeBtn->setToolTip("点击切换窗口模式");
     resizeBtn->setIcon(QIcon(":/icon/res/resize.png"));
-    resizeBtn->setIconSize(QSize(25,25));
-    resizeBtn->setFixedSize(27,27);
+    resizeBtn->setIconSize(QSize(23,23));
+    resizeBtn->setFixedSize(30,27);
     resizeBtn->setAttribute(Qt::WA_Hover,true);
     resizeBtn->installEventFilter(this);
     layout->addWidget(resizeBtn);
+
+    //初始化显示播放列表的按钮
+    closeBtn = new QPushButton;
+    closeBtn->setFlat(true);
+    closeBtn->setStyleSheet("border: none;");
+    closeBtn->setObjectName("closeBtn");
+    closeBtn->setAttribute(Qt::WA_TranslucentBackground);
+    closeBtn->setToolTip("点击显示歌单");
+    closeBtn->setIcon(QIcon(":/icon/res/close.png"));
+    closeBtn->setIconSize(QSize(27,27));
+    closeBtn->setFixedSize(35,29);
+    layout->addWidget(closeBtn);
 
     //初始化右键菜单
     rightClickedMenu = new QMenu(this);
@@ -155,11 +151,15 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     initSignalsAndSlots();
 }
 
-//初始化型号与槽
+//初始化信号与槽
 void SuspensionWindow::initSignalsAndSlots()
 {
+    connect(miniBtn,SIGNAL(clicked()),
+            this,SIGNAL(showMinimized()));
     connect(resizeBtn,SIGNAL(clicked()),
             this,SIGNAL(hideWindow()));
+    connect(closeBtn,SIGNAL(clicked()),
+            this,SIGNAL(close()));
 }
 
 //初始化右键菜单的Actions
@@ -247,18 +247,6 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    //"显示歌单"按钮的事件过滤器
-    if(obj->objectName() == "showListsBtn")
-    {
-        if(event->type() == QEvent::HoverEnter)
-        {
-            showListsBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
-        }
-        if(event->type() == QEvent::HoverLeave)
-        {
-            showListsBtn->setIcon(QIcon(":/icon/res/showSongList.png"));
-        }
-    }
     else if(obj->objectName() == "resizeBtn")
     {
         if(event->type() == QEvent::HoverEnter)
@@ -302,9 +290,9 @@ void SuspensionWindow::on_showListBtn_clicked(bool checked)
     //点击变色且显示歌单
     if(!checked)
     {
-//        showListsBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
+//        closeBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
 //        //选中后关闭事件过滤器
-//        showListsBtn->setAttribute(Qt::WA_Hover,false);
+//        closeBtn->setAttribute(Qt::WA_Hover,false);
     }
 }
 

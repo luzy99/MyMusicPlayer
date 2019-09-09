@@ -62,8 +62,11 @@ private slots:
     //搜索框
     void onSearchlocal(QMap<QString,QString>);
     void onSearch(QMap<QString,SongInfo>);
+    void onSearchMV(QMap<QString,QMap<QString,QString>> mvResults);
     void onResendSongInfo(SongInfo &chosenSong);
     void onResendSongUrl(QString songUrl);
+    void onResendMvId(QString mvId);
+    void onMvWidgetClose();
     //开启&关闭手势识别
     void onBeginGesture();
     void onCloseGesture();
@@ -113,7 +116,7 @@ private:
     SongInfoShow *infoShow; //歌曲信息显示
      LyricWidget *lyricsShower; //歌词展示
 
-     QString userId; //记录当前用户的Id
+    QString userId; //记录当前用户的Id
 };
 
 #endif // MAINWINDOW_H

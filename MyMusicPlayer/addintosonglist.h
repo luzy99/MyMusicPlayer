@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSqlDatabase>
+#include <QMouseEvent>
 
 class AddIntoSongList : public QDialog
 {
@@ -20,6 +21,10 @@ public:
     QString connectString(QString);
     QString processStringId(QString);
     QString processStringName(QString);
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 public slots:
     void closeWindow();
@@ -39,6 +44,9 @@ private:
     QString addedSongList;
 
     QString User;
+
+    QPoint mouseStartPoint;
+    QPoint windowsStartPoint;
 };
 
 #endif // ADDINTOSONGLIST_H

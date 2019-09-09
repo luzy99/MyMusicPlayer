@@ -172,6 +172,7 @@ bool SearchData::searchMv(QString songName)
                 mvResults.insert(id,mvInfo);//加入map
             }
             qDebug()<<"mvResults"<<mvResults.keys();
+            qDebug()<<mvResults.values();
             emit searchMvFinished(mvResults);
             return 1;
         }

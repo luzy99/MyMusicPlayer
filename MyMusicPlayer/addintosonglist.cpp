@@ -1,31 +1,47 @@
 #include "addintosonglist.h"
-#include<QDebug>
+#include <QDebug>
 #include <QGridLayout>
-#include<QSqlQuery>
+#include <QSqlQuery>
+#include <QBitmap>
+#include <QPainter>
+
 AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
     : QDialog(parent),
       User(UserId)
 {
-
     listList = new QListWidget(this);
     closeButton = new QPushButton(this);
     title = new QLabel(this);
 
-    QPalette p = this->palette();
-    p.setColor(QPalette::Background,QColor(255,255,255));
-
-    this->setPalette(p);
+    QPalette pal = this->palette();
+    pal.setColor(QPalette::Background,QColor(245,245,247));
+    this->setPalette(pal);
     this->setFixedSize(500,460);
 
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowOpacity(0.9);
+    //绘制圆角窗口
+     QBitmap bmp(this->size());
+     bmp.fill();
+     QPainter p(&bmp);
+     p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
+     p.setPen(Qt::NoPen);
+     p.setBrush(Qt::black);
+     p.drawRoundedRect(bmp.rect(),2,2);
+     setMask(bmp);
     //各个窗口位置确认
     closeButton->setGeometry(460, 0, 40, 40);
     closeButton->setFlat(true);
-    closeButton->setIcon(QIcon(":/icon/res/close.png"));
+    closeButton->setIcon(QIcon(":/icon/res/titleClose.png"));
+    closeButton->setStyleSheet("background: rgb(25,25,25);"
+                               "border:none;");
 
     title->setGeometry(0, 0, 460, 40);
     title->setText("   添加到歌单");
     title->setFont(QFont("微软雅黑", 11));
+    title->setStyleSheet("color: rgb(245,245,247);"
+                         "background: rgb(25,25,25);"
+                         "border:none;");
 
     listList->setGeometry(0, 40, 500, 420);
     listList->setMinimumSize(500,420);
@@ -33,11 +49,7 @@ AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
     //消除滚轮区内部的窗口边框
     listList->setFrameShape(QFrame::NoFrame);
 
-//滚轮样式
-    listList->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    listList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-
+    //滚轮样式
     QString scrollStyleSheet = "QScrollBar:vertical"
                                "{   width:8px;  "
                                "   background:rgba(0,0,0,0%);"
@@ -141,7 +153,11 @@ AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
                                    "border-radius:4px;"
                                "}";
 
-    listList->setStyleSheet(scrollStyleSheet);
+    listList->setStyleSheet("QListWidget{color:rgb(92,92,92); background:rgb(245,245,247);border:0px solid gray;}" \
+                            "QListWidget::Item{height:30px;border:0px solid gray;padding-left:15;}" \
+                            "QListWidget::Item:hover{color:rgb(55,57,61);background:rgb(230,231,234);border:0px solid gray;}" \
+                            "QListWidget::Item:selected{color:rgb(0,0,0);background:rgb(230,231,234);border:none;}" \
+                            "QListWidget:focus{outline:none;}");
 
     QSqlQuery query;
     QString cmd = "show tables;";
@@ -232,5 +248,17 @@ QString AddIntoSongList::processStringId(QString tableName)
 }
 QString AddIntoSongList::processStringName(QString tableName)
 {
-      return tableName.mid(12,tableName.length()-12);
+    return tableName.mid(12,tableName.length()-12);
+}
+
+void AddIntoSongList::mousePressEvent(QMouseEvent *event)
+{
+    mouseStartPoint = event->globalPos();
+    windowsStartPoint = this->pos();
+}
+void AddIntoSongList::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint offset = event->globalPos() - mouseStartPoint ;
+    QPoint p = windowsStartPoint + offset;
+    this->move(p);
 }

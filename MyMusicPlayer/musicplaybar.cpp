@@ -499,6 +499,14 @@ void MusicPlayBar::onChangePlaylist(QUrl url, int behaviorIndex)
 //外界触发放歌
 void MusicPlayBar::onPlayMusic(int SongIndex)
 {
+    //-1表示手动暂停音乐的播发
+    if(SongIndex == -1)
+    {
+        player->pause();
+        playBtn->setIcon(QIcon(":/icon/res/play.png"));
+        return;
+    }
+
     //播放对应序列的歌曲
         playlist->setCurrentIndex(SongIndex);
         player->play();

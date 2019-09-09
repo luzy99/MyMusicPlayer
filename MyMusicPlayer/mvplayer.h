@@ -2,6 +2,7 @@
 #define MVPLAYER_H
 
 #include <QWidget>
+#include <QDialog>
 #include<QAction>
 #include<QSlider>
 #include<QLabel>
@@ -24,7 +25,7 @@
 #include<QDateTime>
 #include<QTimer>
 
-class MvPlayer : public QWidget
+class MvPlayer : public QDialog
 {
     Q_OBJECT
 public:
@@ -32,6 +33,7 @@ public:
     bool getMvUrls(QString mv_id);
 
 signals:
+    void MvWidgetClose();
 
 public slots:
     void play();
@@ -64,6 +66,7 @@ private:
     QLabel *currentTimeLabel;//当前时间
     QLabel *totalTimeLabel;//总时间
     QComboBox *qualityCom;//画质下拉条
+    QPushButton *existBtn; //退出按钮
     QTimer *timer;//定时器控制隐藏
     QLabel *statusLabel;
 

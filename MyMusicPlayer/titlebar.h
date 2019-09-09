@@ -25,7 +25,6 @@ public:
     ~TitleBar();
     QPixmap PixmapToRound(const QPixmap &src, int radius);
 
-    ResultWidget *searchResult; //全网搜索的结果栏
     UserLogin *loginForm; //用户登录界面
     SkinChange *skinWidget; //换肤界面
 
@@ -59,6 +58,7 @@ private slots:
     void on_skinBtn_clicked(bool);
     void on_gestureBtn_clicked();
     void on_userBtn_clicked();
+    void on_settingsBtn_clicked();
 
 private:
     QLabel *iconLabel; //标题栏图标

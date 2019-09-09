@@ -88,8 +88,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QWidget *rightWidget = new QWidget;
     QVBoxLayout *rightLayout = new QVBoxLayout;
-    rightLayout->setSpacing(10);
-    rightLayout->setContentsMargins(10,10,10,10);
+    rightLayout->setSpacing(20);
+    rightLayout->setContentsMargins(15,10,10,10);
     //初始化动画滚轮
     adsWall = new AnimatedWallWG;
     adsWall->setWindowFlags(Qt::FramelessWindowHint);
@@ -316,8 +316,8 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onSearch(QMap<QString,SongInfo>)));
     connect(searcher,SIGNAL(searchLocalFinished(QMap<QString,QString>)),
             this,SLOT(onSearchlocal(QMap<QString,QString>)));
-    connect(titleBar->searchResult,SIGNAL(resendSongInfo(SongInfo &)),
-            this,SLOT(onResendSongInfo(SongInfo &)));
+    connect(searcher,SIGNAL(searchMvFinished(QMap<QString,QMap<QString,QString>>)),
+            this,SLOT(onSearchMV(QMap<QString,QMap<QString,QString>>)));
 
     //这里是改变主题色的槽函数
     connect(titleBar->skinWidget,SIGNAL(colorChanged(QColor)),
@@ -601,9 +601,11 @@ void MainWindow::onLoginSuccess(QString userId)
 
 void MainWindow::onSearch(QMap<QString, SongInfo> results)
 {
-    titleBar->searchResult=new ResultWidget;
-    titleBar->searchResult->setWindowFlags(Qt::FramelessWindowHint);
-    titleBar->searchResult->on_searchReply(results);
+    ResultWidget *searchResult=new ResultWidget;
+    searchResult->on_searchReply(results);
+    connect(searchResult,SIGNAL(resendSongInfo(SongInfo &)),
+            this,SLOT(onResendSongInfo(SongInfo &)));
+    searchResult->show();
 }
 void MainWindow::onSearchlocal(QMap<QString, QString> localresults)
 {
@@ -611,6 +613,14 @@ void MainWindow::onSearchlocal(QMap<QString, QString> localresults)
     connect(searchLocalResult,SIGNAL(resendSongUrl(QString)),
             this,SLOT(onResendSongUrl(QString)));
     searchLocalResult->show();
+}
+void MainWindow::onSearchMV(QMap<QString, QMap<QString, QString> > mvResults)
+{
+    ResultWidget *searchResult=new ResultWidget;
+    searchResult->on_searchReply1(mvResults);
+    connect(searchResult,SIGNAL(resendnvId(QString)),
+            this,SLOT(onResendMvId(QString)));
+    searchResult->show();
 }
 
 //网络歌曲的播放
@@ -629,6 +639,23 @@ void MainWindow::onResendSongUrl(QString songUrl)
     emit clearMusic();
     emit addIntoPlayList(songUrl);
     emit playMusic(0);
+}
+//mv搜索的播放
+void MainWindow::onResendMvId(QString mvId)
+{
+        MvPlayer *mvplayer = new MvPlayer;
+        connect(mvplayer,SIGNAL(MvWidgetClose()),
+                this,SLOT(onMvWidgetClose()));
+        emit playMusic(-1);
+        this->hide();
+        mvplayer->getMvUrls(mvId);
+        mvplayer->setModal(true);
+        mvplayer->show();
+}
+//mv关闭后重新显示主界面
+void MainWindow::onMvWidgetClose()
+{
+    this->show();
 }
 
 //开始手势识别

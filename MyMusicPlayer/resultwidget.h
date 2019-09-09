@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QPixmap>
+#include <QMouseEvent>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -24,6 +25,12 @@ public:
     void getOnlinePic(QString);
 
     void addsonginfoItems(int cur);
+    void addPicture(QString pid);
+    QWidget *addNewItemWidget(int cur);
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 signals:
     void resendSongInfo(SongInfo &);
@@ -34,6 +41,8 @@ public slots:
     void on_searchReply(QMap<QString,SongInfo> searchResult);
     void on_searchReply1(QMap<QString,QMap<QString,QString>> mvResults);
     void on_itemclicked(int cur);
+    void closeEvent(QCloseEvent *event);//关闭
+
 private:
     QMap<QString,SongInfo> m_searchResult;
     QMap<QString,QMap<QString,QString>> m_mvResults;
@@ -41,12 +50,12 @@ private:
     QLabel *m_tipLabel;
     QPushButton *m_btnClose;
     QListWidget *m_resultWidget;
-//    QWidget *m_songInfoWidget;
-//    QLabel *m_titleLabel;
-//    QLabel *m_artistLabel;
-//    QLabel *m_pictureLabel;
     QPixmap *m_songPicture;
     int curindex;
+    QMap<int,QString> picMap;
+
+    QPoint mouseStartPoint;
+    QPoint windowsStartPoint;
 };
 
 #endif // RESULTWIDGET_H
