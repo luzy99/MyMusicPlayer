@@ -130,4 +130,12 @@
         <file>res/skin5.png</file>
         <file>res/skin6.png</file>
     </qresource>
+    <qresource prefix="/adsPic">
+        <file>res/ads1.png</file>
+        <file>res/ads2.png</file>
+        <file>res/ads3.png</file>
+        <file>res/ads4.png</file>
+        <file>res/ads5.png</file>
+        <file>res/ads6.png</file>
+    </qresource>
 </RCC>

@@ -55,7 +55,8 @@ public slots:
     void onBecomePausing(); //表示接下来暂停
 
 private slots:
-    void on_showListBtn_clicked(bool checked); //显示播放列表按钮按下时触发
+    void on_miniBtn_clicked();
+    void on_closeBtn_clicked();
 
 private:
     QLabel *coverLabel; //展示封面的标签

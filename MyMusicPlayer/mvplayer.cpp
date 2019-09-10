@@ -12,16 +12,6 @@ MvPlayer::MvPlayer(QWidget *parent)
     this->setAttribute(Qt::WA_DeleteOnClose, true);
     this->setStyleSheet("background-color:rgb(0,0,0);");
 
-    //绘制圆角窗口
-     QBitmap bmp(this->size());
-     bmp.fill();
-     QPainter p(&bmp);
-     p.setRenderHint(QPainter::Antialiasing); // 反锯齿;
-     p.setPen(Qt::NoPen);
-     p.setBrush(Qt::black);
-     p.drawRoundedRect(bmp.rect(),2,2);
-     setMask(bmp);
-
     //视频窗口
     QVBoxLayout *layout=new QVBoxLayout();
     videoWidget = new QVideoWidget(this);

@@ -232,7 +232,7 @@ void AnimatedWallWG::setWallpaper(QLabel *pWall, int i)
     QString style = QString("QLabel{border:100px;}"
                             "QLabel:hover{background-color: rgba(255, 255, 255, 30%);}");
     QString index=index.number(i+1);
-    QString path=":/providedPosts/res/"+index+".JPG";
+    QString path=QString(":/adsPic/res/ads%1.png").arg(index);
     pWall->setFixedHeight(fixedheight);
     pWall->setStyleSheet(style);
     pWall->setPixmap(QPixmap(path).scaled(fixedwidth,fixedheight));

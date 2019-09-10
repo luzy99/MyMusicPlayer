@@ -202,6 +202,7 @@ MusicPlayBar::MusicPlayBar(QWidget *parent)
     playlist = new QMediaPlaylist(this);
     playlist->setPlaybackMode(QMediaPlaylist::Loop); //循环模式
     player->setPlaylist(playlist);
+    player->setNotifyInterval(30);
 
     //初始化进度条阻塞状态
     //默认刚开始时不阻塞，进度条随着position的改变而改变

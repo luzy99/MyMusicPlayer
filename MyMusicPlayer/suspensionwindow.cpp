@@ -11,7 +11,8 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
       status(Normal)
 {
     //设置窗口样式
-    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlag(Qt::FramelessWindowHint);
+    this->setWindowFlag(Qt::WindowStaysOnTopHint);
     this->setObjectName("SuspensionWindow");
     this->setAttribute(Qt::WA_Hover,true);
     this->installEventFilter(this);
@@ -154,12 +155,12 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
 //初始化信号与槽
 void SuspensionWindow::initSignalsAndSlots()
 {
-    connect(miniBtn,SIGNAL(clicked()),
-            this,SIGNAL(showMinimized()));
     connect(resizeBtn,SIGNAL(clicked()),
             this,SIGNAL(hideWindow()));
+    connect(miniBtn,SIGNAL(clicked()),
+            this,SLOT(on_miniBtn_clicked()));
     connect(closeBtn,SIGNAL(clicked()),
-            this,SIGNAL(close()));
+            this,SLOT(on_closeBtn_clicked()));
 }
 
 //初始化右键菜单的Actions
@@ -192,6 +193,7 @@ void SuspensionWindow::mouseMoveEvent(QMouseEvent *event)
 //鼠标放下进行检测
 void SuspensionWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+
     //记录当前窗口的位置
     int x=this->x();
     int y=this->y();
@@ -285,15 +287,15 @@ void SuspensionWindow::onBecomePausing()
     playBtn->setIcon(QIcon(":/icon/res/play.png"));
 }
 
-void SuspensionWindow::on_showListBtn_clicked(bool checked)
+//最小化按钮点击
+void SuspensionWindow::on_miniBtn_clicked()
 {
-    //点击变色且显示歌单
-    if(!checked)
-    {
-//        closeBtn->setIcon(QIcon(":/icon/res/showSongListHover.png"));
-//        //选中后关闭事件过滤器
-//        closeBtn->setAttribute(Qt::WA_Hover,false);
-    }
+    this->showMinimized();
+}
+//关闭按钮点击
+void SuspensionWindow::on_closeBtn_clicked()
+{
+    this->close();
 }
 
 //修改当前的播放列表
