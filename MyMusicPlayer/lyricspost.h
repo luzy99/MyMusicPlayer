@@ -13,7 +13,7 @@ class LyricsPost : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LyricsPost(QString,QWidget *parent = nullptr);
+    explicit LyricsPost(QString,QString,QWidget *parent = nullptr);
     void analyzeLyrics(QString);
 
 signals:
@@ -42,6 +42,7 @@ private:
     QTabWidget *m_pTabWidegt;
     QWidget *m_pButtonWidget;
     QString m_Songid;
+    QString m_AlbumCover;
     QStringList m_LyricList;
     QLabel *m_LyricLabel;
     QPoint m_mouseStartPoint;

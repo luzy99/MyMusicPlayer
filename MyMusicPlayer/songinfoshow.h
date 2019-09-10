@@ -47,6 +47,8 @@ private:
     QString songName;
     QString User;
 
+    SongInfo tempSongInfo;
+
     QLabel *titleShow;
     QPushButton *mvButton;
     QLabel *spacingLabel;

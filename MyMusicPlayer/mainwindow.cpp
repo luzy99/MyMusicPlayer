@@ -27,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("Rainbow Music Player");
     this->setWindowIcon(QIcon(":/icon/res/suspensionWindow.png"));
     this->setMinimumSize(1200,800);
+    this->setStyleSheet("QToolTip{border:none; "
+                        "background: rgba(255,255,255,90%);"
+                        "color: rgb(25,25,25);}");
     this->setAcceptDrops(true);
 
     //初始化保存文件夹

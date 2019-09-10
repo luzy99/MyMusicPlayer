@@ -209,6 +209,8 @@ SongList::SongList(QWidget *parent)
     scrollLists->setStyleSheet(scrollStyleSheet);
     scrollSongs->setStyleSheet(scrollStyleSheet);
 
+    playingSongList = "我喜欢的音乐";
+
     tempInfo = new SongInfo;
     tempInfo->title = "暂无歌曲在播放";
     tempInfo->artist = "暂无相关信息";
@@ -323,28 +325,33 @@ void SongList::initSonglist()
         if(processStringId(query.value(0).toString()) == User)
         {
             QString tableName = processStringName(QString(query.value(0).toString()));
+            QListWidgetItem *item;
             if(tableName == QString("我喜欢的音乐"))
             {
-                QListWidgetItem *item = new QListWidgetItem(QIcon(":/icon/res/favourite_d.ico"),tableName);
+                item = new QListWidgetItem(QIcon(":/icon/res/favourite_d.ico"),tableName);
                 item->setFont(font);
                 item->setSizeHint(QSize(230,40));
                 listList->insertItem(0, item);
             }
             else if(tableName == QString("播放历史"))
             {
-                QListWidgetItem *item = new QListWidgetItem(QIcon(":/icon/res/otherlist.ico"),tableName);
+                item = new QListWidgetItem(QIcon(":/icon/res/otherlist.ico"),tableName);
                 item->setFont(font);
                 item->setSizeHint(QSize(230,40));
                 listList->insertItem(1, item);
             }
             else
             {
-                QListWidgetItem *item = new QListWidgetItem(QIcon(":/icon/res/otherlist.ico"),tableName);
+                item = new QListWidgetItem(QIcon(":/icon/res/otherlist.ico"),tableName);
                 item->setIcon(QIcon(":/icon/res/otherlist.ico"));
                 item->setText(tableName);
                 item->setFont(font);
                 item->setSizeHint(QSize(40,40));
                 listList->addItem(item);
+            }
+            if(tableName == playingSongList)
+            {
+                item->setFont(QFont("微软雅黑",10,QFont::Bold));
             }
         }
     }
@@ -752,6 +759,8 @@ void SongList::setSongInfoShowed(QString name)
 void SongList::addNewSong(QString Path)
 {
     playingSongList = actingSongListName;
+    listList->clear();
+    initSonglist();
     SongInfo *info = new SongInfo();
     info->title = "暂无歌曲在播放";
     info->artist = "暂无相关信息";
@@ -949,6 +958,8 @@ void SongList::onUpdateAudioTagInMainWindow(QString filePath)
 void SongList::on_ListSongs_doubleClicked(const QModelIndex &index)
 {
     playingSongList = actingSongListName;
+    listList->clear();
+    initSonglist();
     int songIndex = index.row();
     QSqlQuery query(db);
     emit clearMusic();

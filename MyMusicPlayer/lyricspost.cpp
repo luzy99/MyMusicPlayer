@@ -9,9 +9,9 @@
 #include <QFontDialog>
 #include <QFileDialog>
 
-LyricsPost::LyricsPost(QString songId,QWidget *parent)
+LyricsPost::LyricsPost(QString songId,QString albumCover,QWidget *parent)
     :QWidget (parent),
-     m_Songid(songId)
+     m_Songid(songId),m_AlbumCover(albumCover)
 {
     //设置窗口大小
     this->setWindowFlags(Qt::FramelessWindowHint);
@@ -61,7 +61,7 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     m_pPictureWidget->setLayout(lyriclayout);
     m_pPictureWidget->setAutoFillBackground(true);
     QPalette palette = m_pPictureWidget->palette();
-    palette.setBrush(QPalette::Window,QBrush(QPixmap(":/providedPosts/res/1.JPG").scaled(m_pPictureWidget->size(),
+    palette.setBrush(QPalette::Window,QBrush(QPixmap(m_AlbumCover).scaled(m_pPictureWidget->size(),
                                              Qt::IgnoreAspectRatio,
                                              Qt::SmoothTransformation)));// 使用平滑的缩放方式
     m_pPictureWidget->setPalette(palette);// 给widget加上背景图
@@ -93,6 +93,15 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
     //设置QListWidget中的单元项的间距
     m_pPictureListWidget->setSpacing(20);
     //依次创建11个单元项
+
+    QPixmap objPixmap(m_AlbumCover);
+    //生成QListWidgetItem对象(注意：其Icon图像进行了伸缩[96*96])---scaled函数
+    QListWidgetItem *pItem = new QListWidgetItem(QPixmap(objPixmap.scaled(QSize(120,120))),
+                                                 m_AlbumCover);
+    //设置单元项的宽度和高度
+    pItem->setSizeHint(QSize(120,100));
+    m_pPictureListWidget->insertItem(0, pItem);
+
     for(int nIndex = 0;nIndex<15;nIndex++)
     {
         //获得图片路径
@@ -104,9 +113,9 @@ LyricsPost::LyricsPost(QString songId,QWidget *parent)
                                                      strPath);
         //设置单元项的宽度和高度
         pItem->setSizeHint(QSize(120,100));
-        m_pPictureListWidget->insertItem(nIndex, pItem);
+        m_pPictureListWidget->insertItem(nIndex+1, pItem);
 
-        m_index=15;//有了15张图
+        m_index=16;//有了15张图
 
     }
 
@@ -247,6 +256,7 @@ void LyricsPost::on_btnAddPicture_clicked()
         m_pPictureListWidget->insertItem(m_index, pItem);
         m_index++;
     }
+    on_itemClicked1(m_index-1);
 }
 
 void LyricsPost::on_btnChangeFont_clicked()

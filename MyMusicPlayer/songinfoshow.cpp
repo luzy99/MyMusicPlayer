@@ -13,6 +13,9 @@ SongInfoShow::SongInfoShow(SongInfo &m_song_info,QWidget *parent)
 {
     //设置改窗体的属性
     this->resize(parent->width()/2,parent->height());
+    this->setStyleSheet("QToolTip{border:none; "
+                     "background: rgba(255,255,255,90%);"
+                     "color: rgb(25,25,25);}");
 
     //整体垂直布局
     outerLayout = new QVBoxLayout;
@@ -293,6 +296,7 @@ bool SongInfoShow::eventFilter(QObject *obj, QEvent *event)
 
 void SongInfoShow::changeSong(SongInfo &m_song_info)
 {
+    tempSongInfo = m_song_info;
     titleShow->setText(m_song_info.title);
     artistShow->setText(m_song_info.artist);
     disk->changePic(m_song_info.album_cover);
@@ -331,7 +335,7 @@ void SongInfoShow::on_downloadButton_clicked()
 //点击开始分享歌词海报
 void SongInfoShow::on_shareButton_clicked()
 {
-    LyricsPost *newLyricsPost = new LyricsPost(songId);
+    LyricsPost *newLyricsPost = new LyricsPost(songId, tempSongInfo.album_cover);
     newLyricsPost->show();
 }
 
