@@ -48,6 +48,7 @@ signals:
     void sendSongListName(QString);//传递创建歌单的名字
     void songChanged(QString songId,bool translate); //触发歌词爬取
     void addIntoPlayList(QString);//添加到播放列表中
+    void onlineAddInto(SongInfo songInfo); //远程添加到
     void clearMusic();
 
 private slots:

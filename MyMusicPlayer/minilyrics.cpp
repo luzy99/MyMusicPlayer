@@ -387,23 +387,29 @@ void miniLyrics::analyzeLrcContent(const QString &song_id)
         {
             nRowTime=20000;
             nDur=nRowTime/strLine.length();
+
+            int j=1;
+
             foreach(strWord,strLine)
             {
                 nKeyTime=m_lineMap.keys()[i]+count*nDur;
                 word_map.insert(nKeyTime,strWord);
-                interval_map.insert(nKeyTime,nDur);
+                interval_map.insert(nKeyTime,nDur*j);
+                j++;
                 count++;
             }
         }
         else
         {
+            int j=1;
             nRowTime=m_lineMap.keys()[i+1]-m_lineMap.keys()[i];
             nDur=nRowTime/strLine.length();
             foreach(strWord,strLine)
             {
                 nKeyTime=m_lineMap.keys()[i]+count*nDur;
                 word_map.insert(nKeyTime,strWord);
-                interval_map.insert(nKeyTime,nDur);
+                interval_map.insert(nKeyTime,nDur*j);
+                j++;
                 count++;
             }
         }
@@ -472,7 +478,7 @@ void miniLyrics::getPosInfo(int &keyTime, int &interval, float &precent, QString
     }
 
     keyTime=interval_map.keys().value(lt);
-    interval=interval_map.values().value(lt);
+    interval=interval_map.values().value(0);
     precent=(float)lt/interval_map.size();
     str=word_map.values().value(lt);
 }

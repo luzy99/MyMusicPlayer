@@ -60,7 +60,7 @@ bool SearchData::searchSongsOnline(QString songName)
                 songinfo.pic_url=tempObject.value("album").toObject().value("picUrl").toString();//专辑封面url
                 searchResults.insert(songinfo.song_id,songinfo);//加入map
             }
-            qDebug()<<searchResults.keys();
+
             emit searchFinished(searchResults);
             return 1;
         }

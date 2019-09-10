@@ -235,25 +235,29 @@ void LyricWidget::analyzeLrcContent(const QString& song_id)
         //最后一句歌词默认时长为20s
         if(i == m_lineMap.keys().count()-1)
         {
+            int j=1;
             nRowTime = 20000;
             nDur = nRowTime/strLine.length();
             foreach(strWord,strLine)
             {
                 nKeyTime = m_lineMap.keys()[i]+count*nDur;
                 word_map.insert(nKeyTime,strWord);
-                interval_map.insert(nKeyTime,nDur);
+                interval_map.insert(nKeyTime,nDur*j);
+                j++;
                 count++;
             }
         }
         else
         {
+            int j=1;
             nRowTime = m_lineMap.keys()[i+1]-m_lineMap.keys()[i];
             nDur = nRowTime/strLine.length();
             foreach(strWord,strLine)
             {
                 nKeyTime=m_lineMap.keys()[i]+count*nDur;
                 word_map.insert(nKeyTime,strWord);
-                interval_map.insert(nKeyTime,nDur);
+                interval_map.insert(nKeyTime,nDur*j);
+                j++;
                 count++;
             }
         }
@@ -309,7 +313,7 @@ void LyricWidget::getPosInfo(int &keyTime, int &interval, float &precent, QStrin
     }
 
     keyTime = interval_map.keys().value(lt);
-    interval = interval_map.values().value(lt);
+    interval = interval_map.values().value(0);
     precent = (float)lt/interval_map.size();//第几个字/总共几个字算百分比
     str = word_map.values().value(lt);//返回的那个字吧
 }

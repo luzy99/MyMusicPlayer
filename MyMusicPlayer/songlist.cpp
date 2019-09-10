@@ -824,6 +824,70 @@ void SongList::addNewSong(QString Path)
     delete info;
 }
 
+//在线搜索后添加至歌单
+void SongList::onlineAddNewSong(SongInfo info)
+{
+    playingSongList = actingSongListName;
+
+    QSqlQuery query;
+
+    tempInfo = &info;
+    QString name = tempInfo->title;
+    QString songUrl =QString("http://music.163.com/song/media/outer/url?id=%1.mp3").arg(info.song_id);
+    QString likeOrNot;
+
+    if(actingSongListName == QString("我喜欢的音乐"))
+    {
+        likeOrNot = "1"; //问题：如果此歌曲原来就存在与别的歌单，而且设置为我喜欢
+        QSqlQuery query1;
+        QString cmd = "show tables;";
+        QSqlQuery query2(cmd);
+        while (query2.next())
+        {
+            if(processStringId(query2.value(0).toString()) == User)
+            {
+                QString tableName = QString(query2.value(0).toString());
+                QString command = "update %1 set likeOrNot = 1 where songUrl = '%2' ;";
+                query1.exec(command.arg(tableName, songUrl));
+            }
+        }
+    }
+    else
+    {
+        likeOrNot = "0";
+    }
+
+    query.exec(QString("select likeOrNot from %1 where songUrl = '%2' ;")
+               .arg(connectString(QString("我喜欢的音乐")),songUrl));
+    query.next();
+    if(query.value(0).toInt() == 1)
+    {
+        likeOrNot = "1";
+     }
+
+    QString artist = tempInfo->artist;
+    QString album = tempInfo->album;
+    QString pic_url = tempInfo->pic_url;
+
+    QString addedSonglist(actingSongListName);
+    QString num = QString::number(maxNumInSongList(addedSonglist) + 1);
+    QString insertCommand = "insert into %1 values('%2', '%3', '%4', '%5', '%6', '%7', '%8');";
+    query.exec(insertCommand.arg(connectString(addedSonglist) , name, songUrl,
+                                 likeOrNot , artist, album, pic_url, num));
+    showSongsOfList(actingSongListName);
+
+    //从数据库读取数据
+    QString readcommand = QString("select songUrl from %1 as t order by t.num desc;");
+    query.exec(readcommand.arg(connectString(addedSonglist)));
+    emit clearMusic();
+    while(query.next())//每次执行完exec(),指针会调回第一条数据之前
+    {
+        qDebug()<<query.value(0).toUrl();
+        emit changePlaylist(query.value(0).toUrl(), 1);
+    }
+
+}
+
 void SongList::onUpdateAudioTagInMainWindow(QString filePath)
 {
     if(filePath != "")

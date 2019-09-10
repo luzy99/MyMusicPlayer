@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QEventLoop>
 #include <QElapsedTimer>
+#include <QDir>
 #include <QBitmap>
 #include <QPainter>
 #include <thread>
@@ -180,7 +181,6 @@ void ResultWidget::mouseMoveEvent(QMouseEvent *event)
 
 void ResultWidget::on_replyFinished(QNetworkReply *reply)
 {
-
     m_songPicture->loadFromData(reply->readAll());
 
     QFileInfo picurl(reply->url().toString());
@@ -254,13 +254,29 @@ void ResultWidget::on_searchReply1(QMap<QString, QMap<QString, QString> > mvResu
 void ResultWidget::on_itemclicked(int cur)
 {
     qDebug()<<"clicked";
-    switch (m_mode)
+    if(m_mode == 0)
     {
-    case 0:
-        emit resendSongInfo(m_searchResult.values()[cur]);//发送songinfo
-        break;
-    case 1:
+        SongInfo selectedInfo = m_searchResult.values()[cur];
+        QString picUrl = selectedInfo.pic_url;
+        QFileInfo picurlInfo(picUrl);
+        QString pid=picurlInfo.fileName().mid(0,picurlInfo.fileName().length()-4);//图片id
+        QString newCoverPath = QDir::currentPath() + "/CoverImages/"+selectedInfo.title + ".png";
+        QPixmap coverImage;
+        qDebug()<<QDir::currentPath() + "/searchPictures/"+pid+".png";
+        coverImage.load(QDir::currentPath() + "/searchPictures/"+pid+".png");
+        coverImage.save(newCoverPath);
+        selectedInfo.pic_url = newCoverPath;
+        emit resendSongInfo(selectedInfo);//发送songinfo
+        return;
+    }
+    else if(m_mode == 1)
+    {
         emit resendnvId(m_mvResults.keys()[cur]);//发送mvid
+        return;
+    }
+    else
+    {
+
     }
 
 }

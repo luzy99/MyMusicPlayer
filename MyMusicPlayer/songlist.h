@@ -41,7 +41,7 @@ signals:
     void clearMusic();
     void changePlaylist(QUrl url,int behaviorIndex);  //改变播放列表的信号，第二个参数代表操作类型，1:增加
     void sendSongInfo(SongInfo *);
-     void userLogin();
+    void userLogin();
 
 
 public slots:
@@ -71,6 +71,7 @@ public slots:
     void setSongInfoShowed(QString);
     //拖拽或者添加文件的槽函数
     void addNewSong(QString);
+    void onlineAddNewSong(SongInfo info);
     void onUpdateAudioTagInMainWindow(QString);
 
 private:

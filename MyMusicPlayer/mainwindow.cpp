@@ -255,6 +255,8 @@ void MainWindow::initSignalsAndSlots()
     //添加到播放列表
     connect(this, SIGNAL(addIntoPlayList(QString)),
             songList, SLOT(addNewSong(QString)));
+    connect(this,SIGNAL(onlineAddInto(SongInfo)),
+            songList,SLOT(onlineAddNewSong(SongInfo)));
     connect(songList, SIGNAL(sendSongInfo(SongInfo*)),
             this, SLOT(onRecieveSongInfo(SongInfo*)));
 
@@ -626,10 +628,8 @@ void MainWindow::onSearchMV(QMap<QString, QMap<QString, QString> > mvResults)
 //网络歌曲的播放
 void MainWindow::onResendSongInfo(SongInfo &chosenSong)
 {
-    qDebug()<<"reach process function";
-    QString chosenSongUrl = QString("http://music.163.com/song/media/outer/url?id=%1.mp3").arg(chosenSong.song_id);
     emit clearMusic();
-    emit addIntoPlayList(chosenSongUrl);
+    emit onlineAddInto(chosenSong);
     emit playMusic(0);
 }
 //本地歌曲搜索的播放
