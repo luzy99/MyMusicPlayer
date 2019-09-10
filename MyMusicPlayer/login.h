@@ -39,6 +39,7 @@ public slots:
     void on_signup_clicked();
     void on_login_clicked();
     void on_editingFinished();
+    void passUserInfo(QString userId);
     void displayReturnValues(QString id,QString pwd);
     void on_timeout();
 

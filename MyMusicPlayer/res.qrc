@@ -104,6 +104,8 @@
         <file>res/register.png</file>
         <file>res/user (2).png</file>
         <file>res/dropArrow.png</file>
+        <file>res/information.png</file>
+        <file>res/logOut.png</file>
     </qresource>
     <qresource prefix="/providedPosts">
         <file>res/1.JPG</file>

@@ -38,6 +38,7 @@ SOURCES += \
     downloadwindow.cpp \
     errorwindow.cpp \
     gesturecontrol.cpp \
+    informationwindow.cpp \
     littlesongbar.cpp \
     login.cpp \
     lyricdownload.cpp \
@@ -75,6 +76,7 @@ HEADERS += \
     downloadwindow.h \
     errorwindow.h \
     gesturecontrol.h \
+    informationwindow.h \
     littlesongbar.h \
     login.h \
     lyricdownload.h \

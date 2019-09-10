@@ -1,10 +1,12 @@
 #include "login.h"
 #include"signup.h"
 #include "errorwindow.h"
+#include "informationwindow.h"
 #include <QPicture>
 #include <QDebug>
 #include <QPainter>
 #include <QBitmap>
+#include <QPropertyAnimation>
 #include <QDir>
 
 UserLogin::UserLogin(QWidget *parent)
@@ -198,10 +200,11 @@ UserLogin::UserLogin(QWidget *parent)
     m_addPic = new QLabel(this);
     m_addPic->setGeometry(225,273,50,50);
     m_addPic->setAlignment(Qt::AlignCenter);
-    m_addPic->setPixmap(QIcon(":/icon/res/add.png").pixmap(30,30));
+    m_addPic->setPixmap(QIcon(":/icon/res/logOut.png").pixmap(50,50));
     m_addPic->setStyleSheet("max-width:50;min-width:50;max-height:50;"
                             "min-height:50;border:4px solid rgb(240,240,240);"
                             "border-radius:27px;background-color:white;");
+    m_addPic->setToolTip("登出");
     m_addPic->installEventFilter(this);
     pic->raise();
 
@@ -307,6 +310,33 @@ void UserLogin::on_editingFinished()
                        "border-radius:52px;background-color:white;");
 }
 
+//已登录时再次弹出表单
+void UserLogin::passUserInfo(QString userId)
+{
+    m_id->setText(userId);
+    QString headImagePath = QDir::currentPath()+"/userHeads/"+userId;
+    QSize size(100, 100);
+    QBitmap mask(size);
+    QPainter painter(&mask);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+    painter.setBrush(QColor(0, 0, 0));
+    painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+    QPixmap image = QIcon(headImagePath).pixmap(100,100);
+    image.setMask(mask);
+    pic->setGeometry(200,248,100,100);
+    pic->setAlignment(Qt::AlignCenter);
+    pic->setPixmap(image);
+    pic->setStyleSheet("max-width:100;min-width:100;max-height:100;min-height:100;"
+                       "border:4px solid rgb(200,200,200);"
+                       "border-radius:52px;background-color:white;");
+    QSqlQuery query;
+    query.exec(QString("select password from userinfo where userId = '%1' ;").arg(userId));
+    query.next();
+    m_pwd->setText(query.value(0).toString());
+}
+
 void UserLogin::displayReturnValues(QString id, QString pwd)
 {
     m_id->setText(id);
@@ -315,25 +345,72 @@ void UserLogin::displayReturnValues(QString id, QString pwd)
 
 void UserLogin::on_timeout()
 {
-    m_addPic->move(-323,273);
+    QPropertyAnimation *animation = new QPropertyAnimation;
+    QPoint start = m_addPic->pos();
+    QPoint end = start + QPoint(-100,0);
+    animation->setTargetObject(m_addPic);
+    animation->setPropertyName("pos");
+    animation->setDuration(300);
+    animation->setStartValue(start);
+    animation->setEndValue(end);
+    animation->start();
+
+    //关闭计时器
+    m_timer->stop();
 }
 
 bool UserLogin::eventFilter(QObject *obj, QEvent *event)
 {
-    if(event->type()==QEvent::Enter)
+    if(obj == pic)
     {
-        if(obj==pic)
+        if(event->type() == QEvent::Enter)
         {
-            m_addPic->move(323,273);
+                if(m_addPic->x() == 225)
+                {
+                    QPropertyAnimation *animation = new QPropertyAnimation;
+                    QPoint start = m_addPic->pos();
+                    QPoint end = start + QPoint(100,0);
+                    animation->setTargetObject(m_addPic);
+                    animation->setPropertyName("pos");
+                    animation->setDuration(300);
+                    animation->setStartValue(start);
+                    animation->setEndValue(end);
+                    animation->start();
+                }
+        }
+        else if(event->type() == QEvent::Leave)
+        {
+                m_timer->start(3000);
+        }
+        else
+        {
+
         }
     }
-    if(event->type()==QEvent::Leave)
+    else if(obj == m_addPic)
     {
-        if(obj==pic)
+        if(event->type() == QEvent::MouseButtonPress)
         {
-            m_timer->start(3000);
-        }
+                QSize size(100, 100);
+                QBitmap mask(size);
+                QPainter painter(&mask);
+                painter.setRenderHint(QPainter::Antialiasing);
+                painter.setRenderHint(QPainter::SmoothPixmapTransform);
+                painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+                painter.setBrush(QColor(0, 0, 0));
+                painter.drawRoundedRect(0, 0, size.width(), size.height(), 99, 99);
+                QPixmap image = QIcon(":/icon/res/icon (2).png").pixmap(75,75);
+                pic->setPixmap(image);
+                m_id->clear();
+                m_pwd->clear();
+                InformationWindow *logOut = new InformationWindow("登出成功!");
+                logOut->show();
+                logOut->showInstantly();
+                emit loginSuccess("");
+            }
     }
+
+    return QWidget::eventFilter(obj,event);
 }
 
 void UserLogin::mousePressEvent(QMouseEvent *event)

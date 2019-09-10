@@ -419,8 +419,15 @@ QPixmap TitleBar::PixmapToRound(const QPixmap &src, int radius)
 }
 //这是登录成功之后的槽函数
 void TitleBar::onLoginSuccess(QString userId)
-{
+{   
     this->userId = userId;
+    //登出
+    if(userId == "")
+    {
+        userBtn->setIcon(QIcon(":/icon/res/defaultUser.png"));
+        userBtn->setText(" 未登录");
+        return;
+    }
 
     //修改用户头像
     QString headImagePath = QDir::currentPath()+"/userHeads/"+userId;
@@ -535,6 +542,12 @@ void TitleBar::on_userBtn_clicked()
 {
     if(userId == "")
     {
+        loginForm->show();
+        return;
+    }
+    else
+    {
+        loginForm->passUserInfo(userId);
         loginForm->show();
     }
 }
