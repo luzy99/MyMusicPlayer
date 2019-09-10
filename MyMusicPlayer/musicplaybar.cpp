@@ -621,6 +621,8 @@ void MusicPlayBar::on_nextBtn_clicked()
 //用户开始拖动播放进度条时触发的槽函数
 void MusicPlayBar::on_playSlider_sliderPressed()
 {
+    block = true;
+
     //修改样式表，制造选中的效果
     QString oldStyleSheet = playSlider->styleSheet();
     QString newStyleSheet = oldStyleSheet.replace("playSlider.png","playSliderClicked.png");
@@ -630,6 +632,8 @@ void MusicPlayBar::on_playSlider_sliderPressed()
 //用户拖动播放进度条之后的槽函数
 void MusicPlayBar::on_playSlider_sliderReleased()
 {
+    block = false;
+
     int newValue = playSlider->value();
     player->setPosition(newValue);
     QString oldStyleSheet = playSlider->styleSheet();

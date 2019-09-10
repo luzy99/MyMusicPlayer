@@ -137,7 +137,7 @@ void signup::on_imageBtn_clicked()
 
     QPixmap srcImage(file);
     QSize size = imageBtn->size();
-    QPixmap headImage = srcImage.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation);
+    QPixmap headImage = srcImage.scaled(size,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     imageBtn->setIcon(QIcon(headImage));
     userImagedir = file;
 }
