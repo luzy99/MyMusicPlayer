@@ -606,6 +606,7 @@ void MainWindow::onLoginSuccess(QString userId)
 {
     this->userId = userId;
     songListsShower->onUserLogin(userId);
+    searcher->setUserid(userId);
     infoShow->setUser(userId);
 }
 

@@ -80,7 +80,11 @@ void SearchData::searchLocal(QString songName)
     while (query1.next())
     {
         QString tableName = QString(query1.value(0).toString());
-        if(tableName == QString("播放历史"))
+        if(tableName == QString("%1_播放历史").arg(m_userid))
+        {
+            continue;
+        }
+        if(tableName.section("_",0,0)!=m_userid)
         {
             continue;
         }
@@ -179,5 +183,10 @@ bool SearchData::searchMv(QString songName)
     }
     qDebug()<<"searchMv ERROR";
     return 0;
+}
+
+void SearchData::setUserid(const QString &userid)
+{
+    m_userid = userid;
 }
 

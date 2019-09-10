@@ -18,6 +18,7 @@ class SearchData : public QObject
     Q_OBJECT
 public:
     explicit SearchData(QObject *parent = nullptr);
+    void setUserid(const QString &userid);
 
 signals:
     void searchFinished(QMap<QString,SongInfo> searchResults);
@@ -32,6 +33,7 @@ private:
     QMap<QString,SongInfo> searchResults;//<id,Songinfo结构体>
     QMap<QString,QMap<QString,QString>> mvResults;
     QMap<QString,QString> localResults;
+    QString m_userid;
 };
 
 #endif // SEARCHDATA_H

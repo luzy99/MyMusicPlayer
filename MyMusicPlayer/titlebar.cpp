@@ -276,10 +276,11 @@ void TitleBar::initActions()
     connect(actSearchMV,SIGNAL(triggered()),
             this,SLOT(on_actSearchMV_triggered()));
     searchMenu->addAction(actSearchMV);
+    searchMenu->setWindowOpacity(0.9);
     searchMenu->setStyleSheet("QMenu{"
-                              "background: rgba(25,25,25,90%);"
+                              "background: rgb(25,25,25);"
                               "color: rgb(245,245,245);}"
-                              "QMenu::item:hover{background: rgba(25,25,25,90%);"
+                              "QMenu::item:hover{background: rgb(97,97,97);"
                               "color: rgb(255,255,255);}");
 }
 
