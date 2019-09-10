@@ -1,5 +1,6 @@
 #include "lyricspost.h"
 #include "errorwindow.h"
+#include "informationwindow.h"
 #include <QFile>
 #include <QDir>
 #include <QDebug>
@@ -291,7 +292,7 @@ void LyricsPost::on_btnSave_clicked()
     }
     else
     {
-        ErrorWindow *saveSuccess = new ErrorWindow("图片保存成功");
+        InformationWindow *saveSuccess = new InformationWindow("图片保存成功");
         saveSuccess->show();
         saveSuccess->showInstantly();
         this->close();

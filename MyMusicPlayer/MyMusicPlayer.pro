@@ -34,6 +34,7 @@ SOURCES += \
     animationstackedwidget.cpp \
     audiotag.cpp \
     createsonglistdialog.cpp \
+    database.cpp \
     diskwidget.cpp \
     downloadwindow.cpp \
     errorwindow.cpp \
@@ -62,6 +63,7 @@ SOURCES += \
     skinchange.cpp \
     songinfoshow.cpp \
     songlist.cpp \
+    splashscreen.cpp \
     suspensionwindow.cpp \
     titlebar.cpp
 
@@ -72,6 +74,7 @@ HEADERS += \
     animationstackedwidget.h \
     audiotag.h \
     createsonglistdialog.h \
+    database.h \
     diskwidget.h \
     downloadwindow.h \
     errorwindow.h \
@@ -100,6 +103,7 @@ HEADERS += \
     songinfo.h \
     songinfoshow.h \
     songlist.h \
+    splashscreen.h \
     suspensionwindow.h \
     titlebar.h
 

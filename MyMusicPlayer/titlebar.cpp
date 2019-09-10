@@ -1,5 +1,6 @@
 #include "titleBar.h"
 #include "errorwindow.h"
+#include "informationwindow.h"
 #include "setting.h"
 #include <QDir>
 #include <QLabel>
@@ -522,7 +523,7 @@ void TitleBar::on_gestureBtn_clicked()
     if(!gestureControl)
     {
         gestureControl = true;
-        ErrorWindow *startGesture = new ErrorWindow("打开手势识别功能");
+        InformationWindow *startGesture = new InformationWindow("打开手势识别功能");
         startGesture->show();
         startGesture->showInstantly();
         emit beginGesture();
@@ -531,7 +532,7 @@ void TitleBar::on_gestureBtn_clicked()
     else
     {
         gestureControl = false;
-        ErrorWindow *stopGesture = new ErrorWindow("关闭手势识别功能");
+        InformationWindow *stopGesture = new InformationWindow("关闭手势识别功能");
         stopGesture->show();
         stopGesture->showInstantly();
         emit closeGesture();
