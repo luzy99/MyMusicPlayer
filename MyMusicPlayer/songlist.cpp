@@ -702,7 +702,7 @@ void SongList::remoteSetSongAddInto(QString songName, QString listName)
         QString artist = QString(query.value(3).toString());
         QString album = QString(query.value(4).toString());
         QString album_cover = QString(query.value(5).toString());
-        QString num = QString::number(maxNumInSongList(playingSongList) + 1);
+        QString num = QString::number(maxNumInSongList(listName) + 1);
 
         if(listName == QString("我喜欢的音乐"))
         {
