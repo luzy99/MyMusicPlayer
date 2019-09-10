@@ -776,7 +776,12 @@ void MainWindow::onChangePage()
 //播放MV
 void MainWindow::onPlayMV()
 {
-    MvPlayer *mvPlayer = new MvPlayer;
-    this->setDisabled(true);
-    mvPlayer->show();
+    MvPlayer *mvplayer = new MvPlayer;
+    connect(mvplayer,SIGNAL(MvWidgetClose()),
+            this,SLOT(onMvWidgetClose()));
+    emit playMusic(-1);
+    this->hide();
+    mvplayer->getMvUrls(currentSongInfo->mv_id);
+    mvplayer->setModal(true);
+    mvplayer->show();
 }
