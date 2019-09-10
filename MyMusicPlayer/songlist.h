@@ -58,6 +58,7 @@ public slots:
     void deleteSongListInDatabase(QString);
     void renameSongListInDatabase(QString);
     void on_ListSongs_doubleClicked(const QModelIndex &index); //双击歌曲项时的槽函数
+    void on_playHistory_clicked(QString songUrl); //当首页中的播放历史展示项被点击时
     void on_addSongBtn_clicked(); //增加歌曲时触发
 
 //播放列表槽函数

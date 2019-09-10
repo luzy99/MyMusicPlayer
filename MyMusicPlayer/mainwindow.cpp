@@ -370,6 +370,11 @@ void MainWindow::initSignalsAndSlots()
             suspensionWindow,SLOT(onBecomePlaying()));
     connect(musicPlayBar,SIGNAL(becomePausing()),
             suspensionWindow,SLOT(onBecomePausing()));
+
+    //点击播放历史播放歌曲
+    connect(songListsShower,SIGNAL(songUrl(QString)),
+            songList,SLOT(on_playHistory_clicked(QString)));
+
 }
 
 //更新拖动区域

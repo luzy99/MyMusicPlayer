@@ -16,7 +16,10 @@ UserLogin::UserLogin(QWidget *parent)
     this->setWindowOpacity(0.9);
     this->setFixedSize(500,600);
     this->setWindowTitle("登陆窗口");
-    this->setStyleSheet("border: 1px solid rgb(25,25,25);");
+    this->setStyleSheet("border: 1px solid rgb(25,25,25);"
+                        "QToolTip{border:none; "
+                        "background: rgba(255,255,255,90%);"
+                        "color: rgb(25,25,25);}");
     this->setWindowIcon(QIcon(":/icon/res/user (2).png"));
     //initMytitle();
 

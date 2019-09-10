@@ -10,6 +10,8 @@ MyListListWidget::MyListListWidget(QWidget *parent)
                         "QListWidget::Item:hover{color:rgb(55,57,61);background:rgb(255,232,233);border:0px solid gray;}" \
                         "QListWidget::Item:selected{color:rgb(0,0,0);background:rgb(230,231,234);border:none;}" \
                         "QListWidget:focus{outline:none;}");
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 void MyListListWidget::contextMenuEvent(QContextMenuEvent *event)

@@ -837,6 +837,8 @@ void SongList::addNewSong(QString Path)
 void SongList::onlineAddNewSong(SongInfo info)
 {
     playingSongList = actingSongListName;
+    listList->clear();
+    initSonglist();
 
     QSqlQuery query;
 
@@ -972,6 +974,16 @@ void SongList::on_ListSongs_doubleClicked(const QModelIndex &index)
         emit changePlaylist(query.value(0).toUrl(), 1);
     }
     emit playMusic(songIndex);
+}
+
+void SongList::on_playHistory_clicked(QString songUrl)
+{
+    playingSongList = "播放历史";
+    listList->clear();
+    initSonglist();
+    emit clearMusic();
+    emit changePlaylist(songUrl, 1);
+    emit playMusic(0);
 }
 
 void SongList::on_addSongBtn_clicked()

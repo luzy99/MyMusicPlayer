@@ -23,6 +23,9 @@ TitleBar::TitleBar(QWidget *parent)
     backPalette.setColor(QPalette::Window,QColor(55,55,55));
     this->setPalette(backPalette);
     this->setFixedHeight(60);
+    this->setStyleSheet("QToolTip{border:none; "
+                     "background: rgba(255,255,255,90%);"
+                     "color: rgb(25,25,25);}");
 
     //初始化登录表单
     loginForm = new UserLogin;
@@ -273,6 +276,11 @@ void TitleBar::initActions()
     connect(actSearchMV,SIGNAL(triggered()),
             this,SLOT(on_actSearchMV_triggered()));
     searchMenu->addAction(actSearchMV);
+    searchMenu->setStyleSheet("QMenu{"
+                              "background: rgba(25,25,25,90%);"
+                              "color: rgb(245,245,245);}"
+                              "QMenu::item:hover{background: rgba(25,25,25,90%);"
+                              "color: rgb(255,255,255);}");
 }
 
 TitleBar::~TitleBar()

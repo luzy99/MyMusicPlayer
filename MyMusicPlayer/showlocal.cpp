@@ -34,12 +34,14 @@ ShowLocal::ShowLocal(QWidget *parent) : QWidget(parent)
     m_pLocalShowTab->addTab(m_pListShowList,"Mode 2");
 
     //m_pTabWidegt->setStyleSheet("background-color:rgba(0,0,0,0);");
+    m_pLocalShowTab->setTabText(0,"我最近在听:");
+    m_pLocalShowTab->setTabText(1,"查看详情>>>");
     m_pLocalShowTab->setDocumentMode(true);
-    QString tab_stylesheet=tr("QTabBar::tab{width: 100px;height:20px;"
-                              "font:15px '微软雅黑';color:white;background-color:rbga(0,0,0,5);}");
-    tab_stylesheet.append("QTabBar::tab:selected{color: rgba(0,0,0,50);"
-                          "background-color:rbga(0,0,0,10);}");
-    //tab_stylesheet.append("QTabWidget::pane{border:0px;top:-1px;}");
+    QString tab_stylesheet=tr("QTabBar::tab{width:160px;height:25px;"
+                              "font:15px '微软雅黑';color:rgb(97,97,97);background:rbg(0,0,0,5);}"
+                              "QTabBar::tab:selected{color: rgb(25,25,25);"
+                              "background-color:rbga(0,0,0,10);}"
+                              "QTabWidget::pane{border:0px;top:-1px;}");
     m_pLocalShowTab->setStyleSheet(tab_stylesheet);
 
     QVBoxLayout *hb1= new QVBoxLayout;

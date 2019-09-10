@@ -281,13 +281,13 @@ bool SuspensionWindow::eventFilter(QObject *obj, QEvent *event)
 //表示接下来播放
 void SuspensionWindow::onBecomePlaying()
 {
-    playBtn->setIcon(QIcon(":/icon/res/pause.png"));
+    playBtn->setIcon(QIcon(":/icon/res/pauseHover.png"));
 }
 
 //表示接下来暂停
 void SuspensionWindow::onBecomePausing()
 {
-    playBtn->setIcon(QIcon(":/icon/res/play.png"));
+    playBtn->setIcon(QIcon(":/icon/res/playHover.png"));
 }
 
 //最小化按钮点击
