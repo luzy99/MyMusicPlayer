@@ -167,7 +167,7 @@ AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
         if(processStringId(query1.value(0).toString()) == User)
         {
             QString tableName = QString(query1.value(0).toString());
-            if(tableName == QString("播放历史"))
+            if(processStringName( tableName) == QString("播放历史"))
             {
                 continue;
             }
@@ -201,7 +201,7 @@ AddIntoSongList::AddIntoSongList(QString UserId,QWidget *parent)
             gl1->addWidget(item_numLabel,1,1,1,5,Qt::AlignLeft);
 
             listInfoWidget->setLayout(gl1);
-            if(tableName == QString("我喜欢的音乐"))
+            if(processStringName( tableName) == QString("我喜欢的音乐"))
             {
                 listList->insertItem(0, pItem);
             }

@@ -394,6 +394,7 @@ bool UserLogin::eventFilter(QObject *obj, QEvent *event)
     {
         if(event->type() == QEvent::MouseButtonPress)
         {
+                emit clearMusic();
                 QSize size(100, 100);
                 QBitmap mask(size);
                 QPainter painter(&mask);

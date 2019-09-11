@@ -31,6 +31,7 @@ public:
 
 signals:
     void loginSuccess(QString userId);
+    void clearMusic();
 
 public slots:
     void onClicked();

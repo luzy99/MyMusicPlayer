@@ -48,6 +48,7 @@ bool AudioTag::GetAlbumCover(string &tag_content, int tag_index, int tag_size)
     fread(temp_str,1,tag_size-14,fp);
     fwrite(temp_str,1,tag_size-14,wfp);
     fclose(wfp);
+    delete [] temp_str;
     m_song_info->has_cover=true;
     return 1;
 }
@@ -74,7 +75,7 @@ bool AudioTag::getAllinfo()
         //tag_content =buffer;
         string tag_content(buffer, buffer + tag_size);
         //tag_content.assign(id3v2, tag_size);	//将标签区域的内容保存到一个string对象里
-
+        delete [] buffer;
         const int TAG_NUM=5;
         //要查找的标签标识字符串（标题、艺术家、唱片集、年份、图片）
         const string tag_identify[TAG_NUM]{ "TIT2","TPE1","TALB","TYER","APIC"};

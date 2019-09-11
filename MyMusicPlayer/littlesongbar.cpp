@@ -7,7 +7,8 @@
 
 //SongInfo &info,
 LittleSongBar::LittleSongBar(QWidget *parent)
-    :QWidget(parent)
+    :QWidget(parent),
+      userID("")
 {
     //初始化窗口信息
     this->setWindowFlags(Qt::FramelessWindowHint);
@@ -87,10 +88,27 @@ bool LittleSongBar::eventFilter(QObject *obj, QEvent *event)
 
         if(event->type() == QEvent::MouseButtonPress)
         {
-            //qDebug()<<"press";
-            emit changePage(); //发出换页信号
+            if(userID != "")
+            {
+                //qDebug()<<"press";
+                emit changePage(); //发出换页信号
+            }
         }
     }
 
     return QWidget::eventFilter(obj,event);
+}
+
+void LittleSongBar::setUserID(const QString &value)
+{
+    userID = value;
+
+    if(userID == "")
+    {
+        titleLabel->setText("暂无歌曲在播放");
+        authorLabel->setText("暂无相关信息");    QPixmap image(":/icon/res/default_cover.png");
+        coverImage = image.scaled(QSize(50,50), Qt::KeepAspectRatio,Qt::FastTransformation);
+        coverLabel->setPixmap(coverImage);
+
+    }
 }

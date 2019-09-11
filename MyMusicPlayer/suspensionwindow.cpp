@@ -46,7 +46,7 @@ SuspensionWindow::SuspensionWindow(QWidget *parent)
     //初始化小窗标签按钮
     suspensionBtn = new QPushButton;
     suspensionBtn->setObjectName("suspensionBtn");
-    suspensionBtn->setWindowFlags(Qt::FramelessWindowHint);
+    suspensionBtn->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
     suspensionBtn->setAttribute(Qt::WA_TranslucentBackground);
     suspensionBtn->setIcon(QIcon(":/icon/res/suspensionWindow.png"));
     suspensionBtn->setIconSize(QSize(60,60));

@@ -15,6 +15,7 @@ class LittleSongBar : public QWidget
 public:
     explicit LittleSongBar(QWidget *parent = nullptr);
     void changeSong(SongInfo &info);
+    void setUserID(const QString &value);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -29,6 +30,7 @@ private:
     QLabel *titleLabel; //显示标题的Label
     QLabel *authorLabel; //显示作者的Label
     QPixmap coverImage; //歌曲封面
+    QString userID;
     QGraphicsOpacityEffect *opacityEffect; //设置图片透明度相关
 };
 

@@ -308,6 +308,9 @@ void MainWindow::initSignalsAndSlots()
             this,SLOT(onLoginSuccess(QString)));
     connect(titleBar->loginForm,SIGNAL(loginSuccess(QString)),
             songList,SLOT(onRecieveUserId(QString)));
+    //用户登出时清空歌单
+    connect(titleBar->loginForm,SIGNAL(clearMusic()),
+            musicPlayBar,SLOT(onClearMusic()));
 
     //这是标题栏(搜索框)和搜索器之间的信号槽
     //完成一个搜索的逻辑
@@ -606,6 +609,7 @@ void MainWindow::onLoginSuccess(QString userId)
 {
     this->userId = userId;
     songListsShower->onUserLogin(userId);
+    littleSongBar->setUserID(userId);
     searcher->setUserid(userId);
     infoShow->setUser(userId);
 }
